@@ -134,7 +134,29 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 
 .form-group { margin-bottom: var(--space-md); }
 .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: var(--space-xs); text-transform: uppercase; letter-spacing: 0.05em; }
-.form-input { width: 100%; padding: var(--space-sm) var(--space-md); background: var(--bg-glass); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; transition: border-color var(--transition-fast); outline: none; }
+.form-input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 16px; /* 16px to prevent iOS auto-zoom */
+  transition: border-color var(--transition-fast);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-input[type="date"] {
+  min-height: 48px; /* Better touch target for iOS */
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .form-input:focus { border-color: var(--accent-gold); }
 .form-input::placeholder { color: var(--text-muted); }
 .form-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M2 5l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }

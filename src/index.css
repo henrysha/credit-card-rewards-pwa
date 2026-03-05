@@ -45,6 +45,7 @@
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,6 +71,7 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 
 .page {
   flex: 1; padding: var(--space-md);
+  padding-top: calc(var(--space-md) + var(--safe-top));
   padding-bottom: calc(80px + var(--safe-bottom) + var(--space-md));
   max-width: 600px; margin: 0 auto; width: 100%;
 }

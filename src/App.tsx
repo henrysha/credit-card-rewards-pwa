@@ -7,6 +7,7 @@ import CardDetail from './pages/CardDetail';
 import Perks from './pages/Perks';
 import Churning from './pages/Churning';
 import CardCatalog from './pages/CardCatalog';
+import ReloadPrompt from './components/ReloadPrompt';
 
 function BottomNav() {
   const location = useLocation();
@@ -77,6 +78,7 @@ function AppContent() {
         <Route path="/catalog" element={<CardCatalog />} />
       </Routes>
       <BottomNav />
+      <ReloadPrompt />
     </div>
   );
 }

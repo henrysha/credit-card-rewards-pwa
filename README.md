@@ -1,73 +1,70 @@
-# React + TypeScript + Vite
+# Credit Card Rewards PWA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, offline-first Progressive Web App (PWA) designed to help you maximize your credit card rewards and track your churning progress.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Rewards Dashboard**: Quickly see which card to use for any spending category to get the most rewards.
+- **Perks Management**: Track and manage your card benefits, from dining credits to travel insurance.
+- **Card Catalog**: A comprehensive database of credit cards to explore and compare.
+- **My Cards**: Manage your personal card portfolio securely.
+- **Churning Tools**: Keep track of your application history and 5/24 status.
+- **Offline First**: All data is stored locally using Dexie.js (IndexedDB), ensuring the app works even without an internet connection.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Database**: Dexie.js (IndexedDB wrapper)
+- **Styles**: Vanilla CSS
+- **Testing**: Playwright + Cucumber.js for Behavior-Driven Development (BDD)
+- **Deployment**: GitHub Pages (via GitHub Actions)
+- **PWA**: `vite-plugin-pwa` for offline support and installability
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js (v18 or higher)
+- npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Production Build
+
+Build the production application:
+```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Preview the production build:
+```bash
+npm run preview
 ```
+
+## Testing
+
+The project implements BDD testing using Cucumber and Playwright. Features and step definitions are located in the `tests/` directory.
+
+Run all tests:
+```bash
+npm run test:bdd
+```
+
+## Deployment
+
+The project is configured for automated deployment to GitHub Pages via GitHub Actions. Any push to the `main` branch will trigger a build and deploy.
+
+---
+
+Built with ❤️ for credit card enthusiasts.

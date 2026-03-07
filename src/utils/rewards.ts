@@ -97,7 +97,7 @@ export function normalizeCategory(category: string): ParsedCategories {
     }
   }
 
-  if (cat.includes('transit') || cat.includes('rideshare') || cat.includes('lyft')) {
+  if (cat.includes('transit') || cat.includes('rideshare') || cat.includes('local transit')) {
     broad.push('Transit & Rideshare');
   }
 

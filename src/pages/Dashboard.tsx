@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { requestNotificationPermission } from '../notifications';
 import type { SignupBonus, UserPerk } from '../db/types';
+import { BestCardSection } from '../components/BestCardSection';
 
 function daysUntil(dateStr: string): number {
   const diff = new Date(dateStr).getTime() - new Date().getTime();
@@ -87,7 +88,7 @@ export default function Dashboard() {
 
       {activeBonuses.length > 0 && (
         <>
-          <div className="section-header">
+          <div className="section-header mt-lg">
             <span className="section-title">Active Sign-up Bonuses</span>
           </div>
           {activeBonuses.map((bonus: SignupBonus) => {
@@ -149,6 +150,8 @@ export default function Dashboard() {
           )}
         </>
       )}
+
+      <BestCardSection />
 
       {activeCards === 0 && (
         <div className="empty-state">

@@ -80,14 +80,16 @@ function AppContent() {
 
   return (
     <div className="app-layout">
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/cards" element={<MyCards />} />
-        <Route path="/card/:id" element={<CardDetail />} />
-        <Route path="/perks" element={<Perks />} />
-        <Route path="/churning" element={<Churning />} />
-        <Route path="/catalog" element={<CardCatalog />} />
-      </Routes>
+      <main className="app-main">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/cards" element={<MyCards />} />
+          <Route path="/card/:id" element={<CardDetail />} />
+          <Route path="/perks" element={<Perks />} />
+          <Route path="/churning" element={<Churning />} />
+          <Route path="/catalog" element={<CardCatalog />} />
+        </Routes>
+      </main>
       <BottomNav />
       <ReloadPrompt />
     </div>

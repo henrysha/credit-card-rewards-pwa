@@ -233,6 +233,12 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .mt-sm { margin-top: var(--space-sm); } .mt-md { margin-top: var(--space-md); } .mt-lg { margin-top: var(--space-lg); } .mb-md { margin-bottom: var(--space-md); }
 .text-sm { font-size: 0.8rem; } .text-xs { font-size: 0.7rem; } .text-muted { color: var(--text-secondary); } .text-gold { color: var(--accent-gold); } .text-green { color: var(--accent-green); } .text-red { color: var(--accent-red); }
 .font-bold { font-weight: 700; } .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.best-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr auto;
+  align-items: center;
+  gap: var(--space-sm);
+}
 
 .back-btn { display: inline-flex; align-items: center; gap: var(--space-xs); color: var(--text-secondary); background: none; border: none; font-family: inherit; font-size: 0.85rem; cursor: pointer; padding: var(--space-xs) 0; transition: color var(--transition-fast); }
 .back-btn:hover { color: var(--text-primary); }

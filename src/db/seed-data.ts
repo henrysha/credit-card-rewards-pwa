@@ -15,6 +15,7 @@ export const cardTemplates: CardTemplate[] = [
     signupBonus: { points: 75000, spend: 5000, timeMonths: 3, unit: 'points' },
     earningRates: [
       { category: 'Chase Travel', multiplier: 5 },
+      { category: 'Lyft', multiplier: 5, limit: 'Through 9/30/2027' },
       { category: 'Dining', multiplier: 3 },
       { category: 'Streaming', multiplier: 3 },
       { category: 'Online Groceries', multiplier: 3 },
@@ -40,6 +41,7 @@ export const cardTemplates: CardTemplate[] = [
     signupBonus: { points: 125000, spend: 6000, timeMonths: 3, unit: 'points' },
     earningRates: [
       { category: 'Chase Travel', multiplier: 8 },
+      { category: 'Lyft', multiplier: 5, limit: 'Through 9/30/2027' },
       { category: 'Flights & Hotels (direct)', multiplier: 4 },
       { category: 'Dining', multiplier: 3 },
       { category: 'All Other', multiplier: 1 },

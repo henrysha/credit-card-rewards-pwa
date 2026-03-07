@@ -1,9 +1,11 @@
-import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { getCardTemplate, togglePerk, updateBonusSpend, removeCard } from '../db/helpers';
 import { useState } from 'react';
 import type { UserPerk, PerkTemplate } from '../db/types';
+import { PerkDetailsModal } from '../components/PerkDetailsModal';
+import { InfoIcon } from '../components/InfoIcon';
 
 function daysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -21,6 +23,7 @@ export default function CardDetail() {
   const [editingSpend, setEditingSpend] = useState(false);
   const [spendValue, setSpendValue] = useState('');
   const [showDelete, setShowDelete] = useState(false);
+  const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
 
   if (!card) return <div className="page"><p className="text-muted">Loading...</p></div>;
 
@@ -48,6 +51,13 @@ export default function CardDetail() {
 
   const perkTemplateMap = new Map<string, PerkTemplate>();
   template.perks.forEach(p => perkTemplateMap.set(p.id, p));
+
+  const handleInfoClick = (e: React.MouseEvent, pt: PerkTemplate | undefined) => {
+    e.stopPropagation();
+    if (pt) {
+      setSelectedPerkTemplate(pt);
+    }
+  };
 
   return (
     <div className="page animate-in">
@@ -137,25 +147,40 @@ export default function CardDetail() {
           </div>
           {valuablePerks.map((perk: UserPerk) => {
             const pt = perkTemplateMap.get(perk.perkTemplateId);
+            const hasExtraInfo = !!(pt && (pt.details || pt.usageLink));
+
             return (
-              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`} onClick={() => handleToggle(perk.id!)}>
-                <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                  {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
+                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                  <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                    {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                  </div>
+                  <div className="perk-info" style={{ flex: 1 }}>
+                    <div className="perk-name flex items-center gap-sm">
+                      {perk.perkName}
+                    </div>
+                    <div className="perk-desc">{pt?.description || ''}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    {perk.periodValue ? (
+                      <>
+                        <div className="perk-value">${perk.periodValue}</div>
+                        <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                      </>
+                    ) : (
+                      <div className="perk-value">${perk.annualValue}</div>
+                    )}
+                  </div>
                 </div>
-                <div className="perk-info">
-                  <div className="perk-name">{perk.perkName}</div>
-                  <div className="perk-desc">{pt?.description || ''}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  {perk.periodValue ? (
-                    <>
-                      <div className="perk-value">${perk.periodValue}</div>
-                      <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
-                    </>
-                  ) : (
-                    <div className="perk-value">${perk.annualValue}</div>
-                  )}
-                </div>
+                {hasExtraInfo && (
+                  <button 
+                    className="info-btn" 
+                    onClick={(e) => handleInfoClick(e, pt)}
+                    aria-label="Perk Info"
+                  >
+                    <InfoIcon width={20} height={20} />
+                  </button>
+                )}
               </div>
             );
           })}
@@ -170,15 +195,30 @@ export default function CardDetail() {
           </div>
           {otherPerks.map((perk: UserPerk) => {
             const pt = perkTemplateMap.get(perk.perkTemplateId);
+            const hasExtraInfo = !!(pt && (pt.details || pt.usageLink));
+
             return (
-              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`} onClick={() => handleToggle(perk.id!)}>
-                <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                  {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
+                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                  <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                    {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                  </div>
+                  <div className="perk-info" style={{ flex: 1 }}>
+                    <div className="perk-name flex items-center gap-sm">
+                      {perk.perkName}
+                    </div>
+                    <div className="perk-desc">{pt?.description || ''}</div>
+                  </div>
                 </div>
-                <div className="perk-info">
-                  <div className="perk-name">{perk.perkName}</div>
-                  <div className="perk-desc">{pt?.description || ''}</div>
-                </div>
+                {hasExtraInfo && (
+                  <button 
+                    className="info-btn" 
+                    onClick={(e) => handleInfoClick(e, pt)}
+                    aria-label="Perk Info"
+                  >
+                    <InfoIcon width={20} height={20} />
+                  </button>
+                )}
               </div>
             );
           })}
@@ -204,6 +244,13 @@ export default function CardDetail() {
             </div>
           </div>
         </div>
+      )}
+
+      {selectedPerkTemplate && (
+        <PerkDetailsModal
+          template={selectedPerkTemplate}
+          onClose={() => setSelectedPerkTemplate(null)}
+        />
       )}
     </div>
   );

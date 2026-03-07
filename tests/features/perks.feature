@@ -70,3 +70,13 @@ Feature: Perk Management
     Then I should see "$300 Ultimate Travel Credit" in the perks list
     And the "$300 Ultimate Travel Credit" perk should not be marked as used
     But I should not see "$300 Travel Credit" in the perks list
+
+  Scenario: View perk details via info icon
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    And I click the info icon for the "$300 Exclusive Tables Dining" perk
+    Then I should see the perk details modal for "$300 Exclusive Tables Dining"
+    And I should see "CSR Dining credit can only be used at Opentable exclusive tables restaurants." in the modal
+    And I should see a link to "https://dining.chase.com/collections" in the modal
+    When I click the close button on the perk details modal
+    Then the perk details modal should be closed

@@ -40,3 +40,9 @@ Feature: Rewards Accuracy
     Then I should see "Transit & Rideshare" on the dashboard
     When I click to expand the "Transit & Rideshare" category
     Then I should see the "Lyft" subcategory
+
+  Scenario: Everything Else shows highest catch-all card (issue #48)
+    Given I have added the "Capital One Venture" card
+    And I have added the "Chase Ink Business Preferred" card
+    When I navigate to the "Dashboard"
+    Then I should see "Everything Else" in the best card section with "Capital One Venture" and "2x" multiplier

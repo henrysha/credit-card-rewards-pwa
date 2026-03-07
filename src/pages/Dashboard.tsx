@@ -128,19 +128,21 @@ export default function Dashboard() {
             <button className="btn btn-secondary btn-sm" onClick={() => navigate('/perks')}>View All</button>
           </div>
           {unusedPerks.slice(0, 5).map((perk: UserPerk) => (
-            <div key={perk.id} className="perk-item" onClick={() => navigate(`/card/${perk.cardId}`)}>
-              <div className="perk-info">
-                <div className="perk-name">{perk.perkName}</div>
-                <div className="perk-desc">{perk.renewalPeriod}</div>
-              </div>
-              {perk.periodValue ? (
-                <div style={{ textAlign: 'right' }}>
-                  <div className="perk-value">${perk.periodValue}</div>
-                  <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : 'period'}</div>
+            <div key={perk.id} className="perk-item">
+              <div className="perk-main-action" onClick={() => navigate(`/card/${perk.cardId}`)}>
+                <div className="perk-info">
+                  <div className="perk-name">{perk.perkName}</div>
+                  <div className="perk-desc">{perk.renewalPeriod}</div>
                 </div>
-              ) : perk.annualValue > 0 ? (
-                <div className="perk-value">${perk.annualValue}</div>
-              ) : null}
+                {perk.periodValue ? (
+                  <div style={{ textAlign: 'right' }}>
+                    <div className="perk-value">${perk.periodValue}</div>
+                    <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : 'period'}</div>
+                  </div>
+                ) : perk.annualValue > 0 ? (
+                  <div className="perk-value">${perk.annualValue}</div>
+                ) : null}
+              </div>
             </div>
           ))}
           {unusedPerks.length > 5 && (

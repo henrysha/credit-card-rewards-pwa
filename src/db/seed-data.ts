@@ -371,3 +371,9 @@ export const churningRules: ChurningRule[] = [
   { id: 'capital-one-48', issuer: 'Capital One', ruleName: '48-Month Rule', description: 'You can only receive the Venture/Venture X welcome bonus once per 48 months per product.', cooldownMonths: 48, affectedCards: ['capital-one-venture', 'capital-one-venture-x'] },
   { id: 'citi-48', issuer: 'Citi', ruleName: '48-Month Rule', description: 'Citi limits welcome bonuses to once per 48 months per card family.', cooldownMonths: 48 },
 ];
+
+// Expose to window for BDD testing
+if (typeof window !== 'undefined') {
+  const w = window as unknown as { cardTemplates: typeof cardTemplates };
+  w.cardTemplates = cardTemplates;
+}

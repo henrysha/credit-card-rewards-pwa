@@ -49,11 +49,22 @@ When('the renewal period for {string} expires', async function (perkName: string
 });
 
 When('the app refreshes expired perks', async function () {
-  // Call refreshExpiredPerks via the app's module
   await this.page.evaluate(async () => {
     const refreshExpiredPerks = (window as unknown as { refreshExpiredPerks: () => Promise<void> }).refreshExpiredPerks;
     if (!refreshExpiredPerks) throw new Error('refreshExpiredPerks not found on window');
+    
+    interface PerkData { perkTemplateId: string; perkName: string; used: boolean; currentPeriodEnd: string; }
+    const db = (window as unknown as { db: { perks: { toArray: () => Promise<PerkData[]> } } }).db;
+    if (!db) throw new Error('Database not found on window');
+
+    const before = await db.perks.toArray();
     await refreshExpiredPerks();
+    const after = await db.perks.toArray();
+    
+    return {
+      before: before.filter((p: PerkData) => p.perkTemplateId === 'csr-travel-credit').map((p: PerkData) => ({ name: p.perkName, used: p.used, end: p.currentPeriodEnd })),
+      after: after.filter((p: PerkData) => p.perkTemplateId === 'csr-travel-credit').map((p: PerkData) => ({ name: p.perkName, used: p.used, end: p.currentPeriodEnd }))
+    };
   });
 });
 
@@ -61,4 +72,50 @@ Then('the {string} perk should not be marked as used', async function (perkName:
   const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
   // The checkbox should NOT have the 'checked' class
   await expect(perkItem.locator('.perk-checkbox:not(.checked)')).toBeVisible({ timeout: 5000 });
+});
+
+When('the master catalog\'s {string} is renamed to {string}', async function (oldName: string, newName: string) {
+  await this.page.evaluate(async (args: { oldName: string, newName: string }) => {
+    const templates = (window as unknown as { cardTemplates: { perks: { name: string }[] }[] }).cardTemplates;
+    if (!templates) throw new Error('cardTemplates not found on window');
+    let found = false;
+    for (const t of templates) {
+      const perk = t.perks.find((p: { name: string }) => p.name === args.oldName);
+      if (perk) {
+        perk.name = args.newName;
+        found = true;
+      }
+    }
+    if (!found) throw new Error(`Perk ${args.oldName} not found in catalog`);
+  }, { oldName, newName });
+});
+
+When('a {string} perk is added to the {string} catalog template', async function (perkName: string, cardName: string) {
+  await this.page.evaluate(async (args: { perkName: string, cardName: string }) => {
+    const templates = (window as unknown as { cardTemplates: { name: string, perks: unknown[] }[] }).cardTemplates;
+    if (!templates) throw new Error('cardTemplates not found on window');
+    const card = templates.find((c: { name: string }) => c.name === args.cardName);
+    if (!card) throw new Error(`Card ${args.cardName} not found`);
+    card.perks.push({
+      id: `fake-perk-${Date.now()}`,
+      name: args.perkName,
+      description: 'A fake perk for testing',
+      category: 'other',
+      annualValue: 50,
+      renewalPeriod: 'annual',
+    });
+  }, { perkName, cardName });
+});
+
+When('the app syncs catalog perks', async function () {
+  await this.page.evaluate(async () => {
+    const syncCardPerks = (window as unknown as { syncCardPerks: () => Promise<void> }).syncCardPerks;
+    if (!syncCardPerks) throw new Error('syncCardPerks not found on window');
+    await syncCardPerks();
+  });
+});
+
+Then('I should not see {string} in the perks list', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem).toHaveCount(0, { timeout: 5000 });
 });

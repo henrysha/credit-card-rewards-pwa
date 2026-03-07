@@ -14,6 +14,7 @@ declare module '@cucumber/cucumber' {
     context: BrowserContext;
     page: Page;
     testDbId?: string;
+    baseUrl: string;
   }
 }
 
@@ -88,6 +89,7 @@ Before(async function (scenario) {
   this.testDbId = dbId;
   
   this.browser = browser;
+  this.baseUrl = BASE_URL;
   
   // Create context with notifications permission granted by default
   // This is more reliable than grantPermissions in some environments
@@ -124,14 +126,23 @@ After(async function (scenario) {
   // Clean up the dynamic DB to avoid bloating the test environment
   if (this.page && this.testDbId) {
     const dbName = `CCRewards_Test_${this.testDbId}`;
-    await this.page.evaluate((name: string) => {
-      return new Promise<void>((resolve) => {
-        const req = indexedDB.deleteDatabase(name);
-        req.onsuccess = () => resolve();
-        req.onerror = () => resolve();
-        req.onblocked = () => resolve();
-      });
-    }, dbName);
+    try {
+      await this.page.evaluate((name: string) => {
+        return new Promise<void>((resolve) => {
+          try {
+            const req = indexedDB.deleteDatabase(name);
+            req.onsuccess = () => resolve();
+            req.onerror = () => resolve();
+            req.onblocked = () => resolve();
+          } catch (e) {
+            console.warn(`Failed to delete IndexedDB ${name}:`, e);
+            resolve();
+          }
+        });
+      }, dbName);
+    } catch (e) {
+      console.warn(`Evaluation failed during database cleanup for ${dbName}:`, e);
+    }
   }
 
   await this.context?.close();

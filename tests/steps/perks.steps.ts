@@ -119,3 +119,35 @@ Then('I should not see {string} in the perks list', async function (perkName: st
   const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
   await expect(perkItem).toHaveCount(0, { timeout: 5000 });
 });
+
+When('I click the info icon for the {string} perk', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await perkItem.locator('.info-btn').click();
+});
+
+Then('I should see the perk details modal for {string}', async function (perkName: string) {
+  const modal = this.page.locator('.modal-content');
+  await expect(modal).toBeVisible({ timeout: 5000 });
+  await expect(modal.locator('h3')).toHaveText(perkName);
+});
+
+Then('I should see {string} in the modal', async function (text: string) {
+  const modal = this.page.locator('.modal-content');
+  await expect(modal.getByText(text, { exact: false })).toBeVisible({ timeout: 5000 });
+});
+
+Then('I should see a link to {string} in the modal', async function (url: string) {
+  const modal = this.page.locator('.modal-content');
+  const link = modal.locator(`a[href="${url}"]`);
+  await expect(link).toBeVisible({ timeout: 5000 });
+});
+
+When('I click the close button on the perk details modal', async function () {
+  const modal = this.page.locator('.modal-content');
+  await modal.getByRole('button', { name: 'Close' }).click();
+});
+
+Then('the perk details modal should be closed', async function () {
+  const modal = this.page.locator('.modal-content');
+  await expect(modal).not.toBeVisible({ timeout: 5000 });
+});

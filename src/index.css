@@ -103,9 +103,13 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .progress-bar-fill { height: 100%; border-radius: var(--radius-full); transition: width var(--transition-slow); background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-light)); }
 .progress-bar-fill.complete { background: linear-gradient(90deg, var(--accent-green), #4ade80); }
 
-.perk-item { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); border-radius: var(--radius-md); background: var(--bg-glass); border: 1px solid var(--bg-glass-border); transition: all var(--transition-fast); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.perk-item:hover { background: rgba(255, 255, 255, 0.06); }
+.perk-item { display: flex; align-items: stretch; border-radius: var(--radius-md); background: var(--bg-glass); border: 1px solid var(--bg-glass-border); transition: all var(--transition-fast); overflow: hidden; }
+.perk-item:hover { background: rgba(255, 255, 255, 0.04); }
 .perk-item + .perk-item { margin-top: var(--space-sm); }
+.perk-main-action { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); flex: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.perk-main-action:hover { background: rgba(255, 255, 255, 0.02); }
+.info-btn { display: flex; align-items: center; justify-content: center; width: 56px; margin: 0; padding: 0; background: transparent; border: none; border-left: 1px solid var(--bg-glass-border); color: var(--text-muted); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all var(--transition-fast); }
+.info-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-primary); }
 .perk-item.used { opacity: 0.5; }
 .perk-checkbox { width: 24px; height: 24px; border-radius: var(--radius-sm); border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all var(--transition-fast); }
 .perk-checkbox.checked { background: var(--accent-green); border-color: var(--accent-green); }

@@ -46,6 +46,8 @@ export interface PerkTemplate {
   id: string;
   name: string;
   description: string;
+  details?: string;
+  usageLink?: string;
   category: PerkCategory;
   annualValue: number;      // total annual dollar value
   renewalPeriod: RenewalPeriod;

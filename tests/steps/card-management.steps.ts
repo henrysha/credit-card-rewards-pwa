@@ -1,15 +1,16 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect, type Page } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa';
+const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa/';
 
 // Helper to add a card through the UI
 async function addCardViaUI(page: Page, cardName: string) {
-  await page.goto(`${BASE_URL}/catalog`);
+  await page.goto(`${BASE_URL}catalog`);
   await page.waitForLoadState('networkidle');
 
-  // Click the card in the catalog (cards are glass-card with cursor pointer)
-  const card = page.locator('.glass-card[style*="cursor"]').filter({ hasText: cardName });
+  // Loosen the card selector for production build robustness
+  const card = page.locator('.glass-card').filter({ hasText: cardName }).first();
+  await card.waitFor({ state: 'visible', timeout: 5000 });
   await card.click();
 
   // Wait for modal to appear
@@ -27,7 +28,7 @@ Given('I have added the {string} card', async function (cardName: string) {
 });
 
 When('I click on the {string} card in the catalog', async function (cardName: string) {
-  const card = this.page.locator('.glass-card[style*="cursor"]').filter({ hasText: cardName });
+  const card = this.page.locator('.glass-card').filter({ hasText: cardName }).first();
   await card.click();
 });
 
@@ -36,7 +37,7 @@ Then('I should see the add card modal', async function () {
 });
 
 When('I add the {string} card', async function (cardName: string) {
-  const card = this.page.locator('.glass-card[style*="cursor"]').filter({ hasText: cardName });
+  const card = this.page.locator('.glass-card').filter({ hasText: cardName }).first();
   await card.click();
   await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
   await this.page.locator('.modal-content button').filter({ hasText: /Add Card|Adding/ }).click();
@@ -49,7 +50,7 @@ Then('I should see {string} on the cards page', async function (cardName: string
 
 When('I view the card detail for {string}', async function (cardName: string) {
   // Navigate to My Cards page
-  await this.page.goto(`${BASE_URL}/cards`);
+  await this.page.goto(`${BASE_URL}cards`);
   await this.page.waitForLoadState('networkidle');
 
   // Click the card tile
@@ -68,15 +69,20 @@ Then('I should see {string} in the perks list', async function (text: string) {
 
 // Remove card steps
 When('I click {string}', async function (buttonText: string) {
-  await this.page.locator('button').filter({ hasText: buttonText }).click();
-  await this.page.waitForTimeout(300);
+  const btn = this.page.locator('button').filter({ hasText: buttonText }).first();
+  await btn.waitFor({ state: 'visible', timeout: 5000 });
+  await btn.click();
 });
 
 When('I confirm the removal', async function () {
+  // Wait for modal to appear
+  await this.page.waitForSelector('.modal-overlay', { state: 'visible', timeout: 5000 });
+  
   // The remove modal has a "Remove" button with btn-danger class
-  const confirmBtn = this.page.locator('.modal-content button.btn-danger').filter({ hasText: 'Remove' });
+  // Use first() to be safe and ensure visibility before click
+  const confirmBtn = this.page.locator('.modal-content button.btn-danger').filter({ hasText: 'Remove' }).first();
+  await confirmBtn.waitFor({ state: 'visible', timeout: 5000 });
   await confirmBtn.click();
-  await this.page.waitForTimeout(500);
 });
 
 Then('I should be on the cards page', async function () {

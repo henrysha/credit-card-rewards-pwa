@@ -33,3 +33,10 @@ Feature: Rewards Accuracy
     Then I should see "Travel Portal" in the best card section with "Chase Sapphire Reserve" and "8x" multiplier
     And I should see "Flights" in the best card section with "Chase Sapphire Reserve" and "4x" multiplier
     And I should see "Hotels" in the best card section with "Chase Sapphire Reserve" and "4x" multiplier
+
+  Scenario: Lyft vendor subcategory under Transit & Rideshare
+    Given I have added the "Chase Sapphire Preferred" card
+    When I navigate to the "Dashboard"
+    Then I should see "Transit & Rideshare" on the dashboard
+    When I click to expand the "Transit & Rideshare" category
+    Then I should see the "Lyft" subcategory

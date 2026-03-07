@@ -83,9 +83,10 @@ Then('I should see a push notification {string} containing {string}', async func
   await this.page.evaluate(async () => {
     const maxRetries = 10;
     for (let i = 0; i < maxRetries; i++) {
-      if ((window as any).runNotificationChecks) {
+      const w = window as unknown as { runNotificationChecks?: () => Promise<void> };
+      if (w.runNotificationChecks) {
         console.log('Explicitly triggering runNotificationChecks from test');
-        await (window as any).runNotificationChecks();
+        await w.runNotificationChecks();
         return;
       }
       console.log('runNotificationChecks not found on window, retrying...', i);
@@ -94,9 +95,9 @@ Then('I should see a push notification {string} containing {string}', async func
     console.warn('runNotificationChecks not found on window after retries');
   });
 
-  await this.page.waitForFunction(() => (window as any).capturedNotifications.length > 0, { timeout: 10000 });
+  await this.page.waitForFunction(() => ((window as unknown as { capturedNotifications: unknown[] }).capturedNotifications || []).length > 0, { timeout: 10000 });
 
-  const notifications = await this.page.evaluate(() => (window as any).capturedNotifications) as { title: string; options: NotificationOptions }[];
+  const notifications = await this.page.evaluate(() => (window as unknown as { capturedNotifications: unknown[] }).capturedNotifications) as { title: string; options: NotificationOptions }[];
   const notification = notifications.find(n => n.title === expectedTitle);
 
   expect(notification).toBeDefined();

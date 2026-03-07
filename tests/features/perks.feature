@@ -37,3 +37,36 @@ Feature: Perk Management
     And the app refreshes expired perks
     And I view the card detail for "Chase Sapphire Reserve"
     Then the "$120 Lyft Credit" perk should not be marked as used
+
+  Scenario: Perks update on catalog change
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    Then I should see "$300 Travel Credit" in the perks list
+    
+    When the master catalog's "$300 Travel Credit" is renamed to "$300 Ultimate Travel Credit"
+    And a "$50 Fake Credit" perk is added to the "Chase Sapphire Reserve" catalog template
+    And the app syncs catalog perks
+    
+    Then I should see "$300 Ultimate Travel Credit" in the perks list
+    And I should see "$50 Fake Credit" in the perks list
+    But I should not see "$300 Travel Credit" in the perks list
+
+  Scenario: Used perk retains original details until refreshed
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    And I toggle the "$300 Travel Credit" perk
+    Then the "$300 Travel Credit" perk should be marked as used
+    
+    When the master catalog's "$300 Travel Credit" is renamed to "$300 Ultimate Travel Credit"
+    And the app syncs catalog perks
+    
+    Then I should see "$300 Travel Credit" in the perks list
+    And the "$300 Travel Credit" perk should be marked as used
+    But I should not see "$300 Ultimate Travel Credit" in the perks list
+    
+    When a perk "$300 Travel Credit" is set to expire in -1 days
+    And the app refreshes expired perks
+    
+    Then I should see "$300 Ultimate Travel Credit" in the perks list
+    And the "$300 Ultimate Travel Credit" perk should not be marked as used
+    But I should not see "$300 Travel Credit" in the perks list

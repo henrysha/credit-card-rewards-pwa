@@ -68,7 +68,9 @@ export function computePeriod(renewalPeriod: RenewalPeriod, now: Date = new Date
 
 // Expose to window for BDD testing
 if (typeof window !== 'undefined') {
-  (window as any).refreshExpiredPerks = refreshExpiredPerks;
+  const w = window as unknown as { refreshExpiredPerks: typeof refreshExpiredPerks; syncCardPerks: typeof syncCardPerks };
+  w.refreshExpiredPerks = refreshExpiredPerks;
+  w.syncCardPerks = syncCardPerks;
 }
 
 // ── Card operations ──
@@ -159,6 +161,64 @@ export async function togglePerk(perkId: number): Promise<void> {
   });
 }
 
+// ── Sync Perks with Catalog ──
+
+export async function syncCardPerks(): Promise<void> {
+  const cards = await db.cards.where('status').equals('active').toArray();
+  const now = new Date();
+
+  for (const card of cards) {
+    const template = getCardTemplate(card.cardTemplateId);
+    if (!template) continue;
+
+    const existingPerks = await db.perks.where('cardId').equals(card.id!).toArray();
+    
+    // 1. Delete unused perks that are no longer in the template
+    for (const p of existingPerks) {
+      if (p.used) continue;
+      const inTemplate = template.perks.find(pt => pt.id === p.perkTemplateId);
+      if (!inTemplate) {
+        await db.perks.delete(p.id!);
+      }
+    }
+
+    // 2. Update existing unused perks with latest template data
+    for (const p of existingPerks) {
+      if (p.used) continue;
+      const inTemplate = template.perks.find(pt => pt.id === p.perkTemplateId);
+      if (inTemplate) {
+        await db.perks.update(p.id!, {
+          perkName: inTemplate.name,
+          category: inTemplate.category,
+          renewalPeriod: inTemplate.renewalPeriod,
+          annualValue: inTemplate.annualValue,
+          periodValue: inTemplate.periodValue,
+        });
+      }
+    }
+
+    // 3. Add missing perks that are newly added to the template
+    for (const pt of template.perks) {
+      const existing = existingPerks.find(p => p.perkTemplateId === pt.id);
+      if (!existing) {
+        const period = computePeriod(pt.renewalPeriod, now);
+        await db.perks.add({
+          cardId: card.id!,
+          perkTemplateId: pt.id,
+          perkName: pt.name,
+          category: pt.category,
+          used: false,
+          currentPeriodStart: period.start,
+          currentPeriodEnd: period.end,
+          renewalPeriod: pt.renewalPeriod,
+          annualValue: pt.annualValue,
+          periodValue: pt.periodValue,
+        } as UserPerk);
+      }
+    }
+  }
+}
+
 // ── Auto-refresh expired perks ──
 
 export async function refreshExpiredPerks(): Promise<number> {
@@ -172,8 +232,26 @@ export async function refreshExpiredPerks(): Promise<number> {
   let refreshed = 0;
   for (const perk of expiredPerks) {
     if (perk.renewalPeriod === 'one-time' || perk.renewalPeriod === 'ongoing') continue;
-    const newPeriod = computePeriod(perk.renewalPeriod, now);
+    
+    const card = await db.cards.get(perk.cardId);
+    if (!card) continue;
+    const template = getCardTemplate(card.cardTemplateId);
+    if (!template) continue;
+
+    const perkTemplate = template.perks.find(p => p.id === perk.perkTemplateId);
+    if (!perkTemplate) {
+      // Perk was removed from catalog; delete the user perk now that its period ended
+      await db.perks.delete(perk.id!);
+      continue;
+    }
+
+    const newPeriod = computePeriod(perkTemplate.renewalPeriod, now);
     await db.perks.update(perk.id!, {
+      perkName: perkTemplate.name,
+      category: perkTemplate.category,
+      renewalPeriod: perkTemplate.renewalPeriod,
+      annualValue: perkTemplate.annualValue,
+      periodValue: perkTemplate.periodValue,
       used: false,
       usedDate: undefined,
       currentPeriodStart: newPeriod.start,

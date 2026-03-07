@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { refreshExpiredPerks } from './db/helpers';
+import { refreshExpiredPerks, syncCardPerks } from './db/helpers';
 import { runNotificationChecks } from './notifications';
 import Dashboard from './pages/Dashboard';
 import MyCards from './pages/MyCards';
@@ -62,8 +62,8 @@ function BottomNav() {
 
 function AppContent() {
   useEffect(() => {
-    // Auto-refresh expired perks on app load
-    refreshExpiredPerks();
+    // Sync perks from catalog, then auto-refresh expired ones
+    syncCardPerks().then(() => refreshExpiredPerks());
 
     // Run notification checks on app load
     runNotificationChecks();

@@ -183,6 +183,12 @@ export async function refreshExpiredPerks(): Promise<number> {
 
 export async function getCardsOpenedInLast24Months(): Promise<number> {
   const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
-  const cards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
-  return cards.filter(c => c.status !== 'closed').length;
+  const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
+  
+  // Only count personal cards that are not closed
+  return userCards.filter(c => {
+    if (c.status === 'closed') return false;
+    const template = getCardTemplate(c.cardTemplateId);
+    return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
+  }).length;
 }

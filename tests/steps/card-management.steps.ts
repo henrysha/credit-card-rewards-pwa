@@ -1,7 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect, type Page } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
+const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa';
 
 // Helper to add a card through the UI
 async function addCardViaUI(page: Page, cardName: string) {

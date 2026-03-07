@@ -19,8 +19,8 @@ declare module '@cucumber/cucumber' {
 
 let browser: Browser;
 let server: http.Server;
-const PORT = 5175;
-const BASE_URL = `http://localhost:${PORT}/credit-card-rewards-pwa/`;
+let PORT: number;
+let BASE_URL: string;
 
 BeforeAll(async function () {
   // Start a static server to serve the dist directory with the correct base path
@@ -63,7 +63,14 @@ BeforeAll(async function () {
     }
   });
 
-  await new Promise<void>((resolve) => server.listen(PORT, resolve));
+  await new Promise<void>((resolve) => {
+    server.listen(0, () => {
+      const address = server.address();
+      PORT = typeof address === 'string' ? 0 : address?.port || 0;
+      BASE_URL = `http://localhost:${PORT}/credit-card-rewards-pwa/`;
+      resolve();
+    });
+  });
 
   browser = await chromium.launch({ 
     headless: true,

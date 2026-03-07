@@ -9,10 +9,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview --port 5174 --strictPort",
-    "test:bdd": "npm run build && concurrently --success first --kill-others \"npm run preview\" \"wait-on http://localhost:5174/credit-card-rewards-pwa/ && npm run test:bdd:run\"",
+    "test:bdd": "npm run build && npm run test:bdd:run",
     "test:bdd:run": "NODE_OPTIONS=\"--import tsx/esm\" cucumber-js",
-    "test:bdd:parallel": "npm run build && concurrently --success first --kill-others \"npm run preview\" \"wait-on http://localhost:5174/credit-card-rewards-pwa/ && npm run test:bdd:run -- --parallel 2\"",
-    "test:bdd:ci": "npm run build && concurrently --success first --kill-others \"npm run preview\" \"wait-on http://localhost:5174/credit-card-rewards-pwa/ && npm run test:bdd:run -- --parallel 3\"",
+    "test:bdd:parallel": "npm run build && npm run test:bdd:run -- --parallel 2",
+    "test:bdd:ci": "npm run build && npm run test:bdd:run -- --parallel 3",
     "test": "npm run test:bdd"
   },
   "dependencies": {

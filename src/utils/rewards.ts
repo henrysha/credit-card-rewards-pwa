@@ -86,7 +86,8 @@ export function normalizeCategory(category: string): ParsedCategories {
     if (isDirect || (!isPortal && !isDirect)) broad.push('Rental Cars');
   }
   
-  if (cat === 'travel' || cat === 'other travel' || (isPortal && !broad.includes('Travel Portal')) || (isDirect && !broad.some(r => r === 'Flights' || r === 'Hotels' || r === 'Rental Cars'))) {
+  const hasTravelWord = /\btravel\b/.test(cat);
+  if (cat === 'travel' || cat === 'other travel' || hasTravelWord || (isPortal && !broad.includes('Travel Portal')) || (isDirect && !broad.some(r => r === 'Flights' || r === 'Hotels' || r === 'Rental Cars'))) {
     const pushPortal = isPortal || (!isPortal && !isDirect);
     const pushDirect = isDirect || (!isPortal && !isDirect);
     if (pushPortal && !broad.includes('Travel Portal')) broad.push('Travel Portal');
@@ -131,9 +132,10 @@ export function normalizeCategory(category: string): ParsedCategories {
   }
 
   const uniqueBroad = Array.from(new Set(broad));
-  if (uniqueBroad.length === 0 && vendors.length === 0) {
-    uniqueBroad.push('Everything Else');
-  }
+  // Note: we intentionally do NOT fall back to 'Everything Else' here for unrecognized
+  // specific-category rates (e.g. "Office Supplies / Internet / Cable / Phone").
+  // The dedicated catch-all detection in getBestCardPerCategory handles "Everything Else"
+  // explicitly for true catch-all rates like "All Other" or "Everything".
 
   return { broad: uniqueBroad, vendors };
 }

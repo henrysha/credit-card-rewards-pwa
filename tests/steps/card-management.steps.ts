@@ -17,8 +17,9 @@ async function addCardViaUI(page: Page, cardName: string, baseUrl: string) {
   // Click "Add Card" button  
   await page.locator('.modal-content button').filter({ hasText: /Add Card|Adding/ }).click();
 
-  // Wait for navigation to card detail or back to cards
-  await page.waitForTimeout(1000);
+  // Wait for modal to be hidden to ensure action completed
+  await page.waitForSelector('.modal-overlay', { state: 'hidden', timeout: 5000 });
+  await page.waitForTimeout(500);
 }
 
 Given('I have added the {string} card', async function (cardName: string) {

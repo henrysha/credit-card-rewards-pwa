@@ -1,8 +1,21 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { togglePerk, getCardTemplate } from '../db/helpers';
+import { togglePerk, getCardTemplate, daysUntilDate } from '../db/helpers';
 import { useState } from 'react';
+
 import type { UserPerk } from '../db/types';
+
+function getUrgencyBadge(perk: UserPerk): { label: string; className: string } | null {
+  if (perk.used) return null;
+  if (perk.renewalPeriod === 'ongoing' || perk.renewalPeriod === 'one-time') return null;
+  const daysLeft = daysUntilDate(perk.currentPeriodEnd);
+  if (daysLeft < 0) return null;
+  if (daysLeft === 0) return { label: 'Expires today', className: 'badge-urgent' };
+  if (daysLeft === 1) return { label: 'Expires tomorrow', className: 'badge-urgent' };
+  if (daysLeft <= 3) return { label: `${daysLeft}d left`, className: 'badge-urgent' };
+  if (daysLeft <= 7) return { label: `${daysLeft}d left`, className: 'badge-warning' };
+  return null;
+}
 
 export default function Perks() {
   const [filter, setFilter] = useState<'all' | 'unused' | 'used'>('unused');
@@ -84,27 +97,33 @@ export default function Perks() {
               <span className="section-title">{periodLabels[period]}</span>
               <span className="text-xs text-muted">{items.length} perks</span>
             </div>
-            {items.map((perk: UserPerk) => (
-              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`} onClick={() => togglePerk(perk.id!)}>
-                <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                  {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+            {items.map((perk: UserPerk) => {
+              const urgency = getUrgencyBadge(perk);
+              return (
+                <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`} onClick={() => togglePerk(perk.id!)}>
+                  <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                    {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                  </div>
+                  <div className="perk-info">
+                    <div className="perk-name">
+                      {perk.perkName}
+                      {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                    </div>
+                    <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    {perk.periodValue ? (
+                      <>
+                        <div className="perk-value">${perk.periodValue}</div>
+                        <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
+                      </>
+                    ) : (
+                      <div className="perk-value">${perk.annualValue}</div>
+                    )}
+                  </div>
                 </div>
-                <div className="perk-info">
-                  <div className="perk-name">{perk.perkName}</div>
-                  <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  {perk.periodValue ? (
-                    <>
-                      <div className="perk-value">${perk.periodValue}</div>
-                      <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
-                    </>
-                  ) : (
-                    <div className="perk-value">${perk.annualValue}</div>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         );
       })}
@@ -120,3 +139,4 @@ export default function Perks() {
     </div>
   );
 }
+

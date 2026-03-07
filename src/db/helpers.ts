@@ -197,3 +197,49 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
     return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
   }).length;
 }
+
+// ── Perk expiry/renewal helpers ──
+
+/** Days between today and an ISO date string. Negative = past. */
+export function daysUntilDate(dateStr: string): number {
+  const target = new Date(dateStr + 'T00:00:00');
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+/** Get unused perks whose current period ends within `daysThreshold` days. */
+export async function getExpiringPerks(daysThreshold: number = 7): Promise<UserPerk[]> {
+  const allPerks = await db.perks.toArray();
+  return allPerks.filter(p => {
+    if (p.used) return false;
+    if (p.renewalPeriod === 'ongoing' || p.renewalPeriod === 'one-time') return false;
+    if (p.annualValue <= 0) return false;
+    const daysLeft = daysUntilDate(p.currentPeriodEnd);
+    return daysLeft >= 0 && daysLeft <= daysThreshold;
+  });
+}
+
+/**
+ * Get perks whose underlying template has a permanent expirationDate
+ * within `daysThreshold` days. These perks will stop existing entirely.
+ */
+export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): Promise<(UserPerk & { expirationDate: string })[]> {
+  const allPerks = await db.perks.toArray();
+  const results: (UserPerk & { expirationDate: string })[] = [];
+  for (const perk of allPerks) {
+    // Find the template to check expirationDate
+    const card = await db.cards.get(perk.cardId);
+    if (!card) continue;
+    const cardTemplate = getCardTemplate(card.cardTemplateId);
+    if (!cardTemplate) continue;
+    const perkTemplate = cardTemplate.perks.find(pt => pt.id === perk.perkTemplateId);
+    if (!perkTemplate?.expirationDate) continue;
+    const daysLeft = daysUntilDate(perkTemplate.expirationDate);
+    if (daysLeft >= 0 && daysLeft <= daysThreshold) {
+      results.push({ ...perk, expirationDate: perkTemplate.expirationDate });
+    }
+  }
+  return results;
+}
+

@@ -355,6 +355,52 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'csp2-entertainment', name: 'Citi Entertainment & The Reserve', description: 'Access to Citi Entertainment and The Reserve curated hotel collection', category: 'entertainment-credit', annualValue: 0, renewalPeriod: 'ongoing' },
     ],
   },
+
+  // ─── CHASE CO-BRANDED ───────────────────────────────────────
+  {
+    id: 'amazon-visa',
+    name: 'Amazon Visa',
+    issuer: 'Chase',
+    annualFee: 0,
+    color: '#1a98ff', // Amazon blue
+    signupBonus: { points: 5000, spend: 0, timeMonths: 0, unit: 'cash back ($50)' },
+    earningRates: [
+      { category: 'Amazon.com / Amazon Fresh / Whole Foods / Chase Travel', multiplier: 3 },
+      { category: 'Restaurants / Gas Stations / Local Transit', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [],
+  },
+  {
+    id: 'amazon-prime-visa',
+    name: 'Amazon Prime Visa',
+    issuer: 'Chase',
+    annualFee: 0,
+    color: '#232f3e', // Amazon dark gray
+    signupBonus: { points: 15000, spend: 0, timeMonths: 0, unit: 'cash back ($150)' },
+    earningRates: [
+      { category: 'Amazon.com / Amazon Fresh / Whole Foods / Chase Travel', multiplier: 5 },
+      { category: 'Restaurants / Gas Stations / Local Transit', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [],
+  },
+
+  // ─── GOLDMAN SACHS ──────────────────────────────────────────
+  {
+    id: 'apple-card',
+    name: 'Apple Card',
+    issuer: 'Goldman Sachs',
+    annualFee: 0,
+    color: '#e5e5ea', // Apple Card titanium
+    signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'cash back' },
+    earningRates: [
+      { category: 'Apple / Nike / Panera / Walgreens / T-Mobile / Exxon / Ace Hardware / Uber / Uber Eats (with Apple Pay)', multiplier: 3 },
+      { category: 'All Other (with Apple Pay)', multiplier: 2 },
+      { category: 'Physical Card', multiplier: 1 },
+    ],
+    perks: [],
+  },
 ];
 
 // ============================================================

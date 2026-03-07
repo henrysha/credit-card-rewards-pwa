@@ -4,12 +4,12 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 15 cards in the catalog
+    Then I should see 18 cards in the catalog
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page
     When I click the "Chase" filter button
-    Then I should see 5 cards in the catalog
+    Then I should see 7 cards in the catalog
     And I should see "Chase Sapphire Preferred"
     And I should see "Chase Sapphire Reserve"
 

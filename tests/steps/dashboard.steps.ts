@@ -14,9 +14,15 @@ Then('I should see {string} as the unused perks value', async function (value: s
 
 Then('the unused perks value should be greater than {string}', async function (minValue: string) {
   const statCard = this.page.locator('.stat-card').filter({ hasText: 'Unused Perks Value' });
-  const text = await statCard.locator('.stat-value').textContent();
-  const numericValue = parseInt(text!.replace(/[^0-9]/g, ''), 10);
-  expect(numericValue).toBeGreaterThan(parseInt(minValue.replace(/[^0-9]/g, ''), 10));
+  const statValue = statCard.locator('.stat-value');
+  
+  // Wait for the value to be greater than $0
+  await expect(async () => {
+    const text = await statValue.textContent();
+    const numericValue = parseInt(text!.replace(/[^0-9]/g, ''), 10);
+    const min = parseInt(minValue.replace(/[^0-9]/g, ''), 10);
+    expect(numericValue).toBeGreaterThan(min);
+  }).toPass({ timeout: 10000 });
 });
 
 Then('I should see {string} on the dashboard', async function (text: string) {

@@ -1,5 +1,5 @@
 import { Before, After, setDefaultTimeout, BeforeAll, AfterAll } from '@cucumber/cucumber';
-import { chromium, type Browser, type BrowserContext, type Page, type ConsoleMessage } from '@playwright/test';
+import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 
 setDefaultTimeout(60_000);
 
@@ -89,11 +89,6 @@ Before(async function (scenario) {
   });
   
   this.page = await this.context.newPage();
-
-  // Capture console logs for debugging
-  this.page.on('console', (msg: ConsoleMessage) => {
-    console.log(`BROWSER [${msg.type()}]: ${msg.text()}`);
-  });
 
   // Unregister service workers to avoid stale cache issues in tests
   await this.page.goto(BASE_URL);

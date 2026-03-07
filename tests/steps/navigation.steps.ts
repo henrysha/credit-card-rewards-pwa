@@ -1,7 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa';
+const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa/';
 
 const NAV_MAP: Record<string, string> = {
   'Dashboard': '/',
@@ -18,8 +18,9 @@ Given('I open the app', async function () {
 });
 
 Given('I am on the {string} page', async function (pageName: string) {
-  const path = NAV_MAP[pageName] || '/';
-  await this.page.goto(`${BASE_URL}${path}`);
+  const pathPart = NAV_MAP[pageName] || '';
+  const cleanPath = pathPart.startsWith('/') ? pathPart.substring(1) : pathPart;
+  await this.page.goto(`${BASE_URL}${cleanPath}`);
   await this.page.waitForLoadState('networkidle');
 });
 

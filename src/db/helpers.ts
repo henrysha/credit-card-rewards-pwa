@@ -66,6 +66,11 @@ export function computePeriod(renewalPeriod: RenewalPeriod, now: Date = new Date
   }
 }
 
+// Expose to window for BDD testing
+if (typeof window !== 'undefined') {
+  (window as any).refreshExpiredPerks = refreshExpiredPerks;
+}
+
 // ── Card operations ──
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {

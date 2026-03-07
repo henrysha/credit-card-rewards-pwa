@@ -37,8 +37,8 @@ Then('I should see no perks listed', async function () {
 When('the renewal period for {string} expires', async function (perkName: string) {
   // Backdate the perk's currentPeriodEnd in IndexedDB so refreshExpiredPerks picks it up
   await this.page.evaluate(async (name: string) => {
-    // @ts-expect-error - Vite resolves this path in the browser context
-    const db = (await import('/src/db/database')).db;
+    const db = (window as unknown as { db: { perks: { toArray: () => Promise<{ perkName: string; id?: number }[]>; update: (id: number, data: Record<string, unknown>) => Promise<void> } } }).db;
+    if (!db) throw new Error('Database not found on window');
     const allPerks = await db.perks.toArray();
     const perk = allPerks.find((p: { perkName: string; id?: number }) => p.perkName === name);
     if (!perk?.id) throw new Error(`Perk "${name}" not found in DB`);
@@ -51,8 +51,8 @@ When('the renewal period for {string} expires', async function (perkName: string
 When('the app refreshes expired perks', async function () {
   // Call refreshExpiredPerks via the app's module
   await this.page.evaluate(async () => {
-    // @ts-expect-error - Vite resolves this path in the browser context
-    const { refreshExpiredPerks } = await import('/src/db/helpers');
+    const refreshExpiredPerks = (window as unknown as { refreshExpiredPerks: () => Promise<void> }).refreshExpiredPerks;
+    if (!refreshExpiredPerks) throw new Error('refreshExpiredPerks not found on window');
     await refreshExpiredPerks();
   });
 });

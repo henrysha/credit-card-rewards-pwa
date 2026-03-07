@@ -1,7 +1,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
+const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa';
 
 const NAV_MAP: Record<string, string> = {
   'Dashboard': '/',
@@ -25,7 +25,7 @@ Given('I am on the {string} page', async function (pageName: string) {
 
 When('I navigate to the {string}', async function (pageName: string) {
   // Use bottom nav link
-  const navLink = this.page.locator(`nav a`).filter({ hasText: pageName === 'Dashboard' ? 'Home' : pageName });
+  const navLink = this.page.getByRole('link', { name: pageName === 'Dashboard' ? 'Home' : pageName });
   await navLink.click();
   await this.page.waitForLoadState('networkidle');
 });

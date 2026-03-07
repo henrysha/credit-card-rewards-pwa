@@ -65,7 +65,7 @@ Before(async function () {
   this.page = await this.context.newPage();
 
   // Navigate first, then clear IndexedDB for clean state
-  await this.page.goto('http://localhost:5174');
+  await this.page.goto('http://localhost:5174/credit-card-rewards-pwa/');
   await this.page.evaluate(() => {
     return new Promise<void>((resolve, reject) => {
       const req = indexedDB.deleteDatabase('CreditCardRewardsDB');

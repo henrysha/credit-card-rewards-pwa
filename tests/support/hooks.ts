@@ -4,18 +4,75 @@ import { chromium, type Browser, type BrowserContext, type Page } from '@playwri
 setDefaultTimeout(60_000);
 
 // Store objects in the Cucumber world
+import * as http from 'http';
+import * as fs from 'fs';
+import * as path from 'path';
+
 declare module '@cucumber/cucumber' {
   interface World {
     browser: Browser;
     context: BrowserContext;
     page: Page;
     testDbId?: string;
+    baseUrl: string;
   }
 }
 
 let browser: Browser;
+let server: http.Server;
+let PORT: number;
+let BASE_URL: string;
 
 BeforeAll(async function () {
+  // Start a static server to serve the dist directory with the correct base path
+  const distPath = path.resolve(process.cwd(), 'dist');
+  
+  server = http.createServer((req, res) => {
+    let filePath = req.url || '/';
+    
+    // Handle the base path /credit-card-rewards-pwa/
+    if (filePath.startsWith('/credit-card-rewards-pwa/')) {
+      filePath = filePath.replace('/credit-card-rewards-pwa/', '/');
+    } else {
+      // If it doesn't start with base path, it's a 404 in this simulated environment
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+
+    if (filePath === '/') filePath = '/index.html';
+    
+    // Remove query params
+    filePath = filePath.split('?')[0];
+    
+    const fullPath = path.join(distPath, filePath);
+    
+    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+      const ext = path.extname(fullPath);
+      let contentType = 'text/html';
+      if (ext === '.js') contentType = 'application/javascript';
+      if (ext === '.css') contentType = 'text/css';
+      if (ext === '.webmanifest') contentType = 'application/manifest+json';
+      if (ext === '.png') contentType = 'image/png';
+      
+      res.writeHead(200, { 'Content-Type': contentType });
+      fs.createReadStream(fullPath).pipe(res);
+    } else {
+      // SPA Fallback: serve index.html for unknown routes starting with base path
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      fs.createReadStream(path.join(distPath, 'index.html')).pipe(res);
+    }
+  });
+
+  await new Promise<void>((resolve) => {
+    server.listen(0, () => {
+      const address = server.address();
+      PORT = typeof address === 'string' ? 0 : address?.port || 0;
+      BASE_URL = `http://localhost:${PORT}/credit-card-rewards-pwa/`;
+      resolve();
+    });
+  });
+
   browser = await chromium.launch({ 
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -24,6 +81,7 @@ BeforeAll(async function () {
 
 AfterAll(async function () {
   await browser?.close();
+  await new Promise<void>((resolve) => server.close(() => resolve()));
 });
 
 Before(async function (scenario) {
@@ -31,11 +89,26 @@ Before(async function (scenario) {
   this.testDbId = dbId;
   
   this.browser = browser;
-  this.context = await browser.newContext();
+  this.baseUrl = BASE_URL;
+  
+  // Create context with notifications permission granted by default
+  // This is more reliable than grantPermissions in some environments
+  this.context = await browser.newContext({
+    permissions: ['notifications']
+  });
+  
   this.page = await this.context.newPage();
 
-  // Navigate with the test_db parameter to isolate IndexedDB
-  await this.page.goto(`http://localhost:5174/credit-card-rewards-pwa/?test_db=${dbId}`);
+  // Unregister service workers to avoid stale cache issues in tests
+  await this.page.goto(BASE_URL);
+  await this.page.evaluate(async () => {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const registration of registrations) {
+      await registration.unregister();
+    }
+  });
+
+  await this.page.goto(`${BASE_URL}?test_db=${dbId}`);
   await this.page.evaluate((id: string) => {
     sessionStorage.setItem('test_db', id);
   }, dbId);
@@ -53,14 +126,23 @@ After(async function (scenario) {
   // Clean up the dynamic DB to avoid bloating the test environment
   if (this.page && this.testDbId) {
     const dbName = `CCRewards_Test_${this.testDbId}`;
-    await this.page.evaluate((name: string) => {
-      return new Promise<void>((resolve) => {
-        const req = indexedDB.deleteDatabase(name);
-        req.onsuccess = () => resolve();
-        req.onerror = () => resolve();
-        req.onblocked = () => resolve();
-      });
-    }, dbName);
+    try {
+      await this.page.evaluate((name: string) => {
+        return new Promise<void>((resolve) => {
+          try {
+            const req = indexedDB.deleteDatabase(name);
+            req.onsuccess = () => resolve();
+            req.onerror = () => resolve();
+            req.onblocked = () => resolve();
+          } catch (e) {
+            console.warn(`Failed to delete IndexedDB ${name}:`, e);
+            resolve();
+          }
+        });
+      }, dbName);
+    } catch (e) {
+      console.warn(`Evaluation failed during database cleanup for ${dbName}:`, e);
+    }
   }
 
   await this.context?.close();

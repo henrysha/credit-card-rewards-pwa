@@ -2,6 +2,8 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { getCardTemplate } from '../db/helpers';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { requestNotificationPermission } from '../notifications';
 import type { SignupBonus, UserPerk } from '../db/types';
 
 function daysUntil(dateStr: string): number {
@@ -19,16 +21,58 @@ export default function Dashboard() {
   const bonuses = useLiveQuery(() => db.signupBonuses.toArray());
   const perks = useLiveQuery(() => db.perks.toArray());
 
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission>(
+    'Notification' in window ? Notification.permission : 'denied'
+  );
+  const [notifDismissed, setNotifDismissed] = useState(
+    () => localStorage.getItem('notif_prompt_dismissed') === 'true'
+  );
+
+  // Listen for permission changes
+  useEffect(() => {
+    if ('permissions' in navigator) {
+      navigator.permissions.query({ name: 'notifications' as PermissionName }).then(status => {
+        status.onchange = () => setNotifPermission(status.state as NotificationPermission);
+      }).catch(() => { /* older browsers */ });
+    }
+  }, []);
+
   const activeCards = cards?.length ?? 0;
   const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed) ?? [];
   const unusedPerks = perks?.filter((p: UserPerk) => !p.used && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
   const totalPerkValue = unusedPerks.reduce((sum: number, p: UserPerk) => sum + (p.periodValue ?? p.annualValue), 0);
+
+  const showNotifPrompt = notifPermission === 'default' && !notifDismissed && activeCards > 0;
+
+  const handleEnableNotifications = async () => {
+    const result = await requestNotificationPermission();
+    setNotifPermission(result);
+  };
+
+  const handleDismissNotifPrompt = () => {
+    setNotifDismissed(true);
+    localStorage.setItem('notif_prompt_dismissed', 'true');
+  };
 
   return (
     <div className="page animate-in">
       <div className="page-header">
         <h1>Dashboard</h1>
       </div>
+
+      {showNotifPrompt && (
+        <div className="notification-prompt">
+          <div className="notification-prompt-icon">🔔</div>
+          <div className="notification-prompt-content">
+            <div className="notification-prompt-title">Enable Perk Reminders</div>
+            <div className="notification-prompt-desc">Get notified when your perks are about to expire so you never miss a credit.</div>
+          </div>
+          <div className="notification-prompt-actions">
+            <button className="btn btn-primary btn-sm" onClick={handleEnableNotifications}>Enable</button>
+            <button className="btn btn-sm" onClick={handleDismissNotifPrompt} style={{ opacity: 0.6 }}>Later</button>
+          </div>
+        </div>
+      )}
 
       <div className="stats-grid">
         <div className="stat-card" onClick={() => navigate('/cards')} style={{ cursor: 'pointer' }}>
@@ -116,3 +160,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

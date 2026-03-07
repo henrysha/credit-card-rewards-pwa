@@ -1,11 +1,9 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect, type Page } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174/credit-card-rewards-pwa/';
-
 // Helper to add a card through the UI
-async function addCardViaUI(page: Page, cardName: string) {
-  await page.goto(`${BASE_URL}catalog`);
+async function addCardViaUI(page: Page, cardName: string, baseUrl: string) {
+  await page.goto(`${baseUrl}catalog`);
   await page.waitForLoadState('networkidle');
 
   // Loosen the card selector for production build robustness
@@ -24,7 +22,7 @@ async function addCardViaUI(page: Page, cardName: string) {
 }
 
 Given('I have added the {string} card', async function (cardName: string) {
-  await addCardViaUI(this.page, cardName);
+  await addCardViaUI(this.page, cardName, this.baseUrl);
 });
 
 When('I click on the {string} card in the catalog', async function (cardName: string) {
@@ -50,7 +48,7 @@ Then('I should see {string} on the cards page', async function (cardName: string
 
 When('I view the card detail for {string}', async function (cardName: string) {
   // Navigate to My Cards page
-  await this.page.goto(`${BASE_URL}cards`);
+  await this.page.goto(`${this.baseUrl}cards`);
   await this.page.waitForLoadState('networkidle');
 
   // Click the card tile

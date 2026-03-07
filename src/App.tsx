@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { refreshExpiredPerks } from './db/helpers';
+import { runNotificationChecks } from './notifications';
 import Dashboard from './pages/Dashboard';
 import MyCards from './pages/MyCards';
 import CardDetail from './pages/CardDetail';
@@ -62,9 +63,19 @@ function BottomNav() {
 function AppContent() {
   useEffect(() => {
     // Auto-refresh expired perks on app load
-    refreshExpiredPerks().then(count => {
-      if (count > 0) console.log(`Refreshed ${count} expired perks`);
-    });
+    refreshExpiredPerks();
+
+    // Run notification checks on app load
+    runNotificationChecks();
+
+    // Re-check when app comes to foreground (critical for mobile PWA)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        runNotificationChecks();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, []);
 
   return (

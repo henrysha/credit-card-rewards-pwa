@@ -1,4 +1,4 @@
-import { Then } from '@cucumber/cucumber';
+import { Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 
 Then('I should see {string} as the active cards count', async function (count: string) {
@@ -33,4 +33,24 @@ Then('I should see {string} on the dashboard', async function (text: string) {
 
 Then('I should see {string} bonus info', async function (text: string) {
   await expect(this.page.getByText(text, { exact: false }).first()).toBeVisible({ timeout: 5000 });
+});
+
+interface CustomWorld {
+  page: import('@playwright/test').Page;
+}
+
+When('I click to expand the {string} category', async function (this: CustomWorld, category: string) {
+  const row = this.page.locator(`div[data-category="${category}"]`).first();
+  await expect(row).toBeVisible({ timeout: 5000 });
+  await row.click();
+});
+
+Then('I should see the {string} subcategory', async function (this: CustomWorld, subcategory: string) {
+  const row = this.page.locator(`div[data-category="${subcategory}"]`).first();
+  await expect(row).toBeVisible({ timeout: 5000 });
+});
+
+Then('I should see {string} as the recommended card for {string}', async function (this: CustomWorld, cardName: string, category: string) {
+  const row = this.page.locator(`div[data-category="${category}"]`).first();
+  await expect(row).toContainText(cardName);
 });

@@ -77,6 +77,6 @@ Feature: Perk Management
     And I click the info icon for the "$300 Exclusive Tables Dining" perk
     Then I should see the perk details modal for "$300 Exclusive Tables Dining"
     And I should see "CSR Dining credit can only be used at Opentable exclusive tables restaurants." in the modal
-    And I should see a link to "https://dining.chase.com/collections" in the modal
+    And I should see a link to "https://opentable.com/sapphire-reserve-exclusive-tables" in the modal
     When I click the close button on the perk details modal
     Then the perk details modal should be closed

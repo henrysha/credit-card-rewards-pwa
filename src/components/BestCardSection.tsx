@@ -56,23 +56,18 @@ export function BestCardSection() {
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className="flex items-center text-base font-bold text-white leading-tight truncate">
+                <div className="flex items-center text-sm font-bold text-white leading-tight truncate">
                   {hasSub && (isExpanded ? <ChevronDown /> : <ChevronRight />)}
                   <span className="truncate">{result.category}</span>
                 </div>
-                <div className="text-base text-secondary font-medium truncate mx-[8px]">{result.cardName}</div>
-                <div className="flex flex-col items-end min-w-[50px] shrink-0" onClick={(e) => {
+                <div className="text-sm text-secondary font-medium truncate mx-[8px]">{result.cardName}</div>
+                <div className="flex flex-col justify-center items-end min-w-[40px] shrink-0" onClick={(e) => {
                    if (hasSub && result.cardTemplateId) {
                       e.stopPropagation();
                       navigate(`/catalog`);
                    }
                 }}>
-                  <div className="text-xl font-black text-gold leading-none">{result.multiplier}x</div>
-                  {result.limit && (
-                    <div className="text-[10px] text-muted leading-none mt-1 text-right">
-                      {result.limit}
-                    </div>
-                  )}
+                  <div className="text-lg font-black text-gold leading-none">{result.multiplier}x</div>
                 </div>
               </div>
               
@@ -89,18 +84,13 @@ export function BestCardSection() {
                       }}
                       style={{ cursor: subResult.cardTemplateId ? 'pointer' : 'default' }}
                     >
-                      <div className="flex items-center text-sm font-bold text-white/90 leading-tight truncate relative pl-[16px]">
+                      <div className="flex items-center text-xs font-bold text-white/90 leading-tight truncate relative pl-[16px]">
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[8px] h-[1px] bg-white/20"></div>
                         <span className="truncate">{subResult.category}</span>
                       </div>
-                      <div className="text-sm text-secondary/80 font-medium truncate mx-[8px]">{subResult.cardName}</div>
-                      <div className="flex flex-col items-end min-w-[50px] shrink-0">
-                        <div className="text-lg font-black text-gold/90 leading-none">{subResult.multiplier}x</div>
-                        {subResult.limit && (
-                          <div className="text-[9px] text-muted leading-none mt-1 text-right">
-                            {subResult.limit}
-                          </div>
-                        )}
+                      <div className="text-xs text-secondary/80 font-medium truncate mx-[8px]">{subResult.cardName}</div>
+                      <div className="flex flex-col justify-center items-end min-w-[40px] shrink-0">
+                        <div className="text-base font-black text-gold/90 leading-none">{subResult.multiplier}x</div>
                       </div>
                     </div>
                   ))}

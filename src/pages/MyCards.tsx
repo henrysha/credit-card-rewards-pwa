@@ -3,6 +3,7 @@ import { db } from '../db/database';
 import { getCardTemplate } from '../db/helpers';
 import { useNavigate } from 'react-router-dom';
 import type { UserCard } from '../db/types';
+import { getTextColorForBackground } from '../utils/color';
 
 export default function MyCards() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function MyCards() {
           <div
             key={card.id}
             className="card-tile"
-            style={{ background: template.color, marginBottom: 16 }}
+            style={{ background: template.color, color: getTextColorForBackground(template.color), marginBottom: 16 }}
             onClick={() => navigate(`/card/${card.id}`)}
           >
             <div className="card-issuer">{template.issuer}</div>
@@ -56,7 +57,7 @@ export default function MyCards() {
               <div
                 key={card.id}
                 className="card-tile"
-                style={{ background: template.color, opacity: 0.5, marginBottom: 12 }}
+                style={{ background: template.color, color: getTextColorForBackground(template.color), opacity: 0.5, marginBottom: 12 }}
                 onClick={() => navigate(`/card/${card.id}`)}
               >
                 <div className="card-issuer">{template.issuer}</div>

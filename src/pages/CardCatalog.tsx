@@ -3,6 +3,7 @@ import { addCard } from '../db/helpers';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import type { CardTemplate } from '../db/types';
+import { getTextColorForBackground } from '../utils/color';
 
 export default function CardCatalog() {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ export default function CardCatalog() {
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-handle" />
-            <div className="card-tile" style={{ background: selectedCard.color, marginBottom: 16 }}>
+            <div className="card-tile" style={{ background: selectedCard.color, color: getTextColorForBackground(selectedCard.color), marginBottom: 16 }}>
               <div className="card-issuer">{selectedCard.issuer}</div>
               <div className="card-name">{selectedCard.name}</div>
               <div className="card-fee">${selectedCard.annualFee}/yr</div>

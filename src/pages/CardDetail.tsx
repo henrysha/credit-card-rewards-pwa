@@ -7,6 +7,7 @@ import type { UserPerk, PerkTemplate } from '../db/types';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
 import { InfoIcon } from '../components/InfoIcon';
 import { useToast } from '../components/ToastContext';
+import { getTextColorForBackground } from '../utils/color';
 
 function daysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -70,7 +71,7 @@ export default function CardDetail() {
     <div className="page animate-in">
       <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
 
-      <div className="card-tile mt-sm" style={{ background: template.color }}>
+      <div className="card-tile mt-sm" style={{ background: template.color, color: getTextColorForBackground(template.color) }}>
         <div className="card-issuer">{template.issuer}</div>
         <div className="card-name">{card.nickname || template.name}</div>
         <div className="card-fee">${template.annualFee}/yr</div>

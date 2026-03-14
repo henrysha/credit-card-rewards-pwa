@@ -198,6 +198,17 @@ export default function CardDetail() {
                         {perk.perkName}
                       </div>
                       <div className="perk-desc">{pt?.description || ''}</div>
+                      {pt?.requiresEnrollment && (
+                        <div className="text-xs mt-sm">
+                          <button 
+                            className="link-btn" 
+                            onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
+                            style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
+                          >
+                            Deactivate
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       {perk.periodValue ? (
@@ -269,6 +280,17 @@ export default function CardDetail() {
                         {perk.perkName}
                       </div>
                       <div className="perk-desc">{pt?.description || ''}</div>
+                      {pt?.requiresEnrollment && (
+                        <div className="text-xs mt-sm">
+                          <button 
+                            className="link-btn" 
+                            onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
+                            style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
+                          >
+                            Deactivate
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

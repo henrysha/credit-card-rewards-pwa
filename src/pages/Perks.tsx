@@ -174,6 +174,17 @@ export default function Perks() {
                           {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
                         </div>
                         <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                        {pt?.requiresEnrollment && (
+                          <div className="text-xs mt-sm">
+                            <button 
+                              className="link-btn" 
+                              onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
+                              style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
+                            >
+                              Deactivate
+                            </button>
+                          </div>
+                        )}
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         {perk.periodValue ? (

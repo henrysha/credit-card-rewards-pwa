@@ -7,6 +7,38 @@ When('I toggle the {string} perk', async function (perkName: string) {
   await this.page.waitForTimeout(300);
 });
 
+Then('the {string} perk should have an Activate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Activate', exact: true })).toBeVisible({ timeout: 5000 });
+});
+
+When('I activate the {string} perk', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await perkItem.getByRole('button', { name: 'Activate', exact: true }).click();
+  await this.page.waitForTimeout(300);
+});
+
+Then('the {string} perk should not have an Activate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Activate', exact: true })).toHaveCount(0, { timeout: 5000 });
+});
+
+Then('the {string} perk should have a Deactivate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Deactivate', exact: true })).toBeVisible({ timeout: 5000 });
+});
+
+When('I deactivate the {string} perk', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await perkItem.getByRole('button', { name: 'Deactivate', exact: true }).click();
+  await this.page.waitForTimeout(300);
+});
+
+Then('the {string} perk should not have a Deactivate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Deactivate', exact: true })).toHaveCount(0, { timeout: 5000 });
+});
+
 Then('the {string} perk should be marked as used', async function (perkName: string) {
   const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
   await expect(perkItem.locator('.perk-checkbox.checked')).toBeVisible({ timeout: 5000 });

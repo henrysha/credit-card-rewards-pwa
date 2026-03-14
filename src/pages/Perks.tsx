@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { togglePerk, daysUntilDate, getCardTemplate } from '../db/helpers';
+import { togglePerk, togglePerkActivation, daysUntilDate, getCardTemplate } from '../db/helpers';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
 import { InfoIcon } from '../components/InfoIcon';
 import { useToast } from '../components/ToastContext';
@@ -21,7 +21,7 @@ function getUrgencyBadge(perk: UserPerk): { label: string; className: string } |
 }
 
 export default function Perks() {
-  const [filter, setFilter] = useState<'all' | 'unused' | 'used'>('unused');
+  const [filter, setFilter] = useState<'all' | 'unused' | 'used' | 'inactive'>('unused');
   const [periodFilter, setPeriodFilter] = useState<string>('all');
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
   const { showToast } = useToast();
@@ -40,8 +40,13 @@ export default function Perks() {
 
   let filtered = (perks ?? []).filter((p: UserPerk) => p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
 
-  if (filter === 'unused') filtered = filtered.filter((p: UserPerk) => !p.used);
-  else if (filter === 'used') filtered = filtered.filter((p: UserPerk) => p.used);
+  if (filter === 'inactive') {
+    filtered = filtered.filter((p: UserPerk) => p.active === false);
+  } else {
+    filtered = filtered.filter((p: UserPerk) => p.active !== false);
+    if (filter === 'unused') filtered = filtered.filter((p: UserPerk) => !p.used);
+    else if (filter === 'used') filtered = filtered.filter((p: UserPerk) => p.used);
+  }
 
   if (periodFilter !== 'all') {
     filtered = filtered.filter((p: UserPerk) => p.renewalPeriod === periodFilter);
@@ -66,7 +71,7 @@ export default function Perks() {
     'one-time': 'One-Time',
   };
 
-  const totalValue = filtered.filter((p: UserPerk) => !p.used).reduce((s: number, p: UserPerk) => s + (p.periodValue ?? p.annualValue), 0);
+  const totalValue = filtered.filter((p: UserPerk) => !p.used && p.active !== false).reduce((s: number, p: UserPerk) => s + (p.periodValue ?? p.annualValue), 0);
 
   const handleInfoClick = (e: React.MouseEvent, pt: PerkTemplate | undefined) => {
     e.stopPropagation();
@@ -92,9 +97,9 @@ export default function Perks() {
       </div>
 
       <div className="tabs">
-        {(['unused', 'all', 'used'] as const).map(f => (
+        {(['unused', 'all', 'used', 'inactive'] as const).map(f => (
           <button key={f} className={`tab ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-            {f === 'unused' ? 'Unused' : f === 'all' ? 'All' : 'Used'}
+            {f === 'unused' ? 'Unused' : f === 'all' ? 'All' : f === 'used' ? 'Used' : 'Inactive'}
           </button>
         ))}
       </div>
@@ -128,28 +133,71 @@ export default function Perks() {
 
               return (
                 <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                  <div className="perk-main-action" onClick={() => handleToggle(perk)}>
-                    <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                      {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
-                    </div>
-                    <div className="perk-info" style={{ flex: 1 }}>
-                      <div className="perk-name flex items-center gap-sm">
-                        {perk.perkName}
-                        {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                  {perk.active === false ? (
+                    <div className="perk-main-action" style={{ cursor: 'default' }}>
+                      <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
+                        <div className="perk-name flex items-center gap-sm">
+                          {perk.perkName}
+                          {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                        </div>
+                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
                       </div>
-                      <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                        {perk.periodValue ? (
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+                            <div className="perk-value">${perk.periodValue}</div>
+                            <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
+                          </div>
+                        ) : (
+                          <div className="perk-value">${perk.annualValue}</div>
+                        )}
+                        <button 
+                          className="btn btn-primary" 
+                          style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            togglePerkActivation(perk.id!, true);
+                          }}
+                        >
+                          Activate
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      {perk.periodValue ? (
-                        <>
-                          <div className="perk-value">${perk.periodValue}</div>
-                          <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
-                        </>
-                      ) : (
-                        <div className="perk-value">${perk.annualValue}</div>
-                      )}
+                  ) : (
+                    <div className="perk-main-action" onClick={() => handleToggle(perk)}>
+                      <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                        {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                      </div>
+                      <div className="perk-info" style={{ flex: 1 }}>
+                        <div className="perk-name flex items-center gap-sm">
+                          {perk.perkName}
+                          {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                        </div>
+                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                        {pt?.requiresEnrollment && (
+                          <div className="text-xs mt-sm">
+                            <button 
+                              className="link-btn" 
+                              onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
+                              style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
+                            >
+                              Deactivate
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        {perk.periodValue ? (
+                          <>
+                            <div className="perk-value">${perk.periodValue}</div>
+                            <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
+                          </>
+                        ) : (
+                          <div className="perk-value">${perk.annualValue}</div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   {hasExtraInfo && (
                     <button 
                       className="info-btn" 

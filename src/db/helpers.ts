@@ -123,6 +123,7 @@ export async function addCard(
       perkName: p.name,
       category: p.category,
       used: false,
+      active: p.requiresEnrollment ? false : true,
       currentPeriodStart: period.start,
       currentPeriodEnd: period.end,
       renewalPeriod: p.renewalPeriod,
@@ -158,6 +159,14 @@ export async function togglePerk(perkId: number): Promise<void> {
   await db.perks.update(perkId, {
     used: !perk.used,
     usedDate: !perk.used ? new Date().toISOString().split('T')[0] : undefined,
+  });
+}
+
+export async function togglePerkActivation(perkId: number, active: boolean): Promise<void> {
+  const perk = await db.perks.get(perkId);
+  if (!perk) return;
+  await db.perks.update(perkId, {
+    active,
   });
 }
 
@@ -208,6 +217,7 @@ export async function syncCardPerks(): Promise<void> {
           perkName: pt.name,
           category: pt.category,
           used: false,
+          active: pt.requiresEnrollment ? false : true,
           currentPeriodStart: period.start,
           currentPeriodEnd: period.end,
           renewalPeriod: pt.renewalPeriod,
@@ -253,6 +263,7 @@ export async function refreshExpiredPerks(): Promise<number> {
       annualValue: perkTemplate.annualValue,
       periodValue: perkTemplate.periodValue,
       used: false,
+      active: perk.active ?? (perkTemplate.requiresEnrollment ? false : true),
       usedDate: undefined,
       currentPeriodStart: newPeriod.start,
       currentPeriodEnd: newPeriod.end,
@@ -291,6 +302,7 @@ export async function getExpiringPerks(daysThreshold: number = 7): Promise<UserP
   const allPerks = await db.perks.toArray();
   return allPerks.filter(p => {
     if (p.used) return false;
+    if (p.active === false) return false;
     if (p.renewalPeriod === 'ongoing' || p.renewalPeriod === 'one-time') return false;
     if (p.annualValue <= 0) return false;
     const daysLeft = daysUntilDate(p.currentPeriodEnd);

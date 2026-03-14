@@ -28,15 +28,33 @@ Feature: Perk Management
     Then I should see "$300 Travel Credit" on the perks page
     And I should see an unclaimed total value
 
+  Scenario: Activate an inactive perk
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
+    When I activate the "$5 DoorDash Restaurant Credit" perk
+    Then the "$5 DoorDash Restaurant Credit" perk should not have an Activate button
+    And the "$5 DoorDash Restaurant Credit" perk should not be marked as used
+
+  Scenario: Deactivate an active perk
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
+    When I activate the "$5 DoorDash Restaurant Credit" perk
+    Then the "$5 DoorDash Restaurant Credit" perk should have a Deactivate button
+    When I deactivate the "$5 DoorDash Restaurant Credit" perk
+    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
+    And the "$5 DoorDash Restaurant Credit" perk should not have a Deactivate button
+
   Scenario: Perk resets to unused after renewal period expires
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    And I toggle the "$120 Lyft Credit" perk
-    Then the "$120 Lyft Credit" perk should be marked as used
-    When the renewal period for "$120 Lyft Credit" expires
+    And I toggle the "$300 Travel Credit" perk
+    Then the "$300 Travel Credit" perk should be marked as used
+    When the renewal period for "$300 Travel Credit" expires
     And the app refreshes expired perks
     And I view the card detail for "Chase Sapphire Reserve"
-    Then the "$120 Lyft Credit" perk should not be marked as used
+    Then the "$300 Travel Credit" perk should not be marked as used
 
   Scenario: Perks update on catalog change
     Given I have added the "Chase Sapphire Reserve" card

@@ -4,7 +4,7 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 18 cards in the catalog
+    Then I should see 23 cards in the catalog
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page

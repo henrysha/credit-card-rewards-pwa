@@ -134,7 +134,6 @@ export default function Perks() {
               return (
                 <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
                   {perk.active === false ? (
-                  {perk.active === false ? (
                     <div className="perk-main-action" style={{ cursor: 'default' }}>
                       <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
                         <div className="perk-name flex items-center gap-sm">

@@ -252,7 +252,7 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .rule-name { font-weight: 700; font-size: 0.9rem; margin-bottom: var(--space-xs); }
 .rule-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; }
 
-.toast { position: fixed; top: var(--space-lg); left: 50%; transform: translateX(-50%); background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-lg); font-size: 0.85rem; z-index: 300; animation: fadeIn var(--transition-fast); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.toast { position: fixed; top: calc(var(--space-lg) + var(--safe-top)); left: 50%; transform: translateX(-50%); background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-lg); font-size: 0.85rem; z-index: 300; animation: fadeIn var(--transition-fast); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
 
 /* PWA Reload Prompt */
 .reload-prompt-container {

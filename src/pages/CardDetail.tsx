@@ -6,6 +6,7 @@ import { useState } from 'react';
 import type { UserPerk, PerkTemplate } from '../db/types';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
 import { InfoIcon } from '../components/InfoIcon';
+import { useToast } from '../components/ToastContext';
 
 function daysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -24,6 +25,7 @@ export default function CardDetail() {
   const [spendValue, setSpendValue] = useState('');
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
+  const { showToast } = useToast();
 
   if (!card) return <div className="page"><p className="text-muted">Loading...</p></div>;
 
@@ -33,8 +35,13 @@ export default function CardDetail() {
   const valuablePerks = perks?.filter((p: UserPerk) => p.annualValue > 0) ?? [];
   const otherPerks = perks?.filter((p: UserPerk) => p.annualValue === 0) ?? [];
 
-  const handleToggle = async (perkId: number) => {
-    await togglePerk(perkId);
+  const handleToggle = async (perk: UserPerk) => {
+    await togglePerk(perk.id!);
+    if (perk.used) {
+      showToast(`${perk.perkName} restored`);
+    } else {
+      showToast(`${perk.perkName} recorded!`);
+    }
   };
 
   const handleSpendUpdate = async () => {
@@ -151,7 +158,7 @@ export default function CardDetail() {
 
             return (
               <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                <div className="perk-main-action" onClick={() => handleToggle(perk)}>
                   <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
                     {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                   </div>
@@ -199,7 +206,7 @@ export default function CardDetail() {
 
             return (
               <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                <div className="perk-main-action" onClick={() => handleToggle(perk)}>
                   <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
                     {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                   </div>

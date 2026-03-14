@@ -13,6 +13,7 @@ export default function CardCatalog() {
   const [openDate, setOpenDate] = useState(new Date().toISOString().split('T')[0]);
   const [nickname, setNickname] = useState('');
   const [lastFour, setLastFour] = useState('');
+  const [feeDate, setFeeDate] = useState('');
   const [adding, setAdding] = useState(false);
 
   const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
@@ -30,7 +31,7 @@ export default function CardCatalog() {
     if (!selectedCard || adding) return;
     setAdding(true);
     try {
-      const cardId = await addCard(selectedCard.id, openDate, nickname || undefined, lastFour || undefined);
+      const cardId = await addCard(selectedCard.id, openDate, nickname || undefined, lastFour || undefined, feeDate || undefined);
       setSelectedCard(null);
       setNickname('');
       setLastFour('');
@@ -62,7 +63,14 @@ export default function CardCatalog() {
       </div>
 
       {filtered.map(card => (
-        <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => { setSelectedCard(card); setOpenDate(new Date().toISOString().split('T')[0]); }}>
+        <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => { 
+          setSelectedCard(card); 
+          const today = new Date().toISOString().split('T')[0];
+          setOpenDate(today);
+          const nextYear = new Date();
+          nextYear.setFullYear(nextYear.getFullYear() + 1);
+          setFeeDate(nextYear.toISOString().split('T')[0]);
+        }}>
           <div className="flex items-center gap-md">
             <div style={{ width: 48, height: 32, borderRadius: 6, background: card.color, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.2), transparent)' }} />
@@ -106,7 +114,18 @@ export default function CardCatalog() {
 
             <div className="form-group">
               <label className="form-label">Date Opened *</label>
-              <input type="date" className="form-input" value={openDate} onChange={e => setOpenDate(e.target.value)} />
+              <input type="date" className="form-input" value={openDate} onChange={e => {
+                setOpenDate(e.target.value);
+                const d = new Date(e.target.value);
+                d.setFullYear(d.getFullYear() + 1);
+                setFeeDate(d.toISOString().split('T')[0]);
+              }} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Next Annual Fee Date</label>
+              <input type="date" className="form-input" value={feeDate} onChange={e => setFeeDate(e.target.value)} />
+              <div className="text-xs text-muted mt-xs">Default is 1 year after opening.</div>
             </div>
 
             <div className="form-group">

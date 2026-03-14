@@ -74,8 +74,19 @@ export default function CardDetail() {
       <div className="card-tile mt-sm" style={{ background: template.color, color: getTextColorForBackground(template.color) }}>
         <div className="card-issuer">{template.issuer}</div>
         <div className="card-name">{card.nickname || template.name}</div>
-        <div className="card-fee">${template.annualFee}/yr</div>
-        {card.lastFourDigits && <div className="card-last-four">•••• {card.lastFourDigits}</div>}
+        <div className="flex justify-between items-end">
+          <div className="card-fee">${template.annualFee}/yr</div>
+          <div className="text-right">
+            <div className="text-xs" style={{ opacity: 0.8 }}>Next Annual Fee</div>
+            <div className={`font-bold ${daysUntil(card.annualFeeDate) <= 30 ? 'text-gold' : ''}`} style={{ fontSize: '0.9rem' }}>
+              {card.annualFeeDate}
+              {daysUntil(card.annualFeeDate) <= 30 && daysUntil(card.annualFeeDate) >= 0 && (
+                <span className="ml-xs">({daysUntil(card.annualFeeDate)}d)</span>
+              )}
+            </div>
+          </div>
+        </div>
+        {card.lastFourDigits && <div className="card-last-four" style={{ marginTop: 8 }}>•••• {card.lastFourDigits}</div>}
       </div>
 
       {/* Signup Bonus */}

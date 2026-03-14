@@ -84,19 +84,19 @@ export async function addCard(
   openedDate: string,
   nickname?: string,
   lastFourDigits?: string,
+  annualFeeDate?: string,
 ): Promise<number> {
   const template = getCardTemplate(cardTemplateId);
   if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
 
   const opened = new Date(openedDate);
-  const annualFeeDate = addMonths(opened, 12).toISOString().split('T')[0];
 
   const cardId = await db.cards.add({
     cardTemplateId,
     nickname,
     lastFourDigits,
     openedDate,
-    annualFeeDate,
+    annualFeeDate: annualFeeDate || addMonths(new Date(openedDate), 12).toISOString().split('T')[0],
     status: 'active',
   } as UserCard);
 
@@ -306,6 +306,15 @@ export async function getExpiringPerks(daysThreshold: number = 7): Promise<UserP
     if (p.renewalPeriod === 'ongoing' || p.renewalPeriod === 'one-time') return false;
     if (p.annualValue <= 0) return false;
     const daysLeft = daysUntilDate(p.currentPeriodEnd);
+    return daysLeft >= 0 && daysLeft <= daysThreshold;
+  });
+}
+
+/** Get active cards with an annual fee due within `daysThreshold` days. */
+export async function getUpcomingAnnualFees(daysThreshold: number = 30): Promise<UserCard[]> {
+  const activeCards = await db.cards.where('status').equals('active').toArray();
+  return activeCards.filter(c => {
+    const daysLeft = daysUntilDate(c.annualFeeDate);
     return daysLeft >= 0 && daysLeft <= daysThreshold;
   });
 }

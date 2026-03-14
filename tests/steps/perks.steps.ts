@@ -7,6 +7,22 @@ When('I toggle the {string} perk', async function (perkName: string) {
   await this.page.waitForTimeout(300);
 });
 
+Then('the {string} perk should have an Activate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Activate' })).toBeVisible({ timeout: 5000 });
+});
+
+When('I activate the {string} perk', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await perkItem.getByRole('button', { name: 'Activate' }).click();
+  await this.page.waitForTimeout(300);
+});
+
+Then('the {string} perk should not have an Activate button', async function (perkName: string) {
+  const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
+  await expect(perkItem.getByRole('button', { name: 'Activate' })).toHaveCount(0, { timeout: 5000 });
+});
+
 Then('the {string} perk should be marked as used', async function (perkName: string) {
   const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
   await expect(perkItem.locator('.perk-checkbox.checked')).toBeVisible({ timeout: 5000 });

@@ -28,6 +28,14 @@ Feature: Perk Management
     Then I should see "$300 Travel Credit" on the perks page
     And I should see an unclaimed total value
 
+  Scenario: Activate an inactive perk
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
+    When I activate the "$5 DoorDash Restaurant Credit" perk
+    Then the "$5 DoorDash Restaurant Credit" perk should not have an Activate button
+    And the "$5 DoorDash Restaurant Credit" perk should not be marked as used
+
   Scenario: Perk resets to unused after renewal period expires
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"

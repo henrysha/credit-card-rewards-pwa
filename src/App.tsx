@@ -9,6 +9,7 @@ import Perks from './pages/Perks';
 import Churning from './pages/Churning';
 import CardCatalog from './pages/CardCatalog';
 import ReloadPrompt from './components/ReloadPrompt';
+import { ToastProvider } from './components/ToastContext';
 
 function BottomNav() {
   const location = useLocation();
@@ -99,7 +100,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </BrowserRouter>
   );
 }

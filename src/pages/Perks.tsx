@@ -3,6 +3,7 @@ import { db } from '../db/database';
 import { togglePerk, daysUntilDate, getCardTemplate } from '../db/helpers';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
 import { InfoIcon } from '../components/InfoIcon';
+import { useToast } from '../components/ToastContext';
 import { useState } from 'react';
 
 import type { UserPerk, PerkTemplate } from '../db/types';
@@ -23,6 +24,7 @@ export default function Perks() {
   const [filter, setFilter] = useState<'all' | 'unused' | 'used'>('unused');
   const [periodFilter, setPeriodFilter] = useState<string>('all');
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
+  const { showToast } = useToast();
 
   const perks = useLiveQuery(() => db.perks.toArray());
   const cards = useLiveQuery(() => db.cards.toArray());
@@ -73,6 +75,15 @@ export default function Perks() {
     }
   };
 
+  const handleToggle = async (perk: UserPerk) => {
+    await togglePerk(perk.id!);
+    if (perk.used) {
+      showToast(`${perk.perkName} restored`);
+    } else {
+      showToast(`${perk.perkName} recorded!`);
+    }
+  };
+
   return (
     <div className="page animate-in">
       <div className="page-header">
@@ -117,7 +128,7 @@ export default function Perks() {
 
               return (
                 <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                  <div className="perk-main-action" onClick={() => togglePerk(perk.id!)}>
+                  <div className="perk-main-action" onClick={() => handleToggle(perk)}>
                     <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
                       {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                     </div>

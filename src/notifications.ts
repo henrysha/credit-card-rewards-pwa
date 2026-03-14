@@ -1,8 +1,9 @@
-import { getExpiringPerks, getPermanentlyExpiringPerks, getCardTemplate } from './db/helpers';
+import { getExpiringPerks, getPermanentlyExpiringPerks, getCardTemplate, getUpcomingAnnualFees } from './db/helpers';
 import { db } from './db/database';
 
 const NOTIFICATION_KEY = 'last_perk_notification';
 const PERMANENT_NOTIFICATION_KEY = 'last_permanent_expiry_notification';
+const ANNUAL_FEE_NOTIFICATION_KEY = 'last_annual_fee_notification';
 
 /** Request notification permission from the user. Returns the permission state. */
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
@@ -93,8 +94,36 @@ export async function checkAndNotifyPermanentExpiry(): Promise<void> {
   markNotifiedToday(PERMANENT_NOTIFICATION_KEY);
 }
 
+/**
+ * Check for upcoming annual fees within 7 days.
+ * Only fires once per day.
+ */
+export async function checkAndNotifyAnnualFees(): Promise<void> {
+  if (!('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
+  if (alreadyNotifiedToday(ANNUAL_FEE_NOTIFICATION_KEY)) return;
+
+  const upcoming = await getUpcomingAnnualFees(7);
+  if (upcoming.length === 0) return;
+
+  const cardList = upcoming
+    .slice(0, 3)
+    .map(c => `• ${getCardTemplate(c.cardTemplateId)?.name || 'Unknown Card'} (${c.annualFeeDate})`)
+    .join('\n');
+  const extra = upcoming.length > 3 ? `\n...and ${upcoming.length - 3} more` : '';
+
+  new Notification('💳 Annual Fees Due Soon', {
+    body: `${upcoming.length} card${upcoming.length > 1 ? 's' : ''} have annual fees due within a week:\n${cardList}${extra}`,
+    icon: '/credit-card-rewards-pwa/pwa-192x192.png',
+    tag: 'annual-fee-due',
+  });
+
+  markNotifiedToday(ANNUAL_FEE_NOTIFICATION_KEY);
+}
+
 /** Run all notification checks. Call on app open and foreground. */
 export async function runNotificationChecks(): Promise<void> {
   await checkAndNotifyExpiringPerks();
   await checkAndNotifyPermanentExpiry();
+  await checkAndNotifyAnnualFees();
 }

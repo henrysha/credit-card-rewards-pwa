@@ -31,12 +31,12 @@ Feature: Perk Management
   Scenario: Perk resets to unused after renewal period expires
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    And I toggle the "$5 DoorDash Restaurant Credit" perk
-    Then the "$5 DoorDash Restaurant Credit" perk should be marked as used
-    When the renewal period for "$5 DoorDash Restaurant Credit" expires
+    And I toggle the "$300 Travel Credit" perk
+    Then the "$300 Travel Credit" perk should be marked as used
+    When the renewal period for "$300 Travel Credit" expires
     And the app refreshes expired perks
     And I view the card detail for "Chase Sapphire Reserve"
-    Then the "$5 DoorDash Restaurant Credit" perk should not be marked as used
+    Then the "$300 Travel Credit" perk should not be marked as used
 
   Scenario: Perks update on catalog change
     Given I have added the "Chase Sapphire Reserve" card

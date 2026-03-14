@@ -123,6 +123,7 @@ export interface UserPerk {
   category: PerkCategory;
   used: boolean;
   usedDate?: string;
+  active?: boolean;
   currentPeriodStart: string; // ISO date
   currentPeriodEnd: string;   // ISO date
   renewalPeriod: RenewalPeriod;

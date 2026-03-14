@@ -25,7 +25,7 @@ export const cardTemplates: CardTemplate[] = [
     perks: [
       { id: 'csp-hotel-credit', name: '$50 Hotel Credit', description: 'Annual hotel credit for stays booked through Chase Travel', category: 'hotel-credit', annualValue: 50, renewalPeriod: 'annual' },
       { id: 'csp-anniversary-bonus', name: '10% Anniversary Points Bonus', description: '10% bonus on points earned in previous year, awarded on account anniversary', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
-      { id: 'csp-dashpass', name: 'DashPass Membership', description: 'Complimentary DashPass membership for DoorDash (through 12/31/2027)', category: 'membership', annualValue: 120, renewalPeriod: 'annual', expirationDate: '2027-12-31' },
+      { id: 'csp-dashpass', name: 'DashPass Membership', description: 'Complimentary DashPass membership for DoorDash (through 12/31/2027)', category: 'membership', annualValue: 120, renewalPeriod: 'annual', expirationDate: '2027-12-31', requiresEnrollment: true },
       { id: 'csp-doordash-credit', name: '$10 DoorDash Credit', description: 'Monthly $10 promo credit for grocery, convenience, or other non-restaurant orders (through 12/31/2027)', category: 'delivery-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31' },
       { id: 'csp-trip-insurance', name: 'Trip Cancellation Insurance', description: 'Coverage for pre-paid, non-refundable travel expenses', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'csp-rental-insurance', name: 'Primary Rental Car Insurance', description: 'Primary coverage for rental car theft and collision damage', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
@@ -56,7 +56,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'csr-restaurant-doordash', name: '$5 DoorDash Restaurant Credit', description: 'Monthly $5 restaurant promo credit (through 12/31/2027)', category: 'delivery-credit', annualValue: 60, renewalPeriod: 'monthly', periodValue: 5, expirationDate: '2027-12-31' },
       { id: 'csr-grocery-doordash-1', name: '$10 DoorDash Grocery Credit (1)', description: 'Monthly $10 grocery/retail promo credit (through 12/31/2027)', category: 'delivery-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31' },
       { id: 'csr-grocery-doordash-2', name: '$10 DoorDash Grocery Credit (2)', description: 'Monthly $10 grocery/retail promo credit (through 12/31/2027)', category: 'delivery-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31' },
-      { id: 'csr-dashpass', name: 'DashPass Membership', description: 'Complimentary DashPass ($0 delivery fees, through 12/31/2027)', category: 'membership', annualValue: 120, renewalPeriod: 'annual', expirationDate: '2027-12-31' },
+      { id: 'csr-dashpass', name: 'DashPass Membership', description: 'Complimentary DashPass ($0 delivery fees, through 12/31/2027)', category: 'membership', annualValue: 120, renewalPeriod: 'annual', expirationDate: '2027-12-31', requiresEnrollment: true },
       { id: 'csr-apple', name: 'Apple TV+ & Apple Music', description: 'Complimentary subscriptions (through 6/22/2027)', category: 'streaming-credit', annualValue: 288, renewalPeriod: 'annual', expirationDate: '2027-06-22', requiresEnrollment: true },
       { id: 'csr-peloton', name: '$120 Peloton Credit', description: '$10/month toward Peloton memberships + 10x on equipment >$150 (through 12/31/2027)', category: 'wellness-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31', requiresEnrollment: true },
       { id: 'csr-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit for GE/TSA/NEXUS application fee every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
@@ -79,7 +79,7 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'All Other', multiplier: 1.5 },
     ],
     perks: [
-      { id: 'cfu-dashpass', name: 'DashPass 6-Month Trial', description: 'Complimentary 6-month DashPass membership', category: 'membership', annualValue: 60, renewalPeriod: 'one-time' },
+      { id: 'cfu-dashpass', name: 'DashPass 6-Month Trial', description: 'Complimentary 6-month DashPass membership', category: 'membership', annualValue: 60, renewalPeriod: 'one-time', requiresEnrollment: true },
       { id: 'cfu-purchase-protection', name: 'Purchase Protection', description: 'Covers new purchases against damage/theft for 120 days, up to $500/item', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cfu-extended-warranty', name: 'Extended Warranty', description: 'Adds 1 year to eligible manufacturer warranties (3yr or less)', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cfu-trip-insurance', name: 'Trip Cancellation Insurance', description: 'Up to $1,500/traveler, $6,000/trip', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },

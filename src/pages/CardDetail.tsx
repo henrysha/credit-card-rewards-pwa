@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { getCardTemplate, togglePerk, updateBonusSpend, removeCard } from '../db/helpers';
+import { getCardTemplate, togglePerk, togglePerkActivation, updateBonusSpend, removeCard } from '../db/helpers';
 import { useState } from 'react';
 import type { UserPerk, PerkTemplate } from '../db/types';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
@@ -151,27 +151,58 @@ export default function CardDetail() {
 
             return (
               <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
-                  <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                    {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
-                  </div>
-                  <div className="perk-info" style={{ flex: 1 }}>
-                    <div className="perk-name flex items-center gap-sm">
-                      {perk.perkName}
+                {perk.active === false ? (
+                  <div className="perk-main-action" style={{ cursor: 'default' }}>
+                    <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
+                      <div className="perk-name flex items-center gap-sm">
+                        {perk.perkName}
+                      </div>
+                      <div className="perk-desc">{pt?.description || ''}</div>
                     </div>
-                    <div className="perk-desc">{pt?.description || ''}</div>
+                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      {perk.periodValue ? (
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+                          <div className="perk-value">${perk.periodValue}</div>
+                          <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                        </div>
+                      ) : (
+                        <div className="perk-value">${perk.annualValue}</div>
+                      )}
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePerkActivation(perk.id!, true);
+                        }}
+                      >
+                        Activate
+                      </button>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    {perk.periodValue ? (
-                      <>
-                        <div className="perk-value">${perk.periodValue}</div>
-                        <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
-                      </>
-                    ) : (
-                      <div className="perk-value">${perk.annualValue}</div>
-                    )}
+                ) : (
+                  <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                    <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                      {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    <div className="perk-info" style={{ flex: 1 }}>
+                      <div className="perk-name flex items-center gap-sm">
+                        {perk.perkName}
+                      </div>
+                      <div className="perk-desc">{pt?.description || ''}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      {perk.periodValue ? (
+                        <>
+                          <div className="perk-value">${perk.periodValue}</div>
+                          <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                        </>
+                      ) : (
+                        <div className="perk-value">${perk.annualValue}</div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 {hasExtraInfo && (
                   <button 
                     className="info-btn" 
@@ -199,17 +230,40 @@ export default function CardDetail() {
 
             return (
               <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
-                  <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                    {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
-                  </div>
-                  <div className="perk-info" style={{ flex: 1 }}>
-                    <div className="perk-name flex items-center gap-sm">
-                      {perk.perkName}
+                {perk.active === false ? (
+                  <div className="perk-main-action" style={{ cursor: 'default' }}>
+                    <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
+                      <div className="perk-name flex items-center gap-sm">
+                        {perk.perkName}
+                      </div>
+                      <div className="perk-desc">{pt?.description || ''}</div>
                     </div>
-                    <div className="perk-desc">{pt?.description || ''}</div>
+                    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePerkActivation(perk.id!, true);
+                        }}
+                      >
+                        Activate
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="perk-main-action" onClick={() => handleToggle(perk.id!)}>
+                    <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                      {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    <div className="perk-info" style={{ flex: 1 }}>
+                      <div className="perk-name flex items-center gap-sm">
+                        {perk.perkName}
+                      </div>
+                      <div className="perk-desc">{pt?.description || ''}</div>
+                    </div>
+                  </div>
+                )}
                 {hasExtraInfo && (
                   <button 
                     className="info-btn" 

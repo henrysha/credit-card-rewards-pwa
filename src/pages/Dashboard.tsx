@@ -40,7 +40,7 @@ export default function Dashboard() {
 
   const activeCards = cards?.length ?? 0;
   const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed) ?? [];
-  const unusedPerks = perks?.filter((p: UserPerk) => !p.used && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
+  const unusedPerks = perks?.filter((p: UserPerk) => !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
   const totalPerkValue = unusedPerks.reduce((sum: number, p: UserPerk) => sum + (p.periodValue ?? p.annualValue), 0);
 
   const showNotifPrompt = notifPermission === 'default' && !notifDismissed && activeCards > 0;

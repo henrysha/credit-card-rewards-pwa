@@ -142,6 +142,13 @@ export async function removeCard(cardId: number): Promise<void> {
   await db.cards.delete(cardId);
 }
 
+export async function updateCard(
+  cardId: number,
+  updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string }
+): Promise<void> {
+  await db.cards.update(cardId, updates);
+}
+
 export async function updateBonusSpend(bonusId: number, newSpend: number): Promise<void> {
   const bonus = await db.signupBonuses.get(bonusId);
   if (!bonus) return;

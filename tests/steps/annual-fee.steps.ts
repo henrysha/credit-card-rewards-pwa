@@ -43,3 +43,27 @@ Then('I should see an urgency indicator for the annual fee', async function () {
   const urgencyLabel = this.page.locator('.text-gold').filter({ hasText: /202\d-\d\d-\d\d/ });
   await expect(urgencyLabel).toBeVisible();
 });
+
+When('I click the edit icon next to the annual fee date', async function () {
+  const editBtn = this.page.locator('.card-tile button[aria-label="Edit card details"], .card-tile button svg').first();
+  // The edit button is next to the annual fee date row
+  await editBtn.click();
+  await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
+});
+
+When('I change the annual fee date to {int} days from now', async function (days: number) {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + days);
+  this._updatedFeeDate = targetDate.toISOString().split('T')[0];
+
+  const feeDateInput = this.page.locator('.form-group', { hasText: 'Next Annual Fee Date' }).locator('input[type="date"]');
+  await feeDateInput.waitFor({ state: 'visible', timeout: 5000 });
+  await feeDateInput.fill(this._updatedFeeDate);
+});
+
+Then('I should see the annual fee date updated to {int} days from now', async function (days: number) {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + days);
+  const expectedDate = targetDate.toISOString().split('T')[0];
+  await expect(this.page.getByText(expectedDate)).toBeVisible();
+});

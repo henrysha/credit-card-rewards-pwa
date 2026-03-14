@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { getCardTemplate, togglePerk, togglePerkActivation, updateBonusSpend, removeCard } from '../db/helpers';
+import { getCardTemplate, togglePerk, togglePerkActivation, updateBonusSpend, removeCard, updateCard } from '../db/helpers';
 import { useState } from 'react';
 import type { UserPerk, PerkTemplate } from '../db/types';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
@@ -26,6 +26,11 @@ export default function CardDetail() {
   const [spendValue, setSpendValue] = useState('');
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
+  const [showEditDetails, setShowEditDetails] = useState(false);
+  const [editNickname, setEditNickname] = useState('');
+  const [editLastFour, setEditLastFour] = useState('');
+  const [editFeeDate, setEditFeeDate] = useState('');
+  const [updating, setUpdating] = useState(false);
   const { showToast } = useToast();
 
   if (!card) return <div className="page"><p className="text-muted">Loading...</p></div>;
@@ -57,6 +62,21 @@ export default function CardDetail() {
     navigate('/cards');
   };
 
+  const handleEditDetails = async () => {
+    setUpdating(true);
+    try {
+      await updateCard(cardId, {
+        nickname: editNickname || undefined,
+        lastFourDigits: editLastFour || undefined,
+        annualFeeDate: editFeeDate,
+      });
+      setShowEditDetails(false);
+      showToast('Card updated!');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const perkTemplateMap = new Map<string, PerkTemplate>();
   template.perks.forEach(p => perkTemplateMap.set(p.id, p));
 
@@ -83,6 +103,20 @@ export default function CardDetail() {
               {daysUntil(card.annualFeeDate) <= 30 && daysUntil(card.annualFeeDate) >= 0 && (
                 <span className="ml-xs">({daysUntil(card.annualFeeDate)}d)</span>
               )}
+              <button 
+                className="ml-sm" 
+                style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, opacity: 0.7, cursor: 'pointer' }}
+                onClick={() => {
+                  setEditNickname(card.nickname || '');
+                  setEditLastFour(card.lastFourDigits || '');
+                  setEditFeeDate(card.annualFeeDate);
+                  setShowEditDetails(true);
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -346,6 +380,37 @@ export default function CardDetail() {
           template={selectedPerkTemplate}
           onClose={() => setSelectedPerkTemplate(null)}
         />
+      )}
+
+      {showEditDetails && (
+        <div className="modal-overlay" onClick={() => setShowEditDetails(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-handle" />
+            <h3 className="mb-md">Edit Card Details</h3>
+            
+            <div className="form-group">
+              <label className="form-label">Nickname</label>
+              <input className="form-input" value={editNickname} onChange={e => setEditNickname(e.target.value)} placeholder="e.g. My primary travel card" />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Last 4 Digits</label>
+              <input className="form-input" value={editLastFour} onChange={e => setEditLastFour(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="1234" maxLength={4} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Next Annual Fee Date</label>
+              <input type="date" className="form-input" value={editFeeDate} onChange={e => setEditFeeDate(e.target.value)} />
+            </div>
+
+            <div className="flex gap-sm mt-lg">
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowEditDetails(false)}>Cancel</button>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleEditDetails} disabled={updating}>
+                {updating ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

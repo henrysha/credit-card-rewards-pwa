@@ -135,12 +135,14 @@ export default function Dashboard() {
                   <div className="perk-desc">{perk.renewalPeriod}</div>
                 </div>
                 {perk.periodValue ? (
-                  <div style={{ textAlign: 'right' }}>
+                  <div className="perk-amount">
                     <div className="perk-value">${perk.periodValue}</div>
                     <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : 'period'}</div>
                   </div>
                 ) : perk.annualValue > 0 ? (
-                  <div className="perk-value">${perk.annualValue}</div>
+                  <div className="perk-amount">
+                    <div className="perk-value">${perk.annualValue}</div>
+                  </div>
                 ) : null}
               </div>
             </div>

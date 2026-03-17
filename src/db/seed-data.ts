@@ -71,7 +71,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Chase',
     annualFee: 0,
     color: '#1a3c6e',
-    signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
+    signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($250)' },
     earningRates: [
       { category: 'Chase Travel', multiplier: 5 },
       { category: 'Dining', multiplier: 3 },
@@ -136,7 +136,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Amex',
     annualFee: 325,
     color: '#c8a951',
-    signupBonus: { points: 60000, spend: 6000, timeMonths: 6, unit: 'points' },
+    signupBonus: { points: 100000, spend: 6000, timeMonths: 6, unit: 'points' },
     earningRates: [
       { category: 'Restaurants Worldwide', multiplier: 4, limit: '$50K/yr' },
       { category: 'U.S. Supermarkets', multiplier: 4, limit: '$25K/yr' },
@@ -516,7 +516,7 @@ export const cardTemplates: CardTemplate[] = [
 
 export const churningRules: ChurningRule[] = [
   { id: 'chase-5-24', issuer: 'Chase', ruleName: 'Chase 5/24', description: 'Chase will likely deny your application if you\'ve opened 5+ personal credit cards across all issuers in the past 24 months. Business cards from most issuers don\'t count.', cooldownMonths: 24 },
-  { id: 'chase-sapphire-lifetime', issuer: 'Chase', ruleName: 'Sapphire Once-Per-Lifetime', description: 'You can only receive the Sapphire bonus once per lifetime per product (Preferred or Reserve). You must not currently hold any Sapphire card to apply.', affectedCards: ['chase-sapphire-preferred', 'chase-sapphire-reserve'] },
+  { id: 'chase-sapphire-lifetime', issuer: 'Chase', ruleName: 'Sapphire Once-Per-Card', description: 'As of Jan 2026, you can earn the bonus on EACH Sapphire card once per lifetime. You no longer need to wait 48 months between a Preferred and Reserve bonus.', affectedCards: ['chase-sapphire-preferred', 'chase-sapphire-reserve'] },
   { id: 'amex-lifetime', issuer: 'Amex', ruleName: 'Once-Per-Lifetime', description: 'Amex limits welcome bonuses to once per lifetime per card product. Clock may reset after ~7 years. Watch for targeted "No Lifetime Language" (NLL) offers.', cooldownMonths: 84 },
   { id: 'amex-1-5', issuer: 'Amex', ruleName: '1/5 Rule', description: 'You can hold a maximum of 5 Amex credit cards at the same time.', affectedCards: [] },
   { id: 'amex-2-90', issuer: 'Amex', ruleName: '2/90 Rule', description: 'You can be approved for at most 2 new Amex credit cards within any 90-day period.', cooldownMonths: 3 },

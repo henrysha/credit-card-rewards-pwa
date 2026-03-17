@@ -12,7 +12,7 @@ Then('I should not see the notification permission prompt', async function () {
 Given('a perk {string} is set to expire in {int} days', async function (perkName: string, days: number) {
   const futureDate = new Date();
   futureDate.setDate(futureDate.getDate() + days);
-  const dateStr = futureDate.toLocaleDateString('en-US');
+  const dateStr = futureDate.toLocaleDateString('en-CA');
 
   await this.page.evaluate(async (args: { name: string; date: string }) => {
     const db = (window as unknown as { db: { perks: { toArray: () => Promise<{ perkName: string; id?: number }[]>; update: (id: number, data: Record<string, unknown>) => Promise<void> } } }).db;

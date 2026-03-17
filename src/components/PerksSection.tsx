@@ -76,7 +76,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>
               )}
-            </div>
+              {!readOnly && (
                 <button 
                   className="btn btn-primary" 
                   style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}

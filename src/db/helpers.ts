@@ -160,6 +160,23 @@ export async function updateBonusSpend(bonusId: number, newSpend: number): Promi
   });
 }
 
+export async function updateSignupBonus(
+  bonusId: number,
+  updates: { targetSpend?: number; bonusPoints?: number; bonusUnit?: string; deadline?: string }
+): Promise<void> {
+  const bonus = await db.signupBonuses.get(bonusId);
+  if (!bonus) return;
+
+  const newTargetSpend = updates.targetSpend ?? bonus.targetSpend;
+  const newCompleted = bonus.currentSpend >= newTargetSpend;
+
+  await db.signupBonuses.update(bonusId, {
+    ...updates,
+    completed: newCompleted,
+    completedDate: newCompleted && !bonus.completed ? new Date().toISOString().split('T')[0] : (newCompleted ? bonus.completedDate : undefined),
+  });
+}
+
 export async function togglePerk(perkId: number): Promise<void> {
   const perk = await db.perks.get(perkId);
   if (!perk) return;

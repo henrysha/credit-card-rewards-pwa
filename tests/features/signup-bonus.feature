@@ -19,3 +19,9 @@ Feature: Sign-up Bonus Tracking
     When I view the card detail for "Chase Sapphire Reserve"
     And I update the bonus spend to 6000
     Then I should see the bonus marked as complete
+  Scenario: Edit bonus details
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    And I edit the bonus to require 1000 spend for 80000 points
+    Then I should see "$0 / $1,000" spend progress
+    And I should see "80,000 points" as the bonus amount

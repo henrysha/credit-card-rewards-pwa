@@ -113,7 +113,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex justify-between mt-sm text-xs text-muted">
                   <span>${bonus.currentSpend.toLocaleString()} / ${bonus.targetSpend.toLocaleString()}</span>
-                  <span>{pct.toFixed(0)}%</span>
+                  <span>{Math.floor(pct)}%</span>
                 </div>
               </div>
             );

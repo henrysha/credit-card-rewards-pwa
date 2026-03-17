@@ -5,7 +5,7 @@ import { useToast } from './ToastContext';
 import { getTextColorForBackground } from '../utils/color';
 
 interface CardHeaderProps {
-  card: UserCard;
+  card?: UserCard;
   template: CardTemplate;
 }
 
@@ -15,16 +15,17 @@ function daysUntil(dateStr: string): number {
 
 export function CardHeader({ card, template }: CardHeaderProps) {
   const [showEditDetails, setShowEditDetails] = useState(false);
-  const [editNickname, setEditNickname] = useState(card.nickname || '');
-  const [editLastFour, setEditLastFour] = useState(card.lastFourDigits || '');
-  const [editFeeDate, setEditFeeDate] = useState(card.annualFeeDate);
+  const [editNickname, setEditNickname] = useState(card?.nickname || '');
+  const [editLastFour, setEditLastFour] = useState(card?.lastFourDigits || '');
+  const [editFeeDate, setEditFeeDate] = useState(card?.annualFeeDate || '');
   const [updating, setUpdating] = useState(false);
   const { showToast } = useToast();
 
   const handleEditDetails = async () => {
+    if (!card?.id) return;
     setUpdating(true);
     try {
-      await updateCard(card.id!, {
+      await updateCard(card.id, {
         nickname: editNickname || undefined,
         lastFourDigits: editLastFour || undefined,
         annualFeeDate: editFeeDate,
@@ -40,35 +41,37 @@ export function CardHeader({ card, template }: CardHeaderProps) {
     <>
       <div className="card-tile mt-sm" style={{ background: template.color, color: getTextColorForBackground(template.color) }}>
         <div className="card-issuer">{template.issuer}</div>
-        <div className="card-name">{card.nickname || template.name}</div>
+        <div className="card-name">{card?.nickname || template.name}</div>
         <div className="flex justify-between items-end">
           <div className="card-fee">${template.annualFee}/yr</div>
-          <div className="text-right">
-            <div className="text-xs" style={{ opacity: 0.8 }}>Next Annual Fee</div>
-            <div className={`font-bold ${daysUntil(card.annualFeeDate) <= 30 ? 'text-gold' : ''}`} style={{ fontSize: '0.9rem' }}>
-              {card.annualFeeDate}
-              {daysUntil(card.annualFeeDate) <= 30 && daysUntil(card.annualFeeDate) >= 0 && (
-                <span className="ml-xs">({daysUntil(card.annualFeeDate)}d)</span>
-              )}
-              <button 
-                className="ml-sm" 
-                style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, opacity: 0.7, cursor: 'pointer' }}
-                onClick={() => {
-                  setEditNickname(card.nickname || '');
-                  setEditLastFour(card.lastFourDigits || '');
-                  setEditFeeDate(card.annualFeeDate);
-                  setShowEditDetails(true);
-                }}
-                aria-label="Edit card details"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
+          {card && (
+            <div className="text-right">
+              <div className="text-xs" style={{ opacity: 0.8 }}>Next Annual Fee</div>
+              <div className={`font-bold ${daysUntil(card.annualFeeDate) <= 30 ? 'text-gold' : ''}`} style={{ fontSize: '0.9rem' }}>
+                {card.annualFeeDate}
+                {daysUntil(card.annualFeeDate) <= 30 && daysUntil(card.annualFeeDate) >= 0 && (
+                  <span className="ml-xs">({daysUntil(card.annualFeeDate)}d)</span>
+                )}
+                <button 
+                  className="ml-sm" 
+                  style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, opacity: 0.7, cursor: 'pointer' }}
+                  onClick={() => {
+                    setEditNickname(card.nickname || '');
+                    setEditLastFour(card.lastFourDigits || '');
+                    setEditFeeDate(card.annualFeeDate);
+                    setShowEditDetails(true);
+                  }}
+                  aria-label="Edit card details"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
-        {card.lastFourDigits && <div className="card-last-four" style={{ marginTop: 8 }}>•••• {card.lastFourDigits}</div>}
+        {card?.lastFourDigits && <div className="card-last-four" style={{ marginTop: 8 }}>•••• {card.lastFourDigits}</div>}
       </div>
 
       {showEditDetails && (

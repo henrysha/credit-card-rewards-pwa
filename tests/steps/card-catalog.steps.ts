@@ -20,3 +20,19 @@ When('I search for {string}', async function (query: string) {
   await searchInput.fill(query);
   await this.page.waitForTimeout(300);
 });
+
+When('I click on the card {string}', async function (cardName: string) {
+  const card = this.page.locator('.glass-card').filter({ hasText: cardName }).first();
+  await card.click();
+  await this.page.waitForTimeout(500); // Give it a moment to navigate
+});
+
+Then('I should see {string} perk', async function (perkName: string) {
+  const perk = this.page.locator('.perk-info').getByText(perkName, { exact: true });
+  await expect(perk).toBeVisible({ timeout: 5000 });
+});
+
+Then('I should see {string} button', async function (buttonText: string) {
+  const button = this.page.getByRole('button', { name: buttonText });
+  await expect(button).toBeVisible({ timeout: 5000 });
+});

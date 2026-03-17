@@ -11,14 +11,16 @@ async function addCardViaUI(page: Page, cardName: string, baseUrl: string) {
   await card.waitFor({ state: 'visible', timeout: 5000 });
   await card.click();
 
-  // Wait for modal to appear
-  await page.waitForSelector('.modal-overlay', { state: 'visible' });
+  // Wait for navigation to detail page
+  await page.waitForURL(/\/catalog\/.+/);
 
-  // Click "Add Card" button  
-  await page.locator('.modal-content button').filter({ hasText: /Add Card|Adding/ }).click();
+  // Click "Add This Card" button on the detail page
+  const addBtn = page.locator('button').filter({ hasText: /Add This Card/i }).first();
+  await addBtn.waitFor({ state: 'visible', timeout: 5000 });
+  await addBtn.click();
 
-  // Wait for modal to be hidden to ensure action completed
-  await page.waitForSelector('.modal-overlay', { state: 'hidden', timeout: 5000 });
+  // Wait for navigation to user card detail page
+  await page.waitForURL(/\/card\/\d+/);
   await page.waitForTimeout(500);
 }
 
@@ -32,14 +34,18 @@ When('I click on the {string} card in the catalog', async function (cardName: st
 });
 
 Then('I should see the add card modal', async function () {
-  await expect(this.page.locator('.modal-overlay')).toBeVisible({ timeout: 5000 });
+  // Navigation to detail page is the new "add card modal" step
+  await this.page.waitForURL(/\/catalog\/.+/);
 });
 
 When('I add the {string} card', async function (cardName: string) {
   const card = this.page.locator('.glass-card').filter({ hasText: cardName }).first();
   await card.click();
-  await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
-  await this.page.locator('.modal-content button').filter({ hasText: /Add Card|Adding/ }).click();
+  await this.page.waitForURL(/\/catalog\/.+/);
+  
+  const addBtn = this.page.locator('button').filter({ hasText: /Add This Card/i }).first();
+  await addBtn.click();
+  
   await this.page.waitForTimeout(1000);
 });
 

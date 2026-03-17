@@ -18,6 +18,18 @@ Current base path: `/credit-card-rewards-pwa/` (Refer to `vite.config.ts`)
 
 ---
 
+## Component Architecture
+
+To maintain a maintainable and scalable codebase, follow these architectural guidelines:
+
+### Component Isolation
+- **Do not implement complex feature logic directly within page components** (e.g., `src/pages/Dashboard.tsx`).
+- If a feature can be isolated (e.g., a modal, a complex form, a specific section), **create a separate component** in `src/components/`.
+- Page components should primarily handle data fetching (e.g., `useLiveQuery`), routing, and layout orchestration, delegating specific functionality to modular sub-components.
+- This promotes reusability, easier testing (BDD), and cleaner code.
+
+---
+
 ## UI Constraints
 
 To maintain a clean and usable interface, especially on mobile devices, the following constraints must be followed:
@@ -34,9 +46,13 @@ To maintain a clean and usable interface, especially on mobile devices, the foll
 
 ## Testing (BDD)
 
-To ensure the application remains stable and meets requirements, Behavior-Driven Development (BDD) must be followed:
+To ensure the application remains stable and meets requirements, Behavior-Driven Development (BDD) must be followed. **A task is not considered complete until its corresponding tests are verified.**
 
-### Feature Updates and New Features
-- Whenever a **new feature** is implemented, corresponding BDD feature files and step definitions **must be created**.
-- Whenever an **existing feature is updated**, the relevant BDD test cases **must be updated** to reflect the changes.
-- All BDD tests are located in the `tests/` directory and use Cucumber.js and Playwright.
+### Mandatory Test Coverage
+- **New Features:** Whenever a new feature is implemented, corresponding BDD feature files (`tests/features/`) and step definitions (`tests/steps/`) **MUST** be created before submitting the PR.
+- **Bug Fixes:** Every bug fix **MUST** be accompanied by a BDD test case that reproduces the issue and verifies the fix.
+- **Feature Updates:** Whenever an existing feature is updated, the relevant BDD test cases **MUST** be updated to reflect the new behavior.
+
+### Verification Requirement
+- Agents **MUST** run the relevant BDD tests locally using `npm run test:bdd:run` (or specific feature path) and ensure they pass before concluding the task.
+- If a test fails or is ambiguous, the agent **MUST** resolve the conflict or fix the regression immediately.

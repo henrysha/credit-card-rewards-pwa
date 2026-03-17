@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { requestNotificationPermission } from '../notifications';
 import type { SignupBonus, UserPerk } from '../db/types';
 import { BestCardSection } from '../components/BestCardSection';
+import { SettingsMenu } from '../components/SettingsMenu';
 
 function daysUntil(dateStr: string): number {
   const diff = new Date(dateStr).getTime() - new Date().getTime();
@@ -57,8 +58,9 @@ export default function Dashboard() {
 
   return (
     <div className="page animate-in">
-      <div className="page-header">
+      <div className="page-header flex justify-between items-center">
         <h1>Dashboard</h1>
+        <SettingsMenu />
       </div>
 
       {showNotifPrompt && (

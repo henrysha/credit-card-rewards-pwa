@@ -1,11 +1,13 @@
 import { cardTemplates } from '../db/seed-data';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { RequestCardModal } from '../components/RequestCardModal';
 
 export default function CardCatalog() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
+  const [showRequestModal, setShowRequestModal] = useState(false);
 
   const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
 
@@ -40,35 +42,48 @@ export default function CardCatalog() {
         ))}
       </div>
 
-      {filtered.map(card => (
-        <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/catalog/${card.id}`)}>
-          <div className="flex items-center gap-md">
-            <div style={{ width: 48, height: 32, borderRadius: 6, background: card.color, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.2), transparent)' }} />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="font-bold" style={{ fontSize: '0.9rem' }}>{card.name}</div>
-              <div className="text-xs text-muted">{card.issuer} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
-            </div>
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div className="text-gold font-bold" style={{ fontSize: '0.85rem' }}>
-                {card.signupBonus.points >= 1000
-                  ? `${(card.signupBonus.points / 1000).toFixed(0)}K`
-                  : card.signupBonus.points}
+      <div className="catalog-list">
+        {filtered.map(card => (
+          <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/catalog/${card.id}`)}>
+            <div className="flex items-center gap-md">
+              <div style={{ width: 48, height: 32, borderRadius: 6, background: card.color, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.2), transparent)' }} />
               </div>
-              <div className="text-xs text-muted">{card.signupBonus.unit}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="font-bold" style={{ fontSize: '0.9rem' }}>{card.name}</div>
+                <div className="text-xs text-muted">{card.issuer} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
+              </div>
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <div className="text-gold font-bold" style={{ fontSize: '0.85rem' }}>
+                  {card.signupBonus.points >= 1000
+                    ? `${(card.signupBonus.points / 1000).toFixed(0)}K`
+                    : card.signupBonus.points}
+                </div>
+                <div className="text-xs text-muted">{card.signupBonus.unit}</div>
+              </div>
+            </div>
+            <div className="mt-sm" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {card.perks.filter(p => p.annualValue > 0).slice(0, 4).map(p => (
+                <span key={p.id} className="badge badge-gold" style={{ fontSize: '0.6rem' }}>{p.name}</span>
+              ))}
+              {card.perks.filter(p => p.annualValue > 0).length > 4 && (
+                <span className="badge badge-blue" style={{ fontSize: '0.6rem' }}>+{card.perks.filter(p => p.annualValue > 0).length - 4} more</span>
+              )}
             </div>
           </div>
-          <div className="mt-sm" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {card.perks.filter(p => p.annualValue > 0).slice(0, 4).map(p => (
-              <span key={p.id} className="badge badge-gold" style={{ fontSize: '0.6rem' }}>{p.name}</span>
-            ))}
-            {card.perks.filter(p => p.annualValue > 0).length > 4 && (
-              <span className="badge badge-blue" style={{ fontSize: '0.6rem' }}>+{card.perks.filter(p => p.annualValue > 0).length - 4} more</span>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      <div className="mt-xl mb-xl text-center">
+        <p className="text-sm text-muted mb-md">Can't find the card you're looking for?</p>
+        <button className="btn btn-secondary" onClick={() => setShowRequestModal(true)}>
+          Request New Card
+        </button>
+      </div>
+
+      {showRequestModal && (
+        <RequestCardModal onClose={() => setShowRequestModal(false)} />
+      )}
     </div>
   );
 }

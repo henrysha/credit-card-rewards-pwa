@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { FeatureRequestModal } from './FeatureRequestModal';
+import { RequestCardModal } from './RequestCardModal';
 
 export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [showCardModal, setShowCardModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +35,18 @@ export function SettingsMenu() {
           <button 
             className="dropdown-item" 
             onClick={() => {
+              setShowCardModal(true);
+              setIsOpen(false);
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+            Request New Card
+          </button>
+          <button 
+            className="dropdown-item" 
+            onClick={() => {
               setShowFeatureModal(true);
               setIsOpen(false);
             }}
@@ -43,6 +57,10 @@ export function SettingsMenu() {
             Request Feature
           </button>
         </div>
+      )}
+
+      {showCardModal && (
+        <RequestCardModal onClose={() => setShowCardModal(false)} />
       )}
 
       {showFeatureModal && (

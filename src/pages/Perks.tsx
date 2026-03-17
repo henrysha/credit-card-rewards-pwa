@@ -142,7 +142,7 @@ export default function Perks() {
                         </div>
                         <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
                       </div>
-                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <div className="perk-amount">
                         {perk.periodValue ? (
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
                             <div className="perk-value">${perk.periodValue}</div>
@@ -186,7 +186,7 @@ export default function Perks() {
                           </div>
                         )}
                       </div>
-                      <div style={{ textAlign: 'right' }}>
+                      <div className="perk-amount">
                         {perk.periodValue ? (
                           <>
                             <div className="perk-value">${perk.periodValue}</div>

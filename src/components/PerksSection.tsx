@@ -67,7 +67,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               </div>
               <div className="perk-desc">{pt?.description || ''}</div>
             </div>
-            <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+            <div className="perk-amount">
               {perk.periodValue ? (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
                   <div className="perk-value">${perk.periodValue}</div>
@@ -76,7 +76,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>
               )}
-              {!readOnly && (
+            </div>
                 <button 
                   className="btn btn-primary" 
                   style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
@@ -117,7 +117,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
                 </div>
               )}
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div className="perk-amount">
               {perk.periodValue ? (
                 <>
                   <div className="perk-value">${perk.periodValue}</div>

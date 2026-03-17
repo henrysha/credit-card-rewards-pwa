@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { FeatureRequestModal } from './FeatureRequestModal';
 
 export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
-  const [featureTitle, setFeatureTitle] = useState('');
-  const [featureDesc, setFeatureDesc] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,20 +15,6 @@ export function SettingsMenu() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const handleFeatureSubmit = () => {
-    const baseUrl = 'https://github.com/henrysha/credit-card-rewards-pwa/issues/new';
-    const params = new URLSearchParams({
-      title: `[Feature Request] ${featureTitle}`,
-      body: featureDesc,
-      labels: 'feature-request'
-    });
-    window.open(`${baseUrl}?${params.toString()}`, '_blank');
-    setShowFeatureModal(false);
-    setFeatureTitle('');
-    setFeatureDesc('');
-    setIsOpen(false);
-  };
 
   return (
     <div className="dropdown" ref={menuRef}>
@@ -61,49 +46,7 @@ export function SettingsMenu() {
       )}
 
       {showFeatureModal && (
-        <div className="modal-overlay" onClick={() => setShowFeatureModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-handle" />
-            <h3 className="mb-md">Submit Feature Request</h3>
-            <p className="text-sm text-muted mb-md">
-              Tell us what features you'd like to see! This will redirect you to GitHub to create an issue.
-            </p>
-            
-            <div className="form-group">
-              <label className="form-label">Title</label>
-              <input 
-                className="form-input" 
-                value={featureTitle} 
-                onChange={e => setFeatureTitle(e.target.value)} 
-                placeholder="e.g. Add support for Marriott cards" 
-                autoFocus
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Description</label>
-              <textarea 
-                className="form-input" 
-                style={{ minHeight: '100px', resize: 'vertical' }}
-                value={featureDesc} 
-                onChange={e => setFeatureDesc(e.target.value)} 
-                placeholder="Describe the feature in more detail..." 
-              />
-            </div>
-
-            <div className="flex gap-sm mt-lg">
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowFeatureModal(false)}>Cancel</button>
-              <button 
-                className="btn btn-primary" 
-                style={{ flex: 1 }} 
-                onClick={handleFeatureSubmit}
-                disabled={!featureTitle.trim()}
-              >
-                Continue to GitHub
-              </button>
-            </div>
-          </div>
-        </div>
+        <FeatureRequestModal onClose={() => setShowFeatureModal(false)} />
       )}
     </div>
   );

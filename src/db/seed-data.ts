@@ -71,7 +71,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Chase',
     annualFee: 0,
     color: '#1a3c6e',
-    signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($250)' },
+    signupBonus: { points: 25000, spend: 500, timeMonths: 3, unit: 'cash back ($250)' },
     earningRates: [
       { category: 'Chase Travel', multiplier: 5 },
       { category: 'Dining', multiplier: 3 },

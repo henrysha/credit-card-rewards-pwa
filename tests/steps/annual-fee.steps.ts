@@ -59,7 +59,7 @@ When('I click the edit icon next to the annual fee date', async function () {
 When('I change the annual fee date to {int} days from now', async function (days: number) {
   const targetDate = new Date();
   targetDate.setDate(targetDate.getDate() + days);
-  this._updatedFeeDate = targetDate.toLocaleDateString('en-CA');
+  this._updatedFeeDate = targetDate.toLocaleDateString('en-US');
 
   const feeDateInput = this.page.locator('.form-group', { hasText: 'Next Annual Fee Date' }).locator('input[type="date"]');
   await feeDateInput.waitFor({ state: 'visible', timeout: 5000 });
@@ -69,6 +69,6 @@ When('I change the annual fee date to {int} days from now', async function (days
 Then('I should see the annual fee date updated to {int} days from now', async function (days: number) {
   const targetDate = new Date();
   targetDate.setDate(targetDate.getDate() + days);
-  const expectedDate = targetDate.toLocaleDateString('en-CA');
+  const expectedDate = targetDate.toLocaleDateString('en-US');
   await expect(this.page.getByText(expectedDate)).toBeVisible();
 });

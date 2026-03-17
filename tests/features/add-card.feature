@@ -6,7 +6,7 @@ Feature: Add Card
     When I click on the "Chase Sapphire Reserve" card in the catalog
     Then I should see "Chase Sapphire Reserve"
     And I should see "Sign-up Bonus"
-    And I should see "Earning Rates"
+    And I should see "Add This Card"
 
   Scenario: Card appears on My Cards after adding
     Given I am on the "Catalog" page

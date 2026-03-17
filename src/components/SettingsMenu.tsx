@@ -21,7 +21,8 @@ export function SettingsMenu() {
   return (
     <div className="dropdown" ref={menuRef}>
       <button 
-        className="btn btn-icon btn-secondary" 
+        className="btn btn-icon" 
+        style={{ background: 'none', border: 'none', color: 'var(--text-secondary)' }}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Settings"
       >

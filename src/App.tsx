@@ -8,6 +8,7 @@ import CardDetail from './pages/CardDetail';
 import Perks from './pages/Perks';
 import Churning from './pages/Churning';
 import CardCatalog from './pages/CardCatalog';
+import { CatalogDetail } from './pages/CatalogDetail';
 import ReloadPrompt from './components/ReloadPrompt';
 import { ToastProvider } from './components/ToastContext';
 
@@ -89,6 +90,7 @@ function AppContent() {
           <Route path="/perks" element={<Perks />} />
           <Route path="/churning" element={<Churning />} />
           <Route path="/catalog" element={<CardCatalog />} />
+          <Route path="/catalog/:templateId" element={<CatalogDetail />} />
         </Routes>
       </main>
       <BottomNav />

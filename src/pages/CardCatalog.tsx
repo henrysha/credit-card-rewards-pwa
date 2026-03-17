@@ -1,20 +1,11 @@
 import { cardTemplates } from '../db/seed-data';
-import { addCard } from '../db/helpers';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import type { CardTemplate } from '../db/types';
-import { getTextColorForBackground } from '../utils/color';
 
 export default function CardCatalog() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
-  const [selectedCard, setSelectedCard] = useState<CardTemplate | null>(null);
-  const [openDate, setOpenDate] = useState(new Date().toISOString().split('T')[0]);
-  const [nickname, setNickname] = useState('');
-  const [lastFour, setLastFour] = useState('');
-  const [feeDate, setFeeDate] = useState('');
-  const [adding, setAdding] = useState(false);
 
   const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
 
@@ -27,19 +18,6 @@ export default function CardCatalog() {
     filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q));
   }
 
-  const handleAdd = async () => {
-    if (!selectedCard || adding) return;
-    setAdding(true);
-    try {
-      const cardId = await addCard(selectedCard.id, openDate, nickname || undefined, lastFour || undefined, feeDate || undefined);
-      setSelectedCard(null);
-      setNickname('');
-      setLastFour('');
-      navigate(`/card/${cardId}`);
-    } finally {
-      setAdding(false);
-    }
-  };
 
   return (
     <div className="page animate-in">
@@ -63,14 +41,7 @@ export default function CardCatalog() {
       </div>
 
       {filtered.map(card => (
-        <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => { 
-          setSelectedCard(card); 
-          const today = new Date().toISOString().split('T')[0];
-          setOpenDate(today);
-          const nextYear = new Date();
-          nextYear.setFullYear(nextYear.getFullYear() + 1);
-          setFeeDate(nextYear.toISOString().split('T')[0]);
-        }}>
+        <div key={card.id} className="glass-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/catalog/${card.id}`)}>
           <div className="flex items-center gap-md">
             <div style={{ width: 48, height: 32, borderRadius: 6, background: card.color, flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,0.2), transparent)' }} />
@@ -98,63 +69,6 @@ export default function CardCatalog() {
           </div>
         </div>
       ))}
-
-      {/* Add Card Modal */}
-      {selectedCard && (
-        <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-handle" />
-            <div className="card-tile" style={{ background: selectedCard.color, color: getTextColorForBackground(selectedCard.color), marginBottom: 16 }}>
-              <div className="card-issuer">{selectedCard.issuer}</div>
-              <div className="card-name">{selectedCard.name}</div>
-              <div className="card-fee">${selectedCard.annualFee}/yr</div>
-            </div>
-
-            <h3 className="mb-md">Add to My Wallet</h3>
-
-            <div className="form-group">
-              <label className="form-label">Date Opened *</label>
-              <input type="date" className="form-input" value={openDate} onChange={e => {
-                setOpenDate(e.target.value);
-                const d = new Date(e.target.value);
-                d.setFullYear(d.getFullYear() + 1);
-                setFeeDate(d.toISOString().split('T')[0]);
-              }} />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Next Annual Fee Date</label>
-              <input type="date" className="form-input" value={feeDate} onChange={e => setFeeDate(e.target.value)} />
-              <div className="text-xs text-muted mt-xs">Default is 1 year after opening.</div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Nickname (optional)</label>
-              <input className="form-input" value={nickname} onChange={e => setNickname(e.target.value)} placeholder="e.g. My travel card" />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Last 4 Digits (optional)</label>
-              <input className="form-input" value={lastFour} onChange={e => setLastFour(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="1234" maxLength={4} />
-            </div>
-
-            {/* Quick preview of bonuses and top perks */}
-            <div className="glass-card mb-md">
-              <div className="text-sm font-bold mb-sm">Sign-up Bonus</div>
-              <div className="text-sm">
-                {selectedCard.signupBonus.points.toLocaleString()} {selectedCard.signupBonus.unit} after ${selectedCard.signupBonus.spend.toLocaleString()} in {selectedCard.signupBonus.timeMonths} months
-              </div>
-            </div>
-
-            <div className="flex gap-sm">
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setSelectedCard(null)}>Cancel</button>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleAdd} disabled={adding}>
-                {adding ? 'Adding...' : 'Add Card'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

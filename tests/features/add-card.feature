@@ -4,9 +4,9 @@ Feature: Add Card
   Scenario: Add a card from the catalog
     Given I am on the "Catalog" page
     When I click on the "Chase Sapphire Reserve" card in the catalog
-    Then I should see the add card modal
-    And I should see "Add to My Wallet"
-    And I should see "125,000 points after $6,000 in 3 months"
+    Then I should see "Chase Sapphire Reserve"
+    And I should see "Sign-up Bonus"
+    And I should see "Earning Rates"
 
   Scenario: Card appears on My Cards after adding
     Given I am on the "Catalog" page

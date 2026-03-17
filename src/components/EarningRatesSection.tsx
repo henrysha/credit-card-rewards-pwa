@@ -7,7 +7,9 @@ interface EarningRatesSectionProps {
 export function EarningRatesSection({ earningRates }: EarningRatesSectionProps) {
   return (
     <div className="glass-card mt-md">
-      <h3 className="mb-md">Earning Rates</h3>
+      <div className="section-header">
+        <h3 className="section-title">Earning Rates</h3>
+      </div>
       {earningRates.map((rate, i) => (
         <div key={i} className="earning-rate">
           <div className="earning-multiplier">{rate.multiplier}x</div>

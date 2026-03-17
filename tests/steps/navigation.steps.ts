@@ -30,7 +30,25 @@ When('I navigate to the {string}', async function (pageName: string) {
 });
 
 Then('I should see {string}', async function (text: string) {
-  await expect(this.page.getByText(text, { exact: false }).first()).toBeVisible({ timeout: 5000 });
+  const page = this.page!;
+  const regex = new RegExp(text, 'i');
+  
+  await expect(async () => {
+    const heading = page.getByRole('heading', { name: regex });
+    const textMatch = page.getByText(regex);
+    
+    if (await heading.count() > 0) {
+      await heading.first().scrollIntoViewIfNeeded();
+      if (await heading.first().isVisible()) return;
+    }
+    
+    if (await textMatch.count() > 0) {
+      await textMatch.first().scrollIntoViewIfNeeded();
+      if (await textMatch.first().isVisible()) return;
+    }
+    throw new Error(`Text "${text}" not found as visible heading or text element (tried regex /${text}/i)`);
+  }).toPass({ timeout: 5000 });
+
 });
 
 Then('I should not see {string}', async function (text: string) {

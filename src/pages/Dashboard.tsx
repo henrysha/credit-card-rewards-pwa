@@ -29,6 +29,10 @@ export default function Dashboard() {
     () => localStorage.getItem('notif_prompt_dismissed') === 'true'
   );
 
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [featureTitle, setFeatureTitle] = useState('');
+  const [featureDesc, setFeatureDesc] = useState('');
+
   // Listen for permission changes
   useEffect(() => {
     if ('permissions' in navigator) {
@@ -55,10 +59,30 @@ export default function Dashboard() {
     localStorage.setItem('notif_prompt_dismissed', 'true');
   };
 
+  const handleFeatureSubmit = () => {
+    const baseUrl = 'https://github.com/henrysha/credit-card-rewards-pwa/issues/new';
+    const params = new URLSearchParams({
+      title: `[Feature Request] ${featureTitle}`,
+      body: featureDesc,
+      labels: 'feature-request'
+    });
+    window.open(`${baseUrl}?${params.toString()}`, '_blank');
+    setShowFeatureModal(false);
+    setFeatureTitle('');
+    setFeatureDesc('');
+  };
+
   return (
     <div className="page animate-in">
-      <div className="page-header">
+      <div className="page-header flex justify-between items-center">
         <h1>Dashboard</h1>
+        <button 
+          className="btn btn-secondary btn-sm" 
+          onClick={() => setShowFeatureModal(true)}
+          style={{ padding: '6px 12px' }}
+        >
+          Request Feature
+        </button>
       </div>
 
       {showNotifPrompt && (
@@ -162,6 +186,51 @@ export default function Dashboard() {
           <div className="empty-state-icon">💳</div>
           <div className="empty-state-text">No cards added yet. Browse the catalog to get started!</div>
           <button className="btn btn-primary" onClick={() => navigate('/catalog')}>Browse Card Catalog</button>
+        </div>
+      )}
+
+      {showFeatureModal && (
+        <div className="modal-overlay" onClick={() => setShowFeatureModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-handle" />
+            <h3 className="mb-md">Submit Feature Request</h3>
+            <p className="text-sm text-muted mb-md">
+              Tell us what features you'd like to see! This will redirect you to GitHub to create an issue.
+            </p>
+            
+            <div className="form-group">
+              <label className="form-label">Title</label>
+              <input 
+                className="form-input" 
+                value={featureTitle} 
+                onChange={e => setFeatureTitle(e.target.value)} 
+                placeholder="e.g. Add support for Marriott cards" 
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Description</label>
+              <textarea 
+                className="form-input" 
+                style={{ minHeight: '100px', resize: 'vertical' }}
+                value={featureDesc} 
+                onChange={e => setFeatureDesc(e.target.value)} 
+                placeholder="Describe the feature in more detail..." 
+              />
+            </div>
+
+            <div className="flex gap-sm mt-lg">
+              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowFeatureModal(false)}>Cancel</button>
+              <button 
+                className="btn btn-primary" 
+                style={{ flex: 1 }} 
+                onClick={handleFeatureSubmit}
+                disabled={!featureTitle.trim()}
+              >
+                Continue to GitHub
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

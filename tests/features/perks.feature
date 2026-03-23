@@ -5,7 +5,8 @@ Feature: Perk Management
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
     Then I should see "$300 Travel Credit" in the perks list
-    And I should see "$500 \"The Edit\" Hotel Credit" in the perks list
+    And I should see "$250 \"The Edit\" Hotel Credit (1)" in the perks list
+    And I should see "$250 \"The Edit\" Hotel Credit (2)" in the perks list
     And I should see an unclaimed value badge
 
   Scenario: Toggle a perk as used
@@ -98,3 +99,17 @@ Feature: Perk Management
     And I should see a link to "https://opentable.com/sapphire-reserve-exclusive-tables" in the modal
     When I click the close button on the perk details modal
     Then the perk details modal should be closed
+
+  Scenario: Verify annual renewal for The Edit hotel credit
+    Given I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    Then the "$250 \"The Edit\" Hotel Credit (1)" perk should expire on "2026-12-31"
+    And the "$300 Exclusive Tables Dining" perk should expire on "2026-06-30"
+
+  Scenario: Spend-based perks have activation controls
+    Given I have added the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" card
+    When I view the card detail for "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®"
+    Then the "$125 AA Flight Discount" perk should have an Activate button
+    When I activate the "$125 AA Flight Discount" perk
+    Then the "$125 AA Flight Discount" perk should not have an Activate button
+    And the "$125 AA Flight Discount" perk should have a Deactivate button

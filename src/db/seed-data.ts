@@ -48,7 +48,8 @@ export const cardTemplates: CardTemplate[] = [
     ],
     perks: [
       { id: 'csr-travel-credit', name: '$300 Travel Credit', description: 'Annual statement credit for travel purchases', category: 'travel-credit', annualValue: 300, renewalPeriod: 'annual' },
-      { id: 'csr-edit-hotel', name: '$500 "The Edit" Hotel Credit', description: 'Annual credit for prepaid bookings at The Edit hotels ($250 biannual, 2-night min)', category: 'hotel-credit', annualValue: 500, renewalPeriod: 'semi-annual', periodValue: 250 },
+      { id: 'csr-edit-hotel', name: '$250 "The Edit" Hotel Credit (1)', description: 'Annual credit for prepaid bookings at The Edit hotels (2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
+      { id: 'csr-edit-hotel-2', name: '$250 "The Edit" Hotel Credit (2)', description: 'Annual credit for prepaid bookings at The Edit hotels (2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
       { id: 'csr-select-hotel', name: '$250 Select Hotel Credit', description: 'Annual credit for Chase Travel hotel bookings at IHG, Montage, Pendry, Omni, Virgin, etc. (starting 2026, 2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
       { id: 'csr-dining', name: '$300 Exclusive Tables Dining', description: 'Annual dining credit at Sapphire Reserve Exclusive Tables restaurants ($150 biannual)', details: 'CSR Dining credit can only be used at Opentable exclusive tables restaurants.', usageLink: 'https://opentable.com/sapphire-reserve-exclusive-tables', category: 'dining-credit', annualValue: 300, renewalPeriod: 'semi-annual', periodValue: 150 },
       { id: 'csr-stubhub', name: '$300 StubHub/Viagogo Credit', description: 'Annual ticket credit ($150 biannual, through 12/31/2027)', category: 'entertainment-credit', annualValue: 300, renewalPeriod: 'semi-annual', periodValue: 150, expirationDate: '2027-12-31', requiresEnrollment: true },
@@ -440,8 +441,7 @@ export const cardTemplates: CardTemplate[] = [
     perks: [
       { id: 'aa-plat-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 4 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-plat-boarding', name: 'Preferred Boarding', description: 'Board in Group 5', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual' },
-    ],
+      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual', requiresEnrollment: true },    ],
   },
   {
     id: 'citi-aa-mileup',
@@ -480,8 +480,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'aa-biz-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 4 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-biz-boarding', name: 'Preferred Boarding', description: 'Board in Group 5', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-biz-wifi', name: '25% Inflight Wi-Fi Savings', description: 'Savings on inflight Wi-Fi', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'aa-biz-companion', name: 'Companion Certificate', description: 'After $30K spend in a membership year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
-    ],
+      { id: 'aa-biz-companion', name: 'Companion Certificate', description: 'After $30K spend in a membership year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual', requiresEnrollment: true },    ],
   },
   {
     id: 'citi-aa-globe',

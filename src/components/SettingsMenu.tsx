@@ -6,7 +6,13 @@ export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
+  const [isCompact, setIsCompact] = useState(() => localStorage.getItem('compact_mode') === 'true');
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('compact_mode', isCompact.toString());
+    window.dispatchEvent(new Event('compactModeChanged'));
+  }, [isCompact]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -33,6 +39,21 @@ export function SettingsMenu() {
 
       {isOpen && (
         <div className="dropdown-menu">
+          <div className="dropdown-item" style={{ cursor: 'default', justifyContent: 'space-between' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-sm" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+              </svg>
+              Compact Mode
+            </div>
+            <input 
+              type="checkbox" 
+              checked={isCompact} 
+              onChange={(e) => setIsCompact(e.target.checked)}
+              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+            />
+          </div>
+          <div style={{ height: '1px', background: 'var(--bg-glass-border)', margin: '4px 0' }} />
           <button 
             className="dropdown-item" 
             onClick={() => {

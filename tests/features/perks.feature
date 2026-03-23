@@ -105,3 +105,11 @@ Feature: Perk Management
     When I view the card detail for "Chase Sapphire Reserve"
     Then the "$250 \"The Edit\" Hotel Credit (1)" perk should expire on "2026-12-31"
     And the "$300 Exclusive Tables Dining" perk should expire on "2026-06-30"
+
+  Scenario: Spend-based perks have activation controls
+    Given I have added the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" card
+    When I view the card detail for "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®"
+    Then the "$125 AA Flight Discount" perk should have an Activate button
+    When I activate the "$125 AA Flight Discount" perk
+    Then the "$125 AA Flight Discount" perk should not have an Activate button
+    And the "$125 AA Flight Discount" perk should have a Deactivate button

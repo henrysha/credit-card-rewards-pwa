@@ -48,7 +48,8 @@ export const cardTemplates: CardTemplate[] = [
     ],
     perks: [
       { id: 'csr-travel-credit', name: '$300 Travel Credit', description: 'Annual statement credit for travel purchases', category: 'travel-credit', annualValue: 300, renewalPeriod: 'annual' },
-      { id: 'csr-edit-hotel', name: '$500 "The Edit" Hotel Credit', description: 'Annual credit for prepaid bookings at The Edit hotels ($250 biannual, 2-night min)', category: 'hotel-credit', annualValue: 500, renewalPeriod: 'semi-annual', periodValue: 250 },
+      { id: 'csr-edit-hotel', name: '$250 "The Edit" Hotel Credit (1)', description: 'Annual credit for prepaid bookings at The Edit hotels (2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
+      { id: 'csr-edit-hotel-2', name: '$250 "The Edit" Hotel Credit (2)', description: 'Annual credit for prepaid bookings at The Edit hotels (2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
       { id: 'csr-select-hotel', name: '$250 Select Hotel Credit', description: 'Annual credit for Chase Travel hotel bookings at IHG, Montage, Pendry, Omni, Virgin, etc. (starting 2026, 2-night min)', category: 'hotel-credit', annualValue: 250, renewalPeriod: 'annual' },
       { id: 'csr-dining', name: '$300 Exclusive Tables Dining', description: 'Annual dining credit at Sapphire Reserve Exclusive Tables restaurants ($150 biannual)', details: 'CSR Dining credit can only be used at Opentable exclusive tables restaurants.', usageLink: 'https://opentable.com/sapphire-reserve-exclusive-tables', category: 'dining-credit', annualValue: 300, renewalPeriod: 'semi-annual', periodValue: 150 },
       { id: 'csr-stubhub', name: '$300 StubHub/Viagogo Credit', description: 'Annual ticket credit ($150 biannual, through 12/31/2027)', category: 'entertainment-credit', annualValue: 300, renewalPeriod: 'semi-annual', periodValue: 150, expirationDate: '2027-12-31', requiresEnrollment: true },

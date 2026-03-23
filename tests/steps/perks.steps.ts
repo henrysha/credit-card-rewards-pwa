@@ -56,14 +56,14 @@ Then('I should see an unclaimed total value', async function () {
   await expect(this.page.getByText(/\$\d+.*unclaimed/i, { exact: false })).toBeVisible({ timeout: 5000 });
 });
 
-Then('I should see no perks listed', async function () {
-  const perkItems = this.page.locator('.perk-item');
-  const count = await perkItems.count();
-  if (count > 0) {
-    const noPerkMsg = this.page.getByText(/no perks|no cards|add a card/i);
-    const msgCount = await noPerkMsg.count();
-    expect(count === 0 || msgCount > 0).toBeTruthy();
-  }
+Then('the {string} perk should expire on {string}', async function (perkName: string, expectedDate: string) {
+  const perkEnd = await this.page.evaluate(async (name: string) => {
+    const db = (window as unknown as { db: { perks: { toArray: () => Promise<{ perkName: string; currentPeriodEnd: string }[]> } } }).db;
+    const allPerks = await db.perks.toArray();
+    const perk = allPerks.find((p: { perkName: string }) => p.perkName === name);
+    return perk?.currentPeriodEnd;
+  }, perkName);
+  expect(perkEnd).toBe(expectedDate);
 });
 
 When('the renewal period for {string} expires', async function (perkName: string) {

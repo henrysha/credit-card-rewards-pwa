@@ -440,8 +440,7 @@ export const cardTemplates: CardTemplate[] = [
     perks: [
       { id: 'aa-plat-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 4 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-plat-boarding', name: 'Preferred Boarding', description: 'Board in Group 5', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual' },
-    ],
+      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual', requiresEnrollment: true },    ],
   },
   {
     id: 'citi-aa-mileup',
@@ -480,8 +479,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'aa-biz-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 4 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-biz-boarding', name: 'Preferred Boarding', description: 'Board in Group 5', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-biz-wifi', name: '25% Inflight Wi-Fi Savings', description: 'Savings on inflight Wi-Fi', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'aa-biz-companion', name: 'Companion Certificate', description: 'After $30K spend in a membership year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
-    ],
+      { id: 'aa-biz-companion', name: 'Companion Certificate', description: 'After $30K spend in a membership year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual', requiresEnrollment: true },    ],
   },
   {
     id: 'citi-aa-globe',

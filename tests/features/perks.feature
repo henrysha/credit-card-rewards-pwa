@@ -98,3 +98,11 @@ Feature: Perk Management
     And I should see a link to "https://opentable.com/sapphire-reserve-exclusive-tables" in the modal
     When I click the close button on the perk details modal
     Then the perk details modal should be closed
+
+  Scenario: Spend-based perks have activation controls
+    Given I have added the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" card
+    When I view the card detail for "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®"
+    Then the "$125 AA Flight Discount" perk should have an Activate button
+    When I activate the "$125 AA Flight Discount" perk
+    Then the "$125 AA Flight Discount" perk should not have an Activate button
+    And the "$125 AA Flight Discount" perk should have a Deactivate button

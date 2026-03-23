@@ -66,6 +66,16 @@ Then('I should see no perks listed', async function () {
   }
 });
 
+Then('the {string} perk should expire on {string}', async function (perkName: string, expectedDate: string) {
+  const perkEnd = await this.page.evaluate(async (name: string) => {
+    const db = (window as unknown as { db: { perks: { toArray: () => Promise<{ perkName: string; currentPeriodEnd: string }[]> } } }).db;
+    const allPerks = await db.perks.toArray();
+    const perk = allPerks.find((p: { perkName: string }) => p.perkName === name);
+    return perk?.currentPeriodEnd;
+  }, perkName);
+  expect(perkEnd).toBe(expectedDate);
+});
+
 When('the renewal period for {string} expires', async function (perkName: string) {
   // Backdate the perk's currentPeriodEnd in IndexedDB so refreshExpiredPerks picks it up
   await this.page.evaluate(async (name: string) => {

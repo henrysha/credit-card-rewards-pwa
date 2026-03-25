@@ -94,7 +94,7 @@ Before(async function (scenario) {
   // Create context with notifications permission granted by default
   // This is more reliable than grantPermissions in some environments
   this.context = await browser.newContext({
-    permissions: ['notifications']
+    permissions: ['notifications', 'clipboard-read', 'clipboard-write']
   });
   
   this.page = await this.context.newPage();

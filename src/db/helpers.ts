@@ -226,6 +226,7 @@ export async function syncCardPerks(): Promise<void> {
           renewalPeriod: inTemplate.renewalPeriod,
           annualValue: inTemplate.annualValue,
           periodValue: inTemplate.periodValue,
+          active: p.active !== false,
         });
       }
     }
@@ -287,7 +288,7 @@ export async function refreshExpiredPerks(): Promise<number> {
       annualValue: perkTemplate.annualValue,
       periodValue: perkTemplate.periodValue,
       used: false,
-      active: perk.active ?? (perkTemplate.requiresEnrollment ? false : true),
+      active: perk.active !== false,
       usedDate: undefined,
       currentPeriodStart: newPeriod.start,
       currentPeriodEnd: newPeriod.end,

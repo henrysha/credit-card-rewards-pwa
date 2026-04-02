@@ -193,3 +193,25 @@ Then('the perk details modal should be closed', async function () {
   const modal = this.page.locator('.modal-content');
   await expect(modal).not.toBeVisible({ timeout: 5000 });
 });
+
+When('the perk {string} has active set to undefined in DB', async function (name: string) {
+  await this.page.evaluate(async (perkName: string) => {
+    const db = (window as unknown as { db: any }).db;
+    const allPerks = await db.perks.toArray();
+    const perk = allPerks.find(p => p.perkName === perkName);
+    if (!perk) throw new Error('Perk ' + perkName + ' not found');
+    const p = await db.perks.get(perk.id);
+    delete p.active;
+    await db.perks.put(p);
+  }, name);
+});
+
+Then('the perk {string} active status in DB should be {string}', async function (name: string, expected: string) {
+  const active = await this.page.evaluate(async (perkName: string) => {
+    const db = (window as unknown as { db: any }).db;
+    const allPerks = await db.perks.toArray();
+    const perk = allPerks.find(p => p.perkName === perkName);
+    return perk ? String(perk.active) : 'not found';
+  }, name);
+  expect(active).toBe(expected);
+});

@@ -1,7 +1,7 @@
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
-// Complete Card Catalog — 14 Cards
+// Complete Card Catalog — 26 Cards
 // ============================================================
 
 export const cardTemplates: CardTemplate[] = [
@@ -179,6 +179,60 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'ap-clear', name: '$209 CLEAR+ Credit', description: 'Annual credit for CLEAR+ membership', category: 'membership', annualValue: 209, renewalPeriod: 'annual' },
       { id: 'ap-ge-tsa', name: '$100 Global Entry/TSA PreCheck', description: 'Credit for GE/TSA application fee every 4 years', category: 'global-entry-tsa', annualValue: 25, renewalPeriod: 'every-4-years' },
       { id: 'ap-lounge', name: 'Airport Lounge Access', description: 'Centurion Lounges, Delta Sky Club (10 visits), Priority Pass Select', category: 'lounge-access', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'amex-blue-cash-everyday',
+    name: 'Amex Blue Cash Everyday®',
+    issuer: 'Amex',
+    annualFee: 0,
+    color: '#003a70',
+    signupBonus: { points: 200, spend: 2000, timeMonths: 6, unit: 'cash back' },
+    earningRates: [
+      { category: 'U.S. Supermarkets', multiplier: 3, limit: '$6K/yr' },
+      { category: 'U.S. Online Retail', multiplier: 3, limit: '$6K/yr' },
+      { category: 'U.S. Gas Stations', multiplier: 3, limit: '$6K/yr' },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bce-disney', name: '$84 Disney Bundle Credit', description: '$7/month for Disney Bundle subscription', category: 'streaming-credit', annualValue: 84, renewalPeriod: 'monthly', periodValue: 7, requiresEnrollment: true },
+      { id: 'bce-home-chef', name: '$180 Home Chef Credit', description: '$15/month for Home Chef meal kits', category: 'delivery-credit', annualValue: 180, renewalPeriod: 'monthly', periodValue: 15, requiresEnrollment: true },
+    ],
+  },
+  {
+    id: 'amex-blue-cash-preferred',
+    name: 'Amex Blue Cash Preferred®',
+    issuer: 'Amex',
+    annualFee: 95,
+    firstYearFeeWaived: true,
+    color: '#003a70',
+    signupBonus: { points: 250, spend: 3000, timeMonths: 6, unit: 'cash back' },
+    earningRates: [
+      { category: 'U.S. Supermarkets', multiplier: 6, limit: '$6K/yr' },
+      { category: 'U.S. Streaming', multiplier: 6 },
+      { category: 'U.S. Gas Stations', multiplier: 3 },
+      { category: 'Transit', multiplier: 3 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bcp-disney', name: '$84 Disney Bundle Credit', description: '$7/month for Disney Bundle subscription', category: 'streaming-credit', annualValue: 84, renewalPeriod: 'monthly', periodValue: 7, requiresEnrollment: true },
+      { id: 'bcp-equinox', name: '$120 Equinox+ Credit', description: '$10/month toward Equinox+ digital fitness app', category: 'wellness-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, requiresEnrollment: true },
+    ],
+  },
+  {
+    id: 'amex-blue-business-cash',
+    name: 'Amex Blue Business Cash™',
+    issuer: 'Amex',
+    annualFee: 0,
+    color: '#003a70',
+    isBusinessCard: true,
+    signupBonus: { points: 250, spend: 3000, timeMonths: 3, unit: 'cash back' },
+    earningRates: [
+      { category: 'All eligible purchases', multiplier: 2, limit: '$50K/yr' },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bbc-buying-power', name: 'Expanded Buying Power', description: 'Spend beyond your credit limit', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
     ],
   },
 

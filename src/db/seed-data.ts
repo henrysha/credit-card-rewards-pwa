@@ -248,9 +248,9 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [
-      { id: 'amex-bbp-buying-power', name: 'Expanded Buying Power', description: 'Spend beyond your credit limit', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'amex-bbp-protection', name: 'Purchase Protection', description: 'Coverage for items stolen or damaged within 90 days', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'amex-bbp-warranty', name: 'Extended Warranty', description: 'Adds up to one additional year to manufacturer warranty', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bbp-buying-power', name: 'Expanded Buying Power', description: 'Spend beyond your credit limit', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bbp-protection', name: 'Purchase Protection', description: 'Coverage for items stolen or damaged within 90 days', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bbp-warranty', name: 'Extended Warranty', description: 'Adds up to one additional year to manufacturer warranty', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
     ],
   },
 

@@ -1,7 +1,7 @@
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
-// Complete Card Catalog — 26 Cards
+// Complete Card Catalog — 27 Cards
 // ============================================================
 
 export const cardTemplates: CardTemplate[] = [
@@ -233,6 +233,24 @@ export const cardTemplates: CardTemplate[] = [
     ],
     perks: [
       { id: 'bbc-buying-power', name: 'Expanded Buying Power', description: 'Spend beyond your credit limit', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'amex-blue-business-plus',
+    name: 'Amex Blue Business® Plus',
+    issuer: 'Amex',
+    annualFee: 0,
+    color: '#003a70',
+    isBusinessCard: true,
+    signupBonus: { points: 15000, spend: 3000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'All eligible purchases', multiplier: 2, limit: '$50K/yr' },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bbp-buying-power', name: 'Expanded Buying Power', description: 'Spend beyond your credit limit', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bbp-protection', name: 'Purchase Protection', description: 'Coverage for items stolen or damaged within 90 days', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bbp-warranty', name: 'Extended Warranty', description: 'Adds up to one additional year to manufacturer warranty', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
     ],
   },
 

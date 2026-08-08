@@ -44,3 +44,14 @@ Feature: Card Catalog
     And I should see "Earning Rates"
     And I should see "Cell Phone Protection" perk
     And I should see "DashPass 3-Month Trial" perk
+
+  Scenario: View updated perks for redesigned Chase Sapphire Preferred
+    Given I am on the "Catalog" page
+    When I click on the card "Chase Sapphire Preferred"
+    Then I should see "$100 Hotel Credit" perk
+    And I should see "$120 Global Entry/TSA PreCheck" perk
+    And I should see "Apple TV+ Subscription" perk
+    And I should see "Emergency Evacuation & Transportation" perk
+    And I should not see "$50 Hotel Credit" perk
+    And I should not see "10% Anniversary Points Bonus" perk
+

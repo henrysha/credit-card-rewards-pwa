@@ -103,8 +103,8 @@ Feature: Perk Management
   Scenario: Verify annual renewal for The Edit hotel credit
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    Then the "$250 \"The Edit\" Hotel Credit (1)" perk should expire on "2026-12-31"
-    And the "$300 Exclusive Tables Dining" perk should expire on "2026-06-30"
+    Then the "$250 \"The Edit\" Hotel Credit (1)" perk should expire on "the end of the year"
+    And the "$300 Exclusive Tables Dining" perk should expire on "the end of the current half"
 
   Scenario: Spend-based perks have activation controls
     Given I have added the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" card

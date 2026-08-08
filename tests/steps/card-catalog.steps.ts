@@ -32,7 +32,13 @@ Then('I should see {string} perk', async function (perkName: string) {
   await expect(perk).toBeVisible({ timeout: 5000 });
 });
 
+Then('I should not see {string} perk', async function (perkName: string) {
+  const perk = this.page.locator('.perk-info').getByText(perkName, { exact: true });
+  await expect(perk).toHaveCount(0, { timeout: 5000 });
+});
+
 Then('I should see {string} button', async function (buttonText: string) {
   const button = this.page.getByRole('button', { name: buttonText });
   await expect(button).toBeVisible({ timeout: 5000 });
 });
+

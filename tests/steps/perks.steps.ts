@@ -66,13 +66,30 @@ Then('I should see no perks listed', async function () {
   }
 });
 
-Then('the {string} perk should expire on {string}', async function (perkName: string, expectedDate: string) {
+Then('the {string} perk should expire on {string}', async function (perkName: string, expectedDateStr: string) {
   const perkEnd = await this.page.evaluate(async (name: string) => {
     const db = (window as unknown as { db: { perks: { toArray: () => Promise<{ perkName: string; currentPeriodEnd: string }[]> } } }).db;
     const allPerks = await db.perks.toArray();
     const perk = allPerks.find((p: { perkName: string }) => p.perkName === name);
     return perk?.currentPeriodEnd;
   }, perkName);
+
+  let expectedDate = expectedDateStr;
+  const now = new Date();
+  const fmt = (d: Date) => d.toISOString().split('T')[0];
+  const lower = expectedDateStr.toLowerCase();
+  if (lower.includes('end of the year') || lower.includes('end of year')) {
+    expectedDate = fmt(new Date(now.getFullYear(), 11, 31));
+  } else if (lower.includes('end of the current half') || lower.includes('end of half') || lower.includes('semi-annual')) {
+    const h = now.getMonth() < 6 ? 5 : 11;
+    expectedDate = fmt(new Date(now.getFullYear(), h + 1, 0));
+  } else if (lower.includes('end of the current month') || lower.includes('end of month')) {
+    expectedDate = fmt(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+  } else if (lower.includes('end of the current quarter') || lower.includes('end of quarter')) {
+    const q = Math.floor(now.getMonth() / 3) * 3 + 2;
+    expectedDate = fmt(new Date(now.getFullYear(), q + 1, 0));
+  }
+
   expect(perkEnd).toBe(expectedDate);
 });
 

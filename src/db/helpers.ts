@@ -68,9 +68,16 @@ export function computePeriod(renewalPeriod: RenewalPeriod, now: Date = new Date
 
 // Expose to window for BDD testing
 if (typeof window !== 'undefined') {
-  const w = window as unknown as { refreshExpiredPerks: typeof refreshExpiredPerks; syncCardPerks: typeof syncCardPerks };
+  const w = window as unknown as {
+    refreshExpiredPerks: typeof refreshExpiredPerks;
+    syncCardPerks: typeof syncCardPerks;
+    productChangeCard: typeof productChangeCard;
+    getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+  };
   w.refreshExpiredPerks = refreshExpiredPerks;
   w.syncCardPerks = syncCardPerks;
+  w.productChangeCard = productChangeCard;
+  w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
 }
 
 // ── Card operations ──
@@ -147,6 +154,97 @@ export async function updateCard(
   updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string }
 ): Promise<void> {
   await db.cards.update(cardId, updates);
+}
+
+export function getEligibleProductChangeTemplates(currentTemplateId: string): {
+  upgrades: CardTemplate[];
+  downgrades: CardTemplate[];
+  sameTier: CardTemplate[];
+  allEligible: CardTemplate[];
+} {
+  const currentTemplate = getCardTemplate(currentTemplateId);
+  if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
+
+  // Eligible cards must be from the same issuer and not be the same card
+  const eligible = cardTemplates.filter(
+    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id
+  );
+
+  const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
+  const downgrades = eligible.filter(c => c.annualFee < currentTemplate.annualFee);
+  const sameTier = eligible.filter(c => c.annualFee === currentTemplate.annualFee);
+
+  return { upgrades, downgrades, sameTier, allEligible: eligible };
+}
+
+export async function productChangeCard(
+  cardId: number,
+  targetTemplateId: string,
+  options?: {
+    nickname?: string;
+    lastFourDigits?: string;
+    annualFeeDate?: string;
+  }
+): Promise<number> {
+  const oldCard = await db.cards.get(cardId);
+  if (!oldCard) throw new Error(`Card not found with ID: ${cardId}`);
+
+  const oldTemplate = getCardTemplate(oldCard.cardTemplateId);
+  const targetTemplate = getCardTemplate(targetTemplateId);
+
+  if (!oldTemplate || !targetTemplate) {
+    throw new Error('Invalid card template for product change');
+  }
+
+  if (oldTemplate.issuer !== targetTemplate.issuer) {
+    throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+
+  // 1. Update old card status to 'product-changed'
+  await db.cards.update(cardId, {
+    status: 'product-changed',
+    closedDate: today,
+  });
+
+  // 2. Remove old card's un-used perks so they do not linger in active perks tracker
+  await db.perks.where('cardId').equals(cardId).and(p => !p.used).delete();
+
+  // 3. Create new active card preserving account history
+  const newCardId = await db.cards.add({
+    cardTemplateId: targetTemplateId,
+    nickname: options?.nickname ?? (oldCard.nickname ? `${oldCard.nickname}` : undefined),
+    lastFourDigits: options?.lastFourDigits ?? oldCard.lastFourDigits,
+    openedDate: oldCard.openedDate, // Preserves original account age
+    annualFeeDate: options?.annualFeeDate ?? oldCard.annualFeeDate,
+    status: 'active',
+  } as UserCard);
+
+  // 4. Create new perks for the target template
+  const now = new Date();
+  const perksToAdd: UserPerk[] = targetTemplate.perks.map((p: PerkTemplate) => {
+    const period = computePeriod(p.renewalPeriod, now);
+    return {
+      cardId: newCardId as number,
+      perkTemplateId: p.id,
+      perkName: p.name,
+      category: p.category,
+      used: false,
+      active: p.requiresEnrollment ? false : true,
+      currentPeriodStart: period.start,
+      currentPeriodEnd: period.end,
+      renewalPeriod: p.renewalPeriod,
+      annualValue: p.annualValue,
+      periodValue: p.periodValue,
+    } as UserPerk;
+  });
+
+  await db.perks.bulkAdd(perksToAdd);
+
+  // Note: Product changes do not earn a sign-up bonus according to issuer rules.
+
+  return newCardId as number;
 }
 
 export async function updateBonusSpend(bonusId: number, newSpend: number): Promise<void> {

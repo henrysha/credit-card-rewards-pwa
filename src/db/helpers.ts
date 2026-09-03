@@ -1,5 +1,5 @@
 import { db } from './database';
-import { cardTemplates } from './seed-data';
+import { cardFamilies, cardTemplates } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
 
 // ── Helpers for computing renewal dates ──
@@ -110,6 +110,11 @@ export async function getSignupBonusEligibility(cardTemplateId: string): Promise
 /** Return the distinct loyalty families represented in the catalog. */
 export function getFamilyIds(): string[] {
   return [...new Set(cardTemplates.map(card => card.familyId).filter((familyId): familyId is string => Boolean(familyId)))];
+}
+
+/** Return the user-facing label for a card family identifier. */
+export function getFamilyLabel(familyId: string): string {
+  return cardFamilies.find(family => family.id === familyId)?.label ?? familyId;
 }
 
 /** Return catalog products belonging to a loyalty family. */

@@ -1,10 +1,4 @@
-const familyLabels: Record<string, string> = {
-  'chase-ultimate-rewards-consumer': 'Chase Ultimate Rewards Consumer',
-  'chase-united': 'Chase United',
-  'chase-marriott-bonvoy': 'Chase Marriott Bonvoy',
-  'bilt-card-2.0': 'Bilt Card 2.0',
-  'skypass-visa': 'SKYPASS Visa',
-};
+import { getFamilyLabel } from '../db/helpers';
 
 interface CardFamilyFilterProps {
   familyIds: string[];
@@ -21,7 +15,7 @@ export function CardFamilyFilter({ familyIds, selectedFamilyId, onSelect }: Card
           className={`tab ${selectedFamilyId === familyId ? 'active' : ''}`}
           onClick={() => onSelect(familyId)}
         >
-          {familyId === 'all' ? 'All Families' : (familyLabels[familyId] ?? familyId)}
+          {familyId === 'all' ? 'All Families' : getFamilyLabel(familyId)}
         </button>
       ))}
     </div>

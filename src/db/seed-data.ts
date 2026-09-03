@@ -1,5 +1,16 @@
 import type { CardTemplate, ChurningRule } from './types';
 
+/** Canonical metadata for card families used by catalog filters and eligibility rules. */
+export const cardFamilies = [
+  { id: 'chase-ultimate-rewards-consumer', label: 'Chase Ultimate Rewards Consumer' },
+  { id: 'chase-united', label: 'Chase United' },
+  { id: 'chase-marriott-bonvoy', label: 'Chase Marriott Bonvoy' },
+  { id: 'Hilton', label: 'Hilton' },
+  { id: 'IHG', label: 'IHG' },
+  { id: 'bilt-card-2.0', label: 'Bilt Card 2.0' },
+  { id: 'skypass-visa', label: 'SKYPASS Visa' },
+] as const;
+
 // ============================================================
 // Complete Card Catalog — 47 Cards
 // ============================================================

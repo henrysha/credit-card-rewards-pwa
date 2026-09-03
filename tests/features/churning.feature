@@ -36,3 +36,8 @@ Feature: Churning Tracker
     When I check bonus eligibility for "SKYPASS Select Visa Signature"
     Then the SKYPASS bonus should be marked ineligible
     And the SKYPASS family history should include "SKYPASS SkyBlue Visa"
+
+  Scenario: SKYPASS family history is shown on the churning page
+    Given I have added the "SKYPASS SkyBlue Visa" card
+    When I am on the "Churning" page
+    Then I should see "SKYPASS bonus ineligible" for U.S. Bank

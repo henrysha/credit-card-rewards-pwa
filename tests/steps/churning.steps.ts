@@ -40,6 +40,11 @@ Then('I should see {string} for Chase', async function (status: string) {
   await expect(chaseSection.getByText(status, { exact: false })).toBeVisible({ timeout: 5000 });
 });
 
+Then('I should see {string} for U.S. Bank', async function (status: string) {
+  const bankSection = this.page.locator('.glass-card').filter({ hasText: 'U.S. Bank' }).first();
+  await expect(bankSection.getByText(status, { exact: true })).toBeVisible({ timeout: 5000 });
+});
+
 Then('I should see {string} rule', async function (rule: string) {
   // Rule names are shown in .rule-name elements
   await expect(this.page.getByText(rule, { exact: false }).first()).toBeVisible({ timeout: 5000 });

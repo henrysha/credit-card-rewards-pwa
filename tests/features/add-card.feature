@@ -20,3 +20,14 @@ Feature: Add Card
     Then I should see "Sign-up Bonus" on the detail page
     And I should see "$300 Travel Credit" in the perks list
     And I should see "Earning Rates" on the detail page
+
+  Scenario: Add a SKYPASS card with its mileage bonus
+    Given I am on the "Catalog" page
+    When I add the "SKYPASS Visa Signature" card
+    Then I should see "SKYPASS Visa Signature" on the cards page
+    And I should see "40,000" on the detail page
+
+  Scenario: Robinhood Gold Card can be added from the catalog
+    Given I am on the "Catalog" page
+    When I add the "Robinhood Gold Card" card
+    Then I should see "Robinhood Gold Card" on the detail page

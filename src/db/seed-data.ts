@@ -1,7 +1,7 @@
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
-// Complete Card Catalog — 29 Cards
+// Complete Card Catalog — 47 Cards
 // ============================================================
 
 export const cardTemplates: CardTemplate[] = [
@@ -10,6 +10,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'chase-sapphire-preferred',
     name: 'Chase Sapphire Preferred',
     issuer: 'Chase',
+    familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 95,
     color: '#1a3c6e',
     signupBonus: { points: 75000, spend: 5000, timeMonths: 3, unit: 'points' },
@@ -40,6 +41,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'chase-sapphire-reserve',
     name: 'Chase Sapphire Reserve',
     issuer: 'Chase',
+    familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 795,
     color: '#1a3c6e',
     signupBonus: { points: 125000, spend: 6000, timeMonths: 3, unit: 'points' },
@@ -74,6 +76,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'chase-freedom-flex',
     name: 'Chase Freedom Flex',
     issuer: 'Chase',
+    familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 0,
     color: '#1a3c6e',
     signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
@@ -98,6 +101,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'chase-freedom',
     name: 'Chase Freedom',
     issuer: 'Chase',
+    familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 0,
     color: '#1a3c6e',
     signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
@@ -118,6 +122,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'chase-freedom-unlimited',
     name: 'Chase Freedom Unlimited',
     issuer: 'Chase',
+    familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 0,
     color: '#1a3c6e',
     signupBonus: { points: 25000, spend: 500, timeMonths: 3, unit: 'cash back ($250)' },
@@ -175,6 +180,184 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'cip-trip-insurance', name: 'Travel Insurance Suite', description: 'Trip cancellation/delay, lost luggage, baggage delay', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cip-purchase-protection', name: 'Purchase Protection', description: 'Covers purchases for 120 days, up to $10K/claim', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cip-extended-warranty', name: 'Extended Warranty', description: 'Adds 1 year to eligible warranties', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+
+  // ─── CHASE UNITED FAMILY (US CONSUMER) ─────────────────────
+  {
+    id: 'chase-united-gateway',
+    name: 'United Gateway Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 0,
+    color: '#003b70',
+    signupBonus: {
+      points: 30000, spend: 1000, timeMonths: 3, unit: 'miles',
+      additionalBonus: { points: 10000, spend: 0, unit: 'miles', description: 'Additional 10K miles after adding an authorized user within the first 3 months; awarded once for the first authorized user' },
+    },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 2 },
+      { category: 'Gas Stations', multiplier: 2 },
+      { category: 'Local Transit / Commuting / Rideshare', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'ug-award-pricing', name: 'United Award Pricing', description: 'Save at least 10% on United or United Express award flights after spending $10,000 in a calendar year; Premier members save at least 15%', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ug-checked-bags', name: 'Two Checked Bag Certificates', description: 'Earn two standard checked bag certificates after spending $10,000 in a calendar year; primary cardmember must buy the ticket with the card and include their MileagePlus number', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ug-inflight', name: '25% United Inflight Savings', description: '25% back as a statement credit on food, beverages and Wi-Fi on United or United Express flights and premium drinks at United Clubs, including authorized-user purchases', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'chase-united-explorer',
+    name: 'United Explorer Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 150,
+    firstYearFeeWaived: true,
+    color: '#003b70',
+    signupBonus: {
+      points: 50000, spend: 3000, timeMonths: 3, unit: 'miles',
+      additionalBonus: { points: 10000, spend: 0, unit: 'miles', description: 'Additional 10K miles after adding an authorized user within the first 3 months; awarded once for the first authorized user' },
+    },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 3 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'Hotels (direct)', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'ue-award-pricing', name: 'United Award Pricing', description: 'Save at least 10% on United or United Express award flights; Premier members save even more', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ue-bag', name: 'First Checked Bag Free', description: 'First standard checked bag free for the primary cardmember and one companion on the same reservation on United-operated flights', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ue-priority-boarding', name: 'Priority Boarding', description: 'Primary cardmember and companions on the same reservation board before general boarding on United-operated flights', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ue-club-passes', name: 'Two United Club Passes', description: 'Two one-time passes deposited after account opening and every 12 months thereafter; access is subject to space and Club policies', category: 'lounge-access', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ue-award-discount', name: '10,000-Mile Award Flight Discount', description: 'Earn a 10,000-mile discount after spending $20,000 in a calendar year toward an eligible United award flight', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ue-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit up to $120 for Global Entry, TSA PreCheck or NEXUS every 4 years when the application fee is charged to the card by you or an authorized user', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'ue-inflight', name: '25% United Inflight Savings', description: '25% back as a statement credit on food, beverages and Wi-Fi on United or United Express flights and premium drinks at United Clubs', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ue-united-credit', name: '$100 United Travel Credit', description: 'Earn $100 in United TravelBank cash after spending $10,000 in a calendar year toward a future United or United Express flight', category: 'travel-credit', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'ue-hotels-credit', name: '$100 United Hotels Credit', description: '$50 statement credit on each of the first two prepaid hotel stays purchased directly through United Hotels each anniversary year', category: 'hotel-credit', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'ue-rideshare-credit', name: '$60 Rideshare Credit', description: 'Enroll to receive up to $5 back each month on rideshare purchases, up to $60 each calendar year; yearly opt-in required', category: 'rideshare-credit', annualValue: 60, renewalPeriod: 'monthly', periodValue: 5, requiresEnrollment: true },
+      { id: 'ue-car-rental-credit', name: '$50 Avis/Budget Credit', description: '$25 in United TravelBank cash for each of the first two Avis or Budget rentals booked through cars.united.com and paid with the card each anniversary year', category: 'travel-credit', annualValue: 50, renewalPeriod: 'annual' },
+      { id: 'ue-instacart', name: '$120 Instacart Credits', description: '$10 Instacart credit monthly, up to $120 each calendar year; benefit ends 12/31/2027', category: 'delivery-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31' },
+      { id: 'ue-jsx-credit', name: '$100 JSX Credit', description: 'Up to $100 back as a statement credit each anniversary year on flights purchased directly through JSX', category: 'travel-credit', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'ue-pqp', name: 'Premier Qualifying Points', description: 'Earn 1 PQP per $20 in net purchases, up to 1,000 PQP in a calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'chase-united-quest',
+    name: 'United Quest Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 350,
+    color: '#003b70',
+    signupBonus: {
+      points: 60000, spend: 4000, timeMonths: 3, unit: 'miles + 500 PQP',
+      additionalBonus: { points: 10000, spend: 0, unit: 'miles', description: 'Additional 10K miles after adding an authorized user within the first 3 months; awarded once for the first authorized user' },
+    },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 4 },
+      { category: 'Renowned Hotels and Resorts (prepaid)', multiplier: 5 },
+      { category: 'Travel', multiplier: 2 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'Select Streaming Services', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'uq-travel-credit', name: '$200 United Travel Credit', description: 'Annual statement credit toward eligible United purchases', category: 'travel-credit', annualValue: 200, renewalPeriod: 'annual' },
+      { id: 'uq-award-pricing', name: 'United Award Pricing', description: 'Save at least 10% on United or United Express award flights; Premier members save even more', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uq-award-discount-anniversary', name: '10,000-Mile Anniversary Award Discount', description: 'Starting with the first anniversary and each anniversary thereafter, receive a 10,000-mile discount toward an eligible United award flight', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-award-discount-spend', name: '10,000-Mile Spend Award Discount', description: 'Earn a 10,000-mile eligible award flight discount after spending $20,000 in a calendar year', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-bags', name: 'Two Free Checked Bags', description: 'First and second standard checked bags free for the primary cardmember and one companion on the same reservation on United-operated flights', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uq-economy-plus', name: 'Two Economy Plus Upgrades', description: 'Earn two global Economy Plus seat upgrades after spending $40,000 in a calendar year; primary cardmember only and valid for 12 months after issue', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-priority-boarding', name: 'Priority Boarding', description: 'Primary cardmember and companions on the same reservation board before general boarding on United-operated flights', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uq-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit up to $120 for Global Entry, TSA PreCheck or NEXUS every 4 years when the application fee is charged to the card', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'uq-inflight', name: '25% United Inflight Savings', description: '25% back as a statement credit on food, beverages and Wi-Fi on United or United Express flights and premium drinks at United Clubs', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uq-pqp-bonus', name: '1,000 Annual Card Bonus PQP', description: 'Receive 1,000 Card Bonus PQP each year within 8 weeks of February 1 starting the year after opening; account must remain open and in good standing', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-pqp', name: 'Premier Qualifying Points', description: 'Earn 1 PQP per $20 in net purchases, up to 18,000 PQP in a calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-hotels-credit', name: '$150 Renowned Hotels Credit', description: 'Up to $150 back in statement credits each anniversary year on prepaid stays purchased directly through Renowned Hotels and Resorts', category: 'hotel-credit', annualValue: 150, renewalPeriod: 'annual' },
+      { id: 'uq-rideshare-credit', name: '$100 Rideshare Credit', description: 'Enroll to receive up to $8 back monthly January-November and $12 in December, up to $100 each calendar year; yearly opt-in required', category: 'rideshare-credit', annualValue: 100, renewalPeriod: 'annual', requiresEnrollment: true },
+      { id: 'uq-car-rental-credit', name: '$80 Avis/Budget Credit', description: '$40 in United TravelBank cash for each of the first two Avis or Budget rentals booked through cars.united.com and paid with the card each anniversary year', category: 'travel-credit', annualValue: 80, renewalPeriod: 'annual' },
+      { id: 'uq-instacart', name: '$180 Instacart Credits', description: 'One $10 and one $5 Instacart credit monthly, up to $180 each calendar year; benefit ends 12/31/2027', category: 'delivery-credit', annualValue: 180, renewalPeriod: 'monthly', periodValue: 15, expirationDate: '2027-12-31' },
+      { id: 'uq-jsx-credit', name: '$150 JSX Credit', description: 'Up to $150 back as a statement credit each anniversary year on flights purchased directly through JSX', category: 'travel-credit', annualValue: 150, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'chase-united-club',
+    name: 'United Club Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 695,
+    color: '#003b70',
+    signupBonus: {
+      points: 80000, spend: 5000, timeMonths: 3, unit: 'miles',
+      additionalBonus: { points: 10000, spend: 0, unit: 'miles', description: 'Additional 10K miles after adding an authorized user within the first 3 months; awarded once for the first authorized user' },
+    },
+    earningRates: [
+      { category: 'Eligible United Flights', multiplier: 5 },
+      { category: 'United Purchases', multiplier: 5 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'Travel', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'uc-club', name: 'United Club Membership', description: 'Unlimited United Club access for the primary cardmember and one eligible guest; unlock All Access after Premier Gold status or $50,000 annual spend, which adds Star Alliance lounge access and two adult guests', category: 'lounge-access', annualValue: 750, renewalPeriod: 'annual' },
+      { id: 'uc-club-au-passes', name: 'Four United Club Passes for Authorized Users', description: 'With United Club All Access membership and an authorized user, receive four one-time Club passes each anniversary; allow 3 weeks after adding an authorized user before solo use', category: 'lounge-access', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uc-bags', name: 'Two Free Checked Bags', description: 'First and second standard checked bags free for the primary cardmember and one companion on the same reservation on United-operated flights', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uc-premier-access', name: 'Premier Access', description: 'Primary cardmember and companions on the same reservation receive priority check-in, security screening, boarding and baggage handling where available on United- and United Express-operated flights', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uc-award-discount', name: '10,000-Mile Award Flight Discounts', description: 'Earn a 10,000-mile discount after spending $20,000 in purchases, up to two times each calendar year, toward eligible United award flights', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uc-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit up to $120 for Global Entry, TSA PreCheck or NEXUS every 4 years when the application fee is charged to the card', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'uc-inflight', name: '25% United Inflight Savings', description: '25% back as a statement credit on food, beverages and Wi-Fi on United or United Express flights and premium drinks at United Clubs, including authorized-user purchases', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uc-pqp-bonus', name: '1,500 Annual Card Bonus PQP', description: 'Receive 1,500 Card Bonus PQP each year within 8 weeks of February 1 starting the year after opening; account must remain open and in good standing', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uc-pqp', name: 'Premier Qualifying Points', description: 'Earn 1 PQP per $15 in purchases, up to 28,000 PQP in a calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uc-hotels-credit', name: '$200 Renowned Hotels Credit', description: 'Up to $200 back in statement credits each anniversary year on prepaid stays purchased directly through Renowned Hotels and Resorts', category: 'hotel-credit', annualValue: 200, renewalPeriod: 'annual' },
+      { id: 'uc-rideshare-credit', name: '$150 Rideshare Credit', description: 'Enroll to receive up to $12 back monthly January-November and $18 in December, up to $150 each calendar year; yearly opt-in required', category: 'rideshare-credit', annualValue: 150, renewalPeriod: 'annual', requiresEnrollment: true },
+      { id: 'uc-car-rental-credit', name: '$100 Avis/Budget Credit', description: '$50 in United TravelBank cash for each of the first two Avis or Budget rentals booked through cars.united.com and paid with the card each anniversary year', category: 'travel-credit', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'uc-instacart', name: '$240 Instacart Credits', description: 'Two $10 Instacart credits monthly, up to $240 each calendar year; benefit ends 12/31/2027', category: 'delivery-credit', annualValue: 240, renewalPeriod: 'monthly', periodValue: 20, expirationDate: '2027-12-31' },
+      { id: 'uc-jsx-credit', name: '$200 JSX Credit', description: 'Up to $200 back as a statement credit each anniversary year on flights purchased directly through JSX', category: 'travel-credit', annualValue: 200, renewalPeriod: 'annual' },
+    ],
+  },
+
+  // ─── CHASE MARRIOTT BONVOY FAMILY (US CONSUMER) ────────────
+  {
+    id: 'chase-marriott-bold',
+    name: 'Marriott Bonvoy Bold Card',
+    issuer: 'Chase',
+    familyId: 'chase-marriott-bonvoy',
+    annualFee: 0,
+    color: '#8b1e2d',
+    signupBonus: { points: 45000, spend: 1000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'Marriott Bonvoy Hotels', multiplier: 3 },
+      { category: 'Grocery Stores / Rideshare / Select Delivery / Streaming / Internet / Cable / Phone', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'mbb-silver', name: 'Marriott Bonvoy Silver Elite Status', description: 'Automatic Silver Elite status each calendar year; includes 10% more points on stays and priority late checkout where available', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbb-enc', name: '5 Elite Night Credits', description: 'Receive 5 Elite Night Credits every calendar year toward the next level of Marriott Bonvoy Elite status; subject to member-account limitations', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbb-payback', name: 'Pay Yourself Back', description: 'Redeem Marriott Bonvoy points for statement credits covering qualifying travel purchases made directly with airlines or at participating Marriott hotels, up to $750 total redemptions per year', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'chase-marriott-boundless',
+    name: 'Marriott Bonvoy Boundless Card',
+    issuer: 'Chase',
+    familyId: 'chase-marriott-bonvoy',
+    annualFee: 95,
+    color: '#8b1e2d',
+    signupBonus: {
+      points: 3, spend: 3000, timeMonths: 3, unit: 'Free Night Awards (up to 50,000 points each)',
+      additionalBonus: { points: 1, spend: 4000, unit: 'Free Night Award (up to 50,000 points)', description: 'Additional 1 Free Night Award after $4,000 total eligible spend within the first 4 months; four awards total worth up to 200,000 points' },
+    },
+    earningRates: [
+      { category: 'Marriott Bonvoy Hotels', multiplier: 6 },
+      { category: 'Gas Stations / Grocery Stores / Dining', multiplier: 3, limit: 'First $6,000/yr combined' },
+      { category: 'All Other', multiplier: 2 },
+    ],
+    perks: [
+      { id: 'mbbl-silver', name: 'Marriott Bonvoy Silver Elite Status', description: 'Automatic Silver Elite status each calendar year; includes 10% more points on stays and priority late checkout where available', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-enc', name: '15 Elite Night Credits', description: 'Receive 15 Elite Night Credits every calendar year toward the next level of Marriott Bonvoy Elite status; subject to member-account limitations', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-free-night', name: 'Annual 35,000-Point Free Night Award', description: 'One Free Night Award after each account anniversary, valid for a one-night stay at a participating property requiring up to 35,000 points; certain hotels have resort fees', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-gold', name: 'Path to Marriott Gold Elite Status', description: 'Earn Gold Elite status when you spend $35,000 on purchases each calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-airline-credit', name: '$100 Airline Credits (Temporary Offer)', description: 'Through 6/30/2027, earn up to $100 in statement credits after $500 in eligible airline purchases: $50 semi-annually; offer terms and eligibility apply', category: 'travel-credit', annualValue: 100, renewalPeriod: 'semi-annual', periodValue: 50, expirationDate: '2027-06-30' },
     ],
   },
 
@@ -390,6 +573,110 @@ export const cardTemplates: CardTemplate[] = [
     ],
   },
 
+  // ─── HILTON HONORS ────────────────────────────────────────
+  {
+    id: 'amex-hilton-honors',
+    name: 'Hilton Honors American Express Card',
+    issuer: 'Amex',
+    familyId: 'Hilton',
+    annualFee: 0,
+    color: '#0b3d91',
+    signupBonus: { points: 80000, spend: 2000, timeMonths: 6, unit: 'points' },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 7 },
+      { category: 'U.S. Restaurants', multiplier: 5 },
+      { category: 'U.S. Supermarkets', multiplier: 5 },
+      { category: 'U.S. Gas Stations', multiplier: 5 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-silver', name: 'Hilton Honors Silver Status', description: 'Complimentary Silver status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'amex-hilton-surpass',
+    name: 'Hilton Honors American Express Surpass Card',
+    issuer: 'Amex',
+    familyId: 'Hilton',
+    annualFee: 150,
+    color: '#0b3d91',
+    signupBonus: { points: 130000, spend: 3000, timeMonths: 6, unit: 'points' },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 12 },
+      { category: 'U.S. Restaurants, Supermarkets & Gas Stations', multiplier: 6 },
+      { category: 'U.S. Online Retail', multiplier: 4 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-surpass-gold', name: 'Hilton Honors Gold Status', description: 'Complimentary Gold status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'hilton-surpass-credit', name: 'Up to $200 Hilton Credit', description: 'Up to $50 back each quarter on eligible Hilton purchases', category: 'hotel-credit', annualValue: 200, renewalPeriod: 'quarterly', periodValue: 50 },
+      { id: 'hilton-surpass-free-night', name: 'Free Night Reward', description: 'Earn a Free Night Reward after $15,000 in purchases in a calendar year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'amex-hilton-aspire',
+    name: 'Hilton Honors American Express Aspire Card',
+    issuer: 'Amex',
+    familyId: 'Hilton',
+    annualFee: 550,
+    color: '#0b3d91',
+    signupBonus: { points: 150000, spend: 6000, timeMonths: 6, unit: 'points' },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 14 },
+      { category: 'Flights, Car Rentals & U.S. Restaurants', multiplier: 7 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-aspire-diamond', name: 'Hilton Honors Diamond Status', description: 'Complimentary Diamond status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'hilton-aspire-resort', name: '$400 Hilton Resort Credit', description: '$200 semi-annual credit for eligible Hilton resort purchases', category: 'hotel-credit', annualValue: 400, renewalPeriod: 'semi-annual', periodValue: 200 },
+      { id: 'hilton-aspire-airline', name: '$200 Flight Credit', description: '$50 quarterly statement credit on flight purchases made directly with an airline, through AmexTravel.com, or through the Amex Travel App', category: 'travel-credit', annualValue: 200, renewalPeriod: 'quarterly', periodValue: 50 },
+      { id: 'hilton-aspire-free-night', name: 'Annual Free Night Reward', description: 'Free Night Reward in the first year and every year upon card renewal', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'hilton-aspire-clear', name: '$219 CLEAR+ Credit', description: 'Up to $219 in annual statement credits for CLEAR+ membership', category: 'travel-credit', annualValue: 219, renewalPeriod: 'annual' },
+    ],
+  },
+
+  // ─── IHG ONE REWARDS ──────────────────────────────────────
+  {
+    id: 'chase-ihg-traveler',
+    name: 'IHG One Rewards Traveler Credit Card',
+    issuer: 'Chase',
+    familyId: 'IHG',
+    annualFee: 0,
+    color: '#1d4f91',
+    signupBonus: { points: 80000, spend: 2000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'IHG Hotels & Resorts', multiplier: 5 },
+      { category: 'Dining, Utilities, Select Streaming Services & Gas', multiplier: 3 },
+      { category: 'All Other', multiplier: 2 },
+    ],
+    perks: [
+      { id: 'ihg-traveler-silver', name: 'IHG One Rewards Silver Elite Status', description: 'Complimentary Silver Elite status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-traveler-fourth-night', name: '4th Night Free', description: 'Redeem 3 nights and get the 4th night free on reward stays', category: 'hotel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-traveler-spend-bonus', name: '10,000 Annual Bonus Points', description: 'Earn 10,000 bonus points after you spend $10,000 each calendar year', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'chase-ihg-premier',
+    name: 'IHG One Rewards Premier Credit Card',
+    issuer: 'Chase',
+    familyId: 'IHG',
+    annualFee: 99,
+    color: '#1d4f91',
+    signupBonus: { points: 140000, spend: 3000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'IHG Hotels & Resorts', multiplier: 10 },
+      { category: 'Travel, Gas Stations & Dining', multiplier: 5 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'ihg-premier-platinum', name: 'IHG One Rewards Platinum Elite Status', description: 'Automatic Platinum Elite status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-premier-free-night', name: 'Anniversary Free Night', description: 'Annual Free Night Reward currently capped at 40,000 points, with points top-up available', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ihg-premier-fourth-night', name: '4th Night Free', description: 'Redeem 3 nights and get the 4th night free on reward stays', category: 'hotel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-premier-ge', name: '$120 Global Entry/TSA PreCheck/NEXUS', description: 'Statement credit every four years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'ihg-premier-united', name: '$50 United TravelBank Cash', description: 'Up to $50 each year after linking an eligible United MileagePlus account', category: 'travel-credit', annualValue: 50, renewalPeriod: 'annual', requiresEnrollment: true },
+    ],
+  },
+
   // ─── CAPITAL ONE ───────────────────────────────────────────
   {
     id: 'capital-one-venture',
@@ -486,7 +773,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'bilt-blue',
     name: 'Bilt Blue Card',
     issuer: 'Bilt',
-    family: 'bilt-card-2.0',
+    familyId: 'bilt-card-2.0',
     productChangeEligible: false,
     annualFee: 0,
     color: '#2e7d72',
@@ -510,7 +797,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'bilt-obsidian',
     name: 'Bilt Obsidian Card',
     issuer: 'Bilt',
-    family: 'bilt-card-2.0',
+    familyId: 'bilt-card-2.0',
     productChangeEligible: false,
     annualFee: 95,
     color: '#242936',
@@ -537,7 +824,7 @@ export const cardTemplates: CardTemplate[] = [
     id: 'bilt-palladium',
     name: 'Bilt Palladium Card',
     issuer: 'Bilt',
-    family: 'bilt-card-2.0',
+    familyId: 'bilt-card-2.0',
     productChangeEligible: false,
     annualFee: 495,
     color: '#b6a47a',
@@ -605,6 +892,29 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'Physical Card', multiplier: 1 },
     ],
     perks: [],
+  },
+
+  // ─── ROBINHOOD ────────────────────────────────────────────
+  // Source note (checked 2026-09-03): the current Rewards Program Rules
+  // (last updated 2026-09-01) award 3x on eligible purchases, including the
+  // Travel Portal, and explicitly remove the former portal bonus. The public
+  // support article still advertises up to 5x but has no effective date.
+  {
+    id: 'robinhood-gold-card',
+    name: 'Robinhood Gold Card',
+    issuer: 'Robinhood',
+    annualFee: 0,
+    requirements: [
+      'Annual Robinhood Gold subscription ($50) required to apply and maintain the card; no 30-day free trial is included.',
+    ],
+    color: '#00c805',
+    signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
+    earningRates: [
+      { category: 'All Other Eligible Purchases (including Travel Portal)', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'rh-points-redemption', name: 'Flexible Points Redemptions', description: 'Redeem points for statement credit, brokerage cash back, travel, gift cards, and other options in the Robinhood Banking app; a Robinhood investing account is required for cash back.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
   },
   // ─── CITI CO-BRANDED ───────────────────────────────────────
   {
@@ -709,6 +1019,60 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'aa-globe-ge-tsa', name: 'Global Entry/TSA PreCheck', description: 'Statement credit every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
     ],
   },
+
+// ─── U.S. BANK / KOREAN AIR SKYPASS ───────────────────────────
+// The issuer's current partner-card listing contains these three US consumer products.
+// Source: https://www.usbank.com/credit-cards/co-branded-credit-cards.html
+// Product details: https://ir.usbank.com/news-events/news/news-details/2023/U.S.-Bank-Korean-Air-announce-new-SKYPASS-Visa-benefits-07-25-2023/default.aspx
+  {
+    id: 'usbank-skypass-skyblue',
+    name: 'SKYPASS SkyBlue Visa',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 0,
+    color: '#1769aa',
+    signupBonus: { points: 10000, spend: 1000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'Streaming Services', multiplier: 2 },
+      { category: 'Rideshare', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [],
+  },
+  {
+    id: 'usbank-skypass-signature',
+    name: 'SKYPASS Visa Signature',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 95,
+    color: '#1769aa',
+    signupBonus: { points: 40000, spend: 4000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'Korean Air Tickets', multiplier: 2 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'skypass-signature-ticket-discount', name: '5% Korean Air Ticket Discount', description: '5% discount on Korean Air tickets once annually for the cardholder and one companion', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'usbank-skypass-select',
+    name: 'SKYPASS Select Visa Signature',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 450,
+    color: '#1769aa',
+    signupBonus: { points: 60000, spend: 5000, timeMonths: 3, unit: 'miles', additionalBonus: { points: 5000, spend: 15000, description: 'Additional bonus miles after $15,000 annual spend' } },
+    earningRates: [
+      { category: 'Korean Air Tickets', multiplier: 3 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'skypass-select-ticket-discount', name: '5% Korean Air Ticket Discount', description: '5% discount on Korean Air tickets twice annually for the cardholder and one companion', category: 'other', annualValue: 0, renewalPeriod: 'semi-annual', periodValue: 0 },
+    ],
+  },
 ];
 
 // ============================================================
@@ -718,6 +1082,8 @@ export const cardTemplates: CardTemplate[] = [
 export const churningRules: ChurningRule[] = [
   { id: 'chase-5-24', issuer: 'Chase', ruleName: 'Chase 5/24', description: 'Chase will likely deny your application if you\'ve opened 5+ personal credit cards across all issuers in the past 24 months. Business cards from most issuers don\'t count.', cooldownMonths: 24 },
   { id: 'chase-sapphire-lifetime', issuer: 'Chase', ruleName: 'Sapphire Once-Per-Card', description: 'As of Jan 2026, you can earn the bonus on EACH Sapphire card once per lifetime. You no longer need to wait 48 months between a Preferred and Reserve bonus.', affectedCards: ['chase-sapphire-preferred', 'chase-sapphire-reserve'] },
+  { id: 'chase-united-family', issuer: 'Chase', ruleName: 'United Family Eligibility', description: 'United bonus eligibility varies by product and current offer terms, including restrictions based on current or previous United card bonuses; review the official offer before applying. Product changes within the United family preserve account history and do not earn a new welcome bonus.', affectedCards: ['chase-united-gateway', 'chase-united-explorer', 'chase-united-quest', 'chase-united-club'] },
+  { id: 'chase-marriott-family', issuer: 'Chase', ruleName: 'Marriott Bonvoy Family Eligibility', description: 'Marriott Bonvoy bonus eligibility varies by product and current offer terms, including restrictions based on current or previous Bonvoy card bonuses; review the official offer before applying. Product changes within the Marriott Bonvoy family preserve account history and do not earn a new welcome bonus.', affectedCards: ['chase-marriott-bold', 'chase-marriott-boundless'] },
   { id: 'amex-lifetime', issuer: 'Amex', ruleName: 'Once-Per-Lifetime', description: 'Amex limits welcome bonuses to once per lifetime per card product. Clock may reset after ~7 years. Watch for targeted "No Lifetime Language" (NLL) offers.', cooldownMonths: 84 },
   { id: 'amex-1-5', issuer: 'Amex', ruleName: '1/5 Rule', description: 'You can hold a maximum of 5 Amex credit cards at the same time.', affectedCards: [] },
   { id: 'amex-2-90', issuer: 'Amex', ruleName: '2/90 Rule', description: 'You can be approved for at most 2 new Amex credit cards within any 90-day period.', cooldownMonths: 3 },
@@ -725,6 +1091,7 @@ export const churningRules: ChurningRule[] = [
   { id: 'capital-one-48', issuer: 'Capital One', ruleName: '48-Month Rule', description: 'You can only receive the Venture/Venture X welcome bonus once per 48 months per product.', cooldownMonths: 48, affectedCards: ['capital-one-venture', 'capital-one-venture-x'] },
   { id: 'citi-48', issuer: 'Citi', ruleName: '48-Month Rule', description: 'Citi limits welcome bonuses to once per 48 months per card family.', cooldownMonths: 48 },
   { id: 'bilt-card-2-lifetime', issuer: 'Bilt', ruleName: 'Bilt Card 2.0 Welcome Bonus Eligibility', description: 'Bilt Card 2.0 welcome offers are available only if you do not currently hold, have not previously held, and have not received a welcome bonus on any Bilt Card 2.0 product. This is a shared family history rule across Blue, Obsidian, and Palladium.', affectedCards: ['bilt-blue', 'bilt-obsidian', 'bilt-palladium'] },
+  { id: 'usbank-skypass-family', issuer: 'U.S. Bank', ruleName: 'SKYPASS Family Bonus Eligibility', description: 'The SKYPASS Visa products share one family: check prior SKYPASS cards and issuer terms before applying for another welcome bonus. Product changes preserve account history and do not earn a new bonus.', affectedCards: ['usbank-skypass-skyblue', 'usbank-skypass-signature', 'usbank-skypass-select'] },
 ];
 
 // Expose to window for BDD testing

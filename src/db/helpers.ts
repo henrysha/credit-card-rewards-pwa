@@ -73,17 +73,59 @@ if (typeof window !== 'undefined') {
     syncCardPerks: typeof syncCardPerks;
     productChangeCard: typeof productChangeCard;
     getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+    getSignupBonusEligibility: typeof getSignupBonusEligibility;
+    getFamilyIds: typeof getFamilyIds;
+    getFamilyTemplates: typeof getFamilyTemplates;
+    getFamilyHistory: typeof getFamilyHistory;
+    isFamilyEligible: typeof isFamilyEligible;
   };
   w.refreshExpiredPerks = refreshExpiredPerks;
   w.syncCardPerks = syncCardPerks;
   w.productChangeCard = productChangeCard;
   w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
+  w.getSignupBonusEligibility = getSignupBonusEligibility;
+  w.getFamilyIds = getFamilyIds;
+  w.getFamilyTemplates = getFamilyTemplates;
+  w.getFamilyHistory = getFamilyHistory;
+  w.isFamilyEligible = isFamilyEligible;
 }
 
 // ── Card operations ──
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
+}
+
+export async function getSignupBonusEligibility(cardTemplateId: string): Promise<{ eligible: boolean; history: UserCard[] }> {
+  const template = getCardTemplate(cardTemplateId);
+  if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
+  const allCards = await db.cards.toArray();
+  const history = allCards.filter(card => {
+    const prior = getCardTemplate(card.cardTemplateId);
+    return Boolean(prior?.familyId && template.familyId && prior.familyId === template.familyId);
+  });
+  return { eligible: history.length === 0, history };
+}
+
+/** Return the distinct loyalty families represented in the catalog. */
+export function getFamilyIds(): string[] {
+  return [...new Set(cardTemplates.map(card => card.familyId).filter((familyId): familyId is string => Boolean(familyId)))];
+}
+
+/** Return catalog products belonging to a loyalty family. */
+export function getFamilyTemplates(familyId: string): CardTemplate[] {
+  return cardTemplates.filter(c => c.familyId === familyId);
+}
+
+/** Return a user's complete family history, including closed/product-changed cards. */
+export async function getFamilyHistory(familyId: string): Promise<UserCard[]> {
+  const cards = await db.cards.toArray();
+  return cards.filter(card => getCardTemplate(card.cardTemplateId)?.familyId === familyId);
+}
+
+/** Informational family status: false means prior family history exists; it does not block addCard. */
+export async function isFamilyEligible(familyId: string): Promise<boolean> {
+  return (await getFamilyHistory(familyId)).length === 0;
 }
 
 export async function addCard(
@@ -175,10 +217,18 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   if (currentTemplate.productChangeEligible === false) {
     return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
   }
-  // Eligible cards must be from the same issuer and not be the same card
-  const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id && c.productChangeEligible !== false
-  );
+
+  // Product changes require an explicitly modeled family. Missing family IDs
+  // must never make unrelated same-issuer products eligible by accident.
+  const eligible = currentTemplate.familyId
+    ? cardTemplates.filter(
+        c => c.issuer === currentTemplate.issuer
+          && c.id !== currentTemplate.id
+          && Boolean(c.familyId)
+          && c.familyId === currentTemplate.familyId
+          && c.productChangeEligible !== false
+      )
+    : [];
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
   const downgrades = eligible.filter(c => c.annualFee < currentTemplate.annualFee);
@@ -206,8 +256,20 @@ export async function productChangeCard(
     throw new Error('Invalid card template for product change');
   }
 
+  if (oldTemplate.productChangeEligible === false || targetTemplate.productChangeEligible === false) {
+    throw new Error('This card is not eligible for product changes');
+  }
+
   if (oldTemplate.issuer !== targetTemplate.issuer) {
     throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
+  }
+
+  if (oldTemplate.id === targetTemplate.id) {
+    throw new Error('Product change target must be different from the current card');
+  }
+
+  if (!oldTemplate.familyId || !targetTemplate.familyId || oldTemplate.familyId !== targetTemplate.familyId) {
+    throw new Error('Product change must stay within the same card family');
   }
 
   const today = new Date().toISOString().split('T')[0];
@@ -413,9 +475,11 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
   const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
   const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
   
-  // Only count personal cards that are not closed
+  // A product change creates an active replacement while retaining the old
+  // record for history. Count active records only so one account is not
+  // double-counted in Chase 5/24 after a product change.
   return userCards.filter(c => {
-    if (c.status === 'closed') return false;
+    if (c.status !== 'active') return false;
     const template = getCardTemplate(c.cardTemplateId);
     return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
   }).length;

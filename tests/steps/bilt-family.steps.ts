@@ -3,9 +3,9 @@ import { expect } from '@playwright/test';
 
 Then('Bilt cards should share the {string} family', async function (family: string) {
   const families = await this.page.evaluate(() =>
-    ((window as unknown as { cardTemplates: Array<{ issuer: string; family?: string }> }).cardTemplates)
+    ((window as unknown as { cardTemplates: Array<{ issuer: string; familyId?: string }> }).cardTemplates)
       .filter(card => card.issuer === 'Bilt')
-      .map(card => card.family)
+      .map(card => card.familyId)
   );
   expect(families).toEqual([family, family, family]);
 });

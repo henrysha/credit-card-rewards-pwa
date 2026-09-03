@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Bilt';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank' | 'Bilt';
 
 /** Category of perk */
 export type PerkCategory =
@@ -61,15 +61,20 @@ export interface SignupBonusAdditional {
   points: number;
   spend: number;
   description: string;
+  /** Optional unit for non-point/mile components such as Free Night Awards. */
+  unit?: string;
 }
 
 export interface CardTemplate {
   id: string;
   name: string;
   issuer: CardIssuer;
-  family?: string;
+  /** Shared issuer family identifier used for bonus eligibility/history. */
+  familyId?: string;
   productChangeEligible?: boolean;
   annualFee: number;
+  /** Eligibility or account requirements that are not card perks. */
+  requirements?: string[];
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color
   signupBonus: {

@@ -12,6 +12,8 @@ Feature: Product Change (Upgrading / Downgrading)
     And I should see "Chase Freedom Unlimited" in the product change options
     And I should not see "American Express Platinum" in the product change options
     And I should not see "Capital One Venture X" in the product change options
+    And I should not see "United Gateway Card" in the product change options
+    And I should not see "Marriott Bonvoy Boundless Card" in the product change options
 
   Scenario: Upgrade a card to a higher annual fee product
     Given I have added the "Chase Sapphire Preferred" card
@@ -41,3 +43,55 @@ Feature: Product Change (Upgrading / Downgrading)
     And I navigate to the "Cards"
     Then I should see "Chase Sapphire Reserve" on the cards page
     And I should see "product-changed" in the closed cards section
+
+  Scenario: SKYPASS products can product change within U.S. Bank only
+    Given I have added the "SKYPASS SkyBlue Visa" card
+    When I view the card detail for "SKYPASS SkyBlue Visa"
+    And I click "Upgrade / Downgrade"
+    Then I should see "SKYPASS Visa Signature" in the product change options
+    And I should see "SKYPASS Select Visa Signature" in the product change options
+    And I should not see "Chase Sapphire Reserve" in the product change options
+
+  Scenario: Hotel product changes stay within the same family
+    Given I have added the "Hilton Honors American Express Card" card
+    When I view the card detail for "Hilton Honors American Express Card"
+    And I click "Upgrade / Downgrade"
+    Then I should see "Hilton Honors American Express Surpass Card" in the product change options
+    And I should not see "IHG One Rewards Premier Credit Card" in the product change options
+
+  Scenario: Direct cross-family product changes are rejected
+    Given I have added the "Hilton Honors American Express Card" card
+    When I attempt a direct product change to "American Express Gold"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Cards without an explicit family cannot be product changed
+    Given I have added the "American Express Gold" card
+    When I attempt a direct product change to "American Express Platinum"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Co-branded product changes stay within the card family
+    Given I have added the "United Explorer Card" card
+    When I view the card detail for "United Explorer Card"
+    And I click "Upgrade / Downgrade"
+    Then I should see "United Quest Card" in the product change options
+    And I should not see "Marriott Bonvoy Boundless Card" in the product change options
+
+  Scenario: Direct product change rejects a core-to-United mutation
+    Given I have added the "Chase Sapphire Preferred" card
+    When I attempt a direct product change to "United Gateway Card"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Direct product change rejects a United-to-Marriott mutation
+    Given I have added the "United Explorer Card" card
+    When I attempt a direct product change to "Marriott Bonvoy Boundless Card"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Direct product change rejects a Marriott-to-core mutation
+    Given I have added the "Marriott Bonvoy Bold Card" card
+    When I attempt a direct product change to "Chase Freedom Unlimited"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Personal Chase cards cannot product change into business cards
+    Given I have added the "Chase Sapphire Preferred" card
+    When I attempt a direct product change to "Chase Ink Business Cash"
+    Then the direct product change should be rejected without mutating the account

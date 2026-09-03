@@ -42,3 +42,8 @@ Feature: Bilt Card 2.0 family
     When I view the card detail for "Bilt Blue Card"
     And I click "Upgrade / Downgrade"
     Then I should see "No other cards from Bilt are available for product change in the catalog."
+
+  Scenario: Direct Bilt product changes are rejected
+    Given I have added the "Bilt Blue Card" card
+    When I attempt a direct product change to "Bilt Obsidian Card"
+    Then the direct product change should be rejected without mutating the account

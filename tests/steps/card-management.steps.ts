@@ -68,6 +68,15 @@ Then('I should see {string} on the detail page', async function (text: string) {
   await expect(this.page.getByText(text, { exact: false }).first()).toBeVisible({ timeout: 5000 });
 });
 
+Then('I should not see {string} on the detail page', async function (text: string) {
+  await expect(this.page.getByText(text, { exact: false })).toHaveCount(0, { timeout: 5000 });
+});
+
+When('I reload the page', async function () {
+  await this.page.reload();
+  await this.page.waitForLoadState('networkidle');
+});
+
 Then('I should see {string} in the perks list', async function (text: string) {
   await expect(this.page.getByText(text, { exact: false }).first()).toBeVisible({ timeout: 5000 });
 });

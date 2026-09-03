@@ -56,6 +56,13 @@ export interface PerkTemplate {
   requiresEnrollment?: boolean;
 }
 
+/** A second tier or companion benefit awarded with a sign-up offer. */
+export interface SignupBonusAdditional {
+  points: number;
+  spend: number;
+  description: string;
+}
+
 export interface CardTemplate {
   id: string;
   name: string;
@@ -70,11 +77,7 @@ export interface CardTemplate {
     spend: number;
     timeMonths: number;
     unit: string;           // "points", "miles", "cash back"
-    additionalBonus?: {
-      points: number;
-      spend: number;
-      description: string;
-    };
+    additionalBonus?: SignupBonusAdditional;
   };
   earningRates: EarningRate[];
   perks: PerkTemplate[];
@@ -115,6 +118,8 @@ export interface SignupBonus {
   bonusUnit: string;
   completed: boolean;
   completedDate?: string;
+  /** Persisted copy of the template's second-tier/companion welcome benefit. */
+  additionalBonus?: SignupBonusAdditional;
 }
 
 export interface UserPerk {

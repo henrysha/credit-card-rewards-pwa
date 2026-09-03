@@ -50,14 +50,27 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
     }
   };
 
-  if (bonus?.completed) {
+  const additionalBonus = bonus?.additionalBonus ?? template?.signupBonus.additionalBonus;
+  const isAutomaticallyAwarded = bonus
+    ? bonus.targetSpend <= 0
+    : template
+      ? template.signupBonus.spend <= 0
+      : false;
+
+  if (bonus?.completed || isAutomaticallyAwarded) {
     return (
       <div className="glass-card mt-md" style={{ borderColor: 'var(--accent-green)' }}>
         <div className="flex items-center gap-sm">
           <span style={{ fontSize: '1.5rem' }}>🎉</span>
           <div>
             <div className="font-bold text-green">Bonus Earned!</div>
-            <div className="text-sm text-muted">{bonus.bonusPoints.toLocaleString()} {bonus.bonusUnit}</div>
+            <div className="text-sm text-muted">
+              {(bonus?.bonusPoints ?? template?.signupBonus.points ?? 0).toLocaleString()} {bonus?.bonusUnit ?? template?.signupBonus.unit}
+              {!bonus && <span> on approval</span>}
+            </div>
+            {additionalBonus && (
+              <div className="text-sm text-muted mt-sm">Plus: {additionalBonus.description}</div>
+            )}
           </div>
         </div>
       </div>
@@ -119,6 +132,9 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
             <span> in {template.signupBonus.timeMonths} months</span>
           )}
         </div>
+        {additionalBonus && (
+          <div className="text-sm text-muted mb-md">Plus: {additionalBonus.description}</div>
+        )}
         {signupBonusData.isExisting && (
           <>
             <div className="progress-bar">

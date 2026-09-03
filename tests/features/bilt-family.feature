@@ -17,6 +17,21 @@ Feature: Bilt Card 2.0 family
     And I navigate to the "Cards"
     Then I should see "Bilt Palladium Card" on the cards page
 
+  Scenario: Zero-spend Bilt welcome bonus is immediately earned
+    Given I have added the "Bilt Blue Card" card
+    Then I should see "Bonus Earned!" on the detail page
+    And I should not see "$0 / $0" on the detail page
+    And I should not see "Expired" on the detail page
+
+  Scenario: Palladium additional welcome benefit is rendered and persisted
+    Given I am on the "Catalog" page
+    When I click on the "Bilt Palladium Card" card in the catalog
+    Then I should see "$300 Bilt Cash upon approval" on the detail page
+    When I click "Add This Card"
+    And I reload the page
+    Then I should see "$300 Bilt Cash upon approval" on the detail page
+    And I should see "Bilt Gold status" on the detail page
+
   Scenario: Bilt cards share family identifiers and welcome history rule
     Given I am on the "Catalog" page
     Then Bilt cards should share the "bilt-card-2.0" family

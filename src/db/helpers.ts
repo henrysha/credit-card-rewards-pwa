@@ -107,8 +107,12 @@ export async function addCard(
     status: 'active',
   } as UserCard);
 
-  // Create signup bonus tracker
-  const deadline = addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
+  // A zero-spend offer is awarded on approval. Persist it as complete and use
+  // a non-expiring sentinel so consumers never treat it as a spend tracker.
+  const isAutomaticallyAwarded = template.signupBonus.spend <= 0;
+  const deadline = isAutomaticallyAwarded
+    ? '9999-12-31'
+    : addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
   await db.signupBonuses.add({
     cardId: cardId as number,
     cardTemplateId,
@@ -117,7 +121,9 @@ export async function addCard(
     deadline,
     bonusPoints: template.signupBonus.points,
     bonusUnit: template.signupBonus.unit,
-    completed: false,
+    completed: isAutomaticallyAwarded,
+    completedDate: isAutomaticallyAwarded ? openedDate : undefined,
+    additionalBonus: template.signupBonus.additionalBonus,
   } as SignupBonus);
 
   // Create perk instances
@@ -254,9 +260,10 @@ export async function productChangeCard(
 export async function updateBonusSpend(bonusId: number, newSpend: number): Promise<void> {
   const bonus = await db.signupBonuses.get(bonusId);
   if (!bonus) return;
-  const completed = newSpend >= bonus.targetSpend;
+  const currentSpend = Number.isFinite(newSpend) ? Math.max(0, newSpend) : 0;
+  const completed = bonus.targetSpend <= 0 || currentSpend >= bonus.targetSpend;
   await db.signupBonuses.update(bonusId, {
-    currentSpend: newSpend,
+    currentSpend,
     completed,
     completedDate: completed && !bonus.completed ? new Date().toISOString().split('T')[0] : bonus.completedDate,
   });
@@ -270,7 +277,7 @@ export async function updateSignupBonus(
   if (!bonus) return;
 
   const newTargetSpend = updates.targetSpend ?? bonus.targetSpend;
-  const newCompleted = bonus.currentSpend >= newTargetSpend;
+  const newCompleted = newTargetSpend <= 0 || bonus.currentSpend >= newTargetSpend;
 
   await db.signupBonuses.update(bonusId, {
     ...updates,

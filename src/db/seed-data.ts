@@ -526,6 +526,10 @@ export const cardTemplates: CardTemplate[] = [
   },
 
   // ─── ROBINHOOD ────────────────────────────────────────────
+  // Source note (checked 2026-09-03): the current Rewards Program Rules
+  // (last updated 2026-09-01) award 3x on eligible purchases, including the
+  // Travel Portal, and explicitly remove the former portal bonus. The public
+  // support article still advertises up to 5x but has no effective date.
   {
     id: 'robinhood-gold-card',
     name: 'Robinhood Gold Card',
@@ -534,8 +538,7 @@ export const cardTemplates: CardTemplate[] = [
     color: '#00c805',
     signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
     earningRates: [
-      { category: 'Eligible Purchases', multiplier: 3 },
-      { category: 'Robinhood Travel Portal (select purchases)', multiplier: 5, limit: 'When paying with card instead of points' },
+      { category: 'All Other Eligible Purchases (including Travel Portal)', multiplier: 3 },
     ],
     perks: [
       { id: 'rh-gold-membership', name: 'Robinhood Gold Membership Required', description: 'The card has no annual fee, but an active annual Robinhood Gold subscription ($50) is required to apply, maintain the card, and earn points; no 30-day trial.', category: 'membership', annualValue: 0, renewalPeriod: 'annual' },

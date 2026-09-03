@@ -7,13 +7,18 @@ export default function CardCatalog() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
+  const [familyFilter, setFamilyFilter] = useState('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
   const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
+  const families = ['all', 'Hilton', 'IHG'];
 
   let filtered = cardTemplates;
   if (issuerFilter !== 'all') {
     filtered = filtered.filter(c => c.issuer === issuerFilter);
+  }
+  if (familyFilter !== 'all') {
+    filtered = filtered.filter(c => c.family === familyFilter);
   }
   if (search) {
     const q = search.toLowerCase();
@@ -41,6 +46,13 @@ export default function CardCatalog() {
           </button>
         ))}
       </div>
+      <div className="tabs" aria-label="Hotel family filters">
+        {families.map(family => (
+          <button key={family} className={`tab ${familyFilter === family ? 'active' : ''}`} onClick={() => setFamilyFilter(family)}>
+            {family === 'all' ? 'All Families' : family}
+          </button>
+        ))}
+      </div>
 
       <div className="catalog-list">
         {filtered.map(card => (
@@ -51,7 +63,7 @@ export default function CardCatalog() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="font-bold" style={{ fontSize: '0.9rem' }}>{card.name}</div>
-                <div className="text-xs text-muted">{card.issuer} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
+                <div className="text-xs text-muted">{card.issuer}{card.family ? ` • ${card.family}` : ''} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div className="text-gold font-bold" style={{ fontSize: '0.85rem' }}>

@@ -41,3 +41,10 @@ Feature: Product Change (Upgrading / Downgrading)
     And I navigate to the "Cards"
     Then I should see "Chase Sapphire Reserve" on the cards page
     And I should see "product-changed" in the closed cards section
+
+  Scenario: Hotel product changes stay within the same family
+    Given I have added the "Hilton Honors American Express Card" card
+    When I view the card detail for "Hilton Honors American Express Card"
+    And I click "Upgrade / Downgrade"
+    Then I should see "Hilton Honors American Express Surpass Card" in the product change options
+    And I should not see "IHG One Rewards Premier Credit Card" in the product change options

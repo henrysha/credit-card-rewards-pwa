@@ -390,6 +390,107 @@ export const cardTemplates: CardTemplate[] = [
     ],
   },
 
+  // ─── HILTON HONORS ────────────────────────────────────────
+  {
+    id: 'amex-hilton-honors',
+    name: 'Hilton Honors American Express Card',
+    issuer: 'Amex',
+    family: 'Hilton',
+    annualFee: 0,
+    color: '#0b3d91',
+    signupBonus: { points: 100000, spend: 2000, timeMonths: 6, unit: 'points', additionalBonus: { points: 100, spend: 2000, description: '$100 Hilton statement credit after $2,000 spend' } },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 7 },
+      { category: 'U.S. Restaurants, Supermarkets & Gas Stations', multiplier: 5 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-silver', name: 'Hilton Honors Silver Status', description: 'Complimentary Silver status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'amex-hilton-surpass',
+    name: 'Hilton Honors American Express Surpass Card',
+    issuer: 'Amex',
+    family: 'Hilton',
+    annualFee: 150,
+    firstYearFeeWaived: true,
+    color: '#0b3d91',
+    signupBonus: { points: 130000, spend: 3000, timeMonths: 6, unit: 'points' },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 12 },
+      { category: 'U.S. Restaurants, Supermarkets & Gas Stations', multiplier: 6 },
+      { category: 'U.S. Online Retail', multiplier: 4 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-surpass-gold', name: 'Hilton Honors Gold Status', description: 'Complimentary Gold status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'hilton-surpass-credit', name: 'Up to $200 Hilton Credit', description: 'Up to $50 back each quarter on eligible Hilton purchases', category: 'hotel-credit', annualValue: 200, renewalPeriod: 'quarterly', periodValue: 50 },
+      { id: 'hilton-surpass-free-night', name: 'Free Night Reward', description: 'Earn a Free Night Reward after $15,000 in purchases in a calendar year', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'amex-hilton-aspire',
+    name: 'Hilton Honors American Express Aspire Card',
+    issuer: 'Amex',
+    family: 'Hilton',
+    annualFee: 550,
+    color: '#0b3d91',
+    signupBonus: { points: 175000, spend: 6000, timeMonths: 6, unit: 'points' },
+    earningRates: [
+      { category: 'Hilton Hotels & Resorts', multiplier: 14 },
+      { category: 'Flights, Car Rentals & U.S. Restaurants', multiplier: 7 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'hilton-aspire-diamond', name: 'Hilton Honors Diamond Status', description: 'Complimentary Diamond status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'hilton-aspire-resort', name: '$400 Hilton Resort Credit', description: '$200 semi-annual credit for eligible Hilton resort purchases', category: 'hotel-credit', annualValue: 400, renewalPeriod: 'semi-annual', periodValue: 200 },
+      { id: 'hilton-aspire-airline', name: '$200 Airline Fee Credit', description: '$50 quarterly credit for incidental fees from one selected airline', category: 'travel-credit', annualValue: 200, renewalPeriod: 'quarterly', periodValue: 50, requiresEnrollment: true },
+      { id: 'hilton-aspire-free-night', name: 'Annual Free Night Reward', description: 'Free Night Reward each year after renewal', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+
+  // ─── IHG ONE REWARDS ──────────────────────────────────────
+  {
+    id: 'chase-ihg-traveler',
+    name: 'IHG One Rewards Traveler Credit Card',
+    issuer: 'Chase',
+    family: 'IHG',
+    annualFee: 0,
+    color: '#1d4f91',
+    signupBonus: { points: 125000, spend: 2000, timeMonths: 6, unit: 'points', additionalBonus: { points: 35000, spend: 4000, description: 'Additional 35,000 points after $4,000 total spend in 6 months' } },
+    earningRates: [
+      { category: 'IHG Hotels & Resorts', multiplier: 5 },
+      { category: 'Dining, Utilities, Internet, Cable, Phone, Streaming & Gas', multiplier: 3 },
+      { category: 'All Other', multiplier: 2 },
+    ],
+    perks: [
+      { id: 'ihg-traveler-silver', name: 'IHG One Rewards Silver Elite Status', description: 'Complimentary Silver Elite status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-traveler-fourth-night', name: '4th Night Free', description: 'Redeem 3 nights and get the 4th night free on reward stays', category: 'hotel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'chase-ihg-premier',
+    name: 'IHG One Rewards Premier Credit Card',
+    issuer: 'Chase',
+    family: 'IHG',
+    annualFee: 99,
+    color: '#1d4f91',
+    signupBonus: { points: 140000, spend: 3000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'IHG Hotels & Resorts', multiplier: 10 },
+      { category: 'Travel, Gas Stations & Dining', multiplier: 5 },
+      { category: 'All Other', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'ihg-premier-platinum', name: 'IHG One Rewards Platinum Elite Status', description: 'Automatic Platinum Elite status while the card is open', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-premier-free-night', name: 'Anniversary Free Night', description: 'Annual Free Night Reward currently capped at 40,000 points, with points top-up available', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ihg-premier-fourth-night', name: '4th Night Free', description: 'Redeem 3 nights and get the 4th night free on reward stays', category: 'hotel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ihg-premier-ge', name: '$120 Global Entry/TSA PreCheck/NEXUS', description: 'Statement credit every four years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'ihg-premier-united', name: '$50 United TravelBank Cash', description: 'Up to $50 each year after linking an eligible United MileagePlus account', category: 'travel-credit', annualValue: 50, renewalPeriod: 'annual', requiresEnrollment: true },
+    ],
+  },
+
   // ─── CAPITAL ONE ───────────────────────────────────────────
   {
     id: 'capital-one-venture',

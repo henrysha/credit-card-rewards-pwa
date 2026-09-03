@@ -20,6 +20,7 @@ export default function Churning() {
   }, [cards]);
 
   const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi'] as const;
+  const familyGroups = ['Hilton', 'IHG'] as const;
 
   const getLastOpenedByIssuer = (issuer: string): UserCard | undefined => {
     if (!cards) return undefined;
@@ -98,6 +99,29 @@ export default function Churning() {
                 <div className="rule-desc">{rule.description}</div>
               </div>
             ))}
+          </div>
+        );
+      })}
+
+      <div className="section-header mt-lg">
+        <span className="section-title">Hotel Family Eligibility</span>
+      </div>
+      {familyGroups.map(family => {
+        const familyCards = (cards ?? []).filter(card => getCardTemplate(card.cardTemplateId)?.family === family);
+        return (
+          <div key={family} className="glass-card">
+            <div className="flex justify-between items-center mb-md">
+              <h3>{family}</h3>
+              <span className={`badge ${familyCards.length === 0 ? 'badge-green' : 'badge-red'}`}>
+                {familyCards.length === 0 ? 'Eligible' : 'Prior family history'}
+              </span>
+            </div>
+            <div className="text-sm text-muted">
+              {familyCards.length === 0
+                ? `No ${family} cards in your history.`
+                : `${familyCards.length} ${family} card${familyCards.length === 1 ? '' : 's'} in your history: ${familyCards.map(card => getCardTemplate(card.cardTemplateId)?.name).filter(Boolean).join(', ')}`}
+            </div>
+            <div className="text-xs text-muted mt-sm">Family history includes closed and product-changed cards.</div>
           </div>
         );
       })}

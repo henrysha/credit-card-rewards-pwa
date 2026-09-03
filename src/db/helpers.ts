@@ -73,17 +73,39 @@ if (typeof window !== 'undefined') {
     syncCardPerks: typeof syncCardPerks;
     productChangeCard: typeof productChangeCard;
     getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+    getFamilyTemplates: typeof getFamilyTemplates;
+    getFamilyHistory: typeof getFamilyHistory;
+    isFamilyEligible: typeof isFamilyEligible;
   };
   w.refreshExpiredPerks = refreshExpiredPerks;
   w.syncCardPerks = syncCardPerks;
   w.productChangeCard = productChangeCard;
   w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
+  w.getFamilyTemplates = getFamilyTemplates;
+  w.getFamilyHistory = getFamilyHistory;
+  w.isFamilyEligible = isFamilyEligible;
 }
 
 // ── Card operations ──
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
+}
+
+/** Return catalog products belonging to a loyalty family. */
+export function getFamilyTemplates(family: string): CardTemplate[] {
+  return cardTemplates.filter(c => c.family === family);
+}
+
+/** Return a user's complete family history, including closed/product-changed cards. */
+export async function getFamilyHistory(family: string): Promise<UserCard[]> {
+  const cards = await db.cards.toArray();
+  return cards.filter(card => getCardTemplate(card.cardTemplateId)?.family === family);
+}
+
+/** Family-level welcome-bonus eligibility: any prior product in the family blocks it. */
+export async function isFamilyEligible(family: string): Promise<boolean> {
+  return (await getFamilyHistory(family)).length === 0;
 }
 
 export async function addCard(
@@ -167,7 +189,7 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
 
   // Eligible cards must be from the same issuer and not be the same card
   const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id
+    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id && c.family === currentTemplate.family
   );
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
@@ -464,4 +486,3 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   }
   return results;
 }
-

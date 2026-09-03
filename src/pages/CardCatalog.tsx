@@ -9,7 +9,7 @@ export default function CardCatalog() {
   const [issuerFilter, setIssuerFilter] = useState('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
+  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'U.S. Bank'];
 
   let filtered = cardTemplates;
   if (issuerFilter !== 'all') {

@@ -19,7 +19,7 @@ export default function Churning() {
     getCardsOpenedInLast24Months().then(setFiveOfTwentyFour);
   }, [cards]);
 
-  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi'] as const;
+  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi', 'U.S. Bank'] as const;
 
   const getLastOpenedByIssuer = (issuer: string): UserCard | undefined => {
     if (!cards) return undefined;

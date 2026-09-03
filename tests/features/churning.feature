@@ -28,3 +28,11 @@ Feature: Churning Tracker
     And I should see "Amex" issuer section
     And I should see "Capital One" issuer section
     And I should see "Citi" issuer section
+    And I should see "U.S. Bank" issuer section
+    And I should see "SKYPASS Family Bonus Eligibility" rule
+
+  Scenario: SKYPASS family history affects welcome-bonus eligibility
+    Given I have added the "SKYPASS SkyBlue Visa" card
+    When I check bonus eligibility for "SKYPASS Select Visa Signature"
+    Then the SKYPASS bonus should be marked ineligible
+    And the SKYPASS family history should include "SKYPASS SkyBlue Visa"

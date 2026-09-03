@@ -73,17 +73,30 @@ if (typeof window !== 'undefined') {
     syncCardPerks: typeof syncCardPerks;
     productChangeCard: typeof productChangeCard;
     getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+    getSignupBonusEligibility: typeof getSignupBonusEligibility;
   };
   w.refreshExpiredPerks = refreshExpiredPerks;
   w.syncCardPerks = syncCardPerks;
   w.productChangeCard = productChangeCard;
   w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
+  w.getSignupBonusEligibility = getSignupBonusEligibility;
 }
 
 // ── Card operations ──
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
+}
+
+export async function getSignupBonusEligibility(cardTemplateId: string): Promise<{ eligible: boolean; history: UserCard[] }> {
+  const template = getCardTemplate(cardTemplateId);
+  if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
+  const allCards = await db.cards.toArray();
+  const history = allCards.filter(card => {
+    const prior = getCardTemplate(card.cardTemplateId);
+    return Boolean(prior?.familyId && template.familyId && prior.familyId === template.familyId);
+  });
+  return { eligible: history.length === 0, history };
 }
 
 export async function addCard(
@@ -464,4 +477,3 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   }
   return results;
 }
-

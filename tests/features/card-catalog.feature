@@ -4,7 +4,16 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 29 cards in the catalog
+    Then I should see 32 cards in the catalog
+
+  Scenario: SKYPASS consumer cards are listed and filterable
+    Given I am on the "Catalog" page
+    When I click the "U.S. Bank" filter button
+    Then I should see 3 cards in the catalog
+    And I should see "SKYPASS SkyBlue Visa"
+    And I should see "SKYPASS Visa Signature"
+    And I should see "SKYPASS Select Visa Signature"
+    And I should not see "SKYPASS Visa Signature Business"
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page
@@ -54,4 +63,3 @@ Feature: Card Catalog
     And I should see "Emergency Evacuation & Transportation" perk
     And I should not see "$50 Hotel Credit" perk
     And I should not see "10% Anniversary Points Bonus" perk
-

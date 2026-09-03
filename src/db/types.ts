@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'U.S. Bank';
 
 /** Category of perk */
 export type PerkCategory =
@@ -77,6 +77,8 @@ export interface CardTemplate {
   earningRates: EarningRate[];
   perks: PerkTemplate[];
   isBusinessCard?: boolean;
+  /** Product family used when welcome-bonus eligibility spans multiple tiers. */
+  familyId?: string;
 }
 
 export interface ChurningRule {

@@ -448,6 +448,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'hilton-aspire-resort', name: '$400 Hilton Resort Credit', description: '$200 semi-annual credit for eligible Hilton resort purchases', category: 'hotel-credit', annualValue: 400, renewalPeriod: 'semi-annual', periodValue: 200 },
       { id: 'hilton-aspire-airline', name: '$200 Flight Credit', description: '$50 quarterly statement credit on flight purchases made directly with an airline, through AmexTravel.com, or through the Amex Travel App', category: 'travel-credit', annualValue: 200, renewalPeriod: 'quarterly', periodValue: 50 },
       { id: 'hilton-aspire-free-night', name: 'Annual Free Night Reward', description: 'Free Night Reward in the first year and every year upon card renewal', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'hilton-aspire-clear', name: '$219 CLEAR+ Credit', description: 'Up to $219 in annual statement credits for CLEAR+ membership', category: 'travel-credit', annualValue: 219, renewalPeriod: 'annual' },
     ],
   },
 

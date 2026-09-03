@@ -4,12 +4,12 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 36 cards in the catalog
+    Then I should see 41 cards in the catalog
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page
     When I click the "Chase" filter button
-    Then I should see 15 cards in the catalog
+    Then I should see 17 cards in the catalog
     And I should see "Chase Sapphire Preferred"
     And I should see "Chase Sapphire Reserve"
     And I should see "Chase Freedom Flex"
@@ -18,7 +18,17 @@ Feature: Card Catalog
   Scenario: Filter cards by Amex issuer
     Given I am on the "Catalog" page
     When I click the "Amex" filter button
-    Then I should see 9 cards in the catalog
+    Then I should see 12 cards in the catalog
+
+  Scenario: Filter cards by hotel family
+    Given I am on the "Catalog" page
+    Then the "Hilton" family should have 3 catalog cards
+    And I should see "Hilton Honors American Express Card"
+    And I should see "Hilton Honors American Express Surpass Card"
+    And I should see "Hilton Honors American Express Aspire Card"
+    Then the "IHG" family should have 2 catalog cards
+    And I should see "IHG One Rewards Traveler Credit Card"
+    And I should see "IHG One Rewards Premier Credit Card"
 
   Scenario: Robinhood Gold Card is present and filterable
     Given I am on the "Catalog" page

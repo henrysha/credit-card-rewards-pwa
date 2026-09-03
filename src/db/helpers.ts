@@ -73,17 +73,46 @@ if (typeof window !== 'undefined') {
     syncCardPerks: typeof syncCardPerks;
     productChangeCard: typeof productChangeCard;
     getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+    getFamilyIds: typeof getFamilyIds;
+    getFamilyTemplates: typeof getFamilyTemplates;
+    getFamilyHistory: typeof getFamilyHistory;
+    isFamilyEligible: typeof isFamilyEligible;
   };
   w.refreshExpiredPerks = refreshExpiredPerks;
   w.syncCardPerks = syncCardPerks;
   w.productChangeCard = productChangeCard;
   w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
+  w.getFamilyIds = getFamilyIds;
+  w.getFamilyTemplates = getFamilyTemplates;
+  w.getFamilyHistory = getFamilyHistory;
+  w.isFamilyEligible = isFamilyEligible;
 }
 
 // ── Card operations ──
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
+}
+
+/** Return the distinct loyalty families represented in the catalog. */
+export function getFamilyIds(): string[] {
+  return [...new Set(cardTemplates.map(card => card.familyId).filter((familyId): familyId is string => Boolean(familyId)))];
+}
+
+/** Return catalog products belonging to a loyalty family. */
+export function getFamilyTemplates(familyId: string): CardTemplate[] {
+  return cardTemplates.filter(c => c.familyId === familyId);
+}
+
+/** Return a user's complete family history, including closed/product-changed cards. */
+export async function getFamilyHistory(familyId: string): Promise<UserCard[]> {
+  const cards = await db.cards.toArray();
+  return cards.filter(card => getCardTemplate(card.cardTemplateId)?.familyId === familyId);
+}
+
+/** Informational family status: false means prior family history exists; it does not block addCard. */
+export async function isFamilyEligible(familyId: string): Promise<boolean> {
+  return (await getFamilyHistory(familyId)).length === 0;
 }
 
 export async function addCard(
@@ -107,6 +136,8 @@ export async function addCard(
     status: 'active',
   } as UserCard);
 
+  // Family history is informational only; every newly added card gets its own signup-bonus tracker.
+  // Product changes intentionally skip this block because they do not earn a signup bonus.
   // Create signup bonus tracker
   const deadline = addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
   await db.signupBonuses.add({
@@ -205,6 +236,10 @@ export async function productChangeCard(
 
   if (oldTemplate.issuer !== targetTemplate.issuer) {
     throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
+  }
+
+  if (oldTemplate.id === targetTemplate.id) {
+    throw new Error('Product change target must be different from the current card');
   }
 
   if (!oldTemplate.familyId || !targetTemplate.familyId || oldTemplate.familyId !== targetTemplate.familyId) {

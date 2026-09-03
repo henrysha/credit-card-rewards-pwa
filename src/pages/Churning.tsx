@@ -4,6 +4,7 @@ import { getCardTemplate, getCardsOpenedInLast24Months } from '../db/helpers';
 import { churningRules } from '../db/seed-data';
 import { useState, useEffect } from 'react';
 import type { UserCard, ChurningRule } from '../db/types';
+import HotelFamilyEligibility from '../components/HotelFamilyEligibility';
 
 function monthsSince(dateStr: string): number {
   const d = new Date(dateStr);
@@ -20,7 +21,6 @@ export default function Churning() {
   }, [cards]);
 
   const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi'] as const;
-
   const getLastOpenedByIssuer = (issuer: string): UserCard | undefined => {
     if (!cards) return undefined;
     const issuerCards = cards
@@ -101,6 +101,8 @@ export default function Churning() {
           </div>
         );
       })}
+
+      <HotelFamilyEligibility cards={cards ?? []} />
     </div>
   );
 }

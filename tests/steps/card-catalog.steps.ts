@@ -9,6 +9,11 @@ Then('I should see {int} cards in the catalog', async function (count: number) {
   await expect(cards).toHaveCount(count, { timeout: 5000 });
 });
 
+Then('the {string} family should have {int} catalog cards', async function (family: string, count: number) {
+  await this.page.getByRole('button', { name: family, exact: true }).click();
+  await expect(this.page.locator('.page .glass-card')).toHaveCount(count, { timeout: 5000 });
+});
+
 When('I click the {string} filter button', async function (issuer: string) {
   const tabName = issuer === 'all' ? 'All' : issuer;
   await this.page.getByRole('button', { name: tabName, exact: true }).click();

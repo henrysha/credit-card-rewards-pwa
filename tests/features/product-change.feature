@@ -65,3 +65,8 @@ Feature: Product Change (Upgrading / Downgrading)
     Given I have added the "Marriott Bonvoy Bold Card" card
     When I attempt a direct product change to "Chase Freedom Unlimited"
     Then the direct product change should be rejected without mutating the account
+
+  Scenario: Personal Chase cards cannot product change into business cards
+    Given I have added the "Chase Sapphire Preferred" card
+    When I attempt a direct product change to "Chase Ink Business Cash"
+    Then the direct product change should be rejected without mutating the account

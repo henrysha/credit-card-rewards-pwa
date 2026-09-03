@@ -118,6 +118,7 @@ export async function addCard(
     bonusPoints: template.signupBonus.points,
     bonusUnit: template.signupBonus.unit,
     completed: false,
+    additionalBonus: template.signupBonus.additionalBonus,
   } as SignupBonus);
 
   // Create perk instances
@@ -165,13 +166,16 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
-  // Eligible cards must be from the same issuer, in the same family, and not
-  // be the same card. A missing familyId means a core issuer product, so core
-  // products can only change to other core products.
-  const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id &&
-      c.familyId === currentTemplate.familyId
-  );
+  // Product changes require an explicitly modeled family. Missing family IDs
+  // must never make unrelated same-issuer products eligible by accident.
+  const eligible = currentTemplate.familyId
+    ? cardTemplates.filter(
+        c => c.issuer === currentTemplate.issuer
+          && c.id !== currentTemplate.id
+          && Boolean(c.familyId)
+          && c.familyId === currentTemplate.familyId
+      )
+    : [];
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
   const downgrades = eligible.filter(c => c.annualFee < currentTemplate.annualFee);
@@ -203,7 +207,7 @@ export async function productChangeCard(
     throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
   }
 
-  if (oldTemplate.familyId !== targetTemplate.familyId) {
+  if (!oldTemplate.familyId || !targetTemplate.familyId || oldTemplate.familyId !== targetTemplate.familyId) {
     throw new Error('Product change must stay within the same card family');
   }
 

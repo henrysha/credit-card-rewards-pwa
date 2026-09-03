@@ -24,6 +24,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
   const [editDeadline, setEditDeadline] = useState('');
 
   const { showToast } = useToast();
+  const additionalBonus = bonus?.additionalBonus ?? template?.signupBonus.additionalBonus;
 
   const handleSpendUpdate = async () => {
     if (bonus?.id) {
@@ -119,6 +120,9 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
             <span> in {template.signupBonus.timeMonths} months</span>
           )}
         </div>
+        {additionalBonus && (
+          <div className="text-sm text-muted mb-md">Plus: {additionalBonus.description}</div>
+        )}
         {signupBonusData.isExisting && (
           <>
             <div className="progress-bar">

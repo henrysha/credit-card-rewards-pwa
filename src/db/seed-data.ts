@@ -479,6 +479,88 @@ export const cardTemplates: CardTemplate[] = [
     ],
   },
 
+  // ─── BILT CARD 2.0 ─────────────────────────────────────────
+  // These Column N.A. products are not interchangeable through the
+  // app's generic product-change flow.
+  {
+    id: 'bilt-blue',
+    name: 'Bilt Blue Card',
+    issuer: 'Bilt',
+    family: 'bilt-card-2.0',
+    productChangeEligible: false,
+    annualFee: 0,
+    color: '#2e7d72',
+    signupBonus: { points: 100, spend: 0, timeMonths: 0, unit: 'Bilt Cash' },
+    earningRates: [
+      { category: 'Bilt Housing Payments (Housing-only option)', multiplier: 1.25, limit: 'Up to 1.25X; based on everyday-spend ratio' },
+      { category: 'Bilt Dining partners', multiplier: 4, limit: 'Up to 4X total; partner rate varies' },
+      { category: 'Lyft', multiplier: 3 },
+      { category: 'Bilt Travel Hotels', multiplier: 3 },
+      { category: 'Bilt Travel Flights', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bilt-blue-welcome-cash', name: '$100 Bilt Cash Welcome Bonus', description: 'One-time $100 Bilt Cash on or about account opening; alternate offers may apply', category: 'other', annualValue: 100, renewalPeriod: 'one-time' },
+      { id: 'bilt-blue-housing', name: 'Fee-Free Rent, Mortgage & HOA Payments', description: 'No transaction fee on eligible Bilt Housing Payments made through the Bilt App or website', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-blue-membership', name: 'Bilt Rewards Membership', description: 'Cardholders must be Bilt Rewards Members and are automatically enrolled with access to partner programs; this is a program requirement, not a card annual fee', category: 'membership', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-blue-protections', name: 'World Elite Mastercard Protections', description: 'MasterRental car rental coverage, trip cancellation/interruption, trip delay, purchase assurance, and cellular wireless telephone protection', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'bilt-obsidian',
+    name: 'Bilt Obsidian Card',
+    issuer: 'Bilt',
+    family: 'bilt-card-2.0',
+    productChangeEligible: false,
+    annualFee: 95,
+    color: '#242936',
+    signupBonus: { points: 200, spend: 0, timeMonths: 0, unit: 'Bilt Cash' },
+    earningRates: [
+      { category: 'Bilt Housing Payments (Housing-only option)', multiplier: 1.25, limit: 'Up to 1.25X; based on everyday-spend ratio' },
+      { category: 'Selected Dining or Grocery', multiplier: 3, limit: 'Grocery up to $25K/calendar year; dining uncapped' },
+      { category: 'Travel (direct)', multiplier: 2 },
+      { category: 'Bilt Travel Hotels', multiplier: 4 },
+      { category: 'Bilt Travel Flights', multiplier: 3 },
+      { category: 'Lyft', multiplier: 3 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'bilt-obsidian-welcome-cash', name: '$200 Bilt Cash Welcome Bonus', description: 'One-time $200 Bilt Cash on or about account opening; no spend requirement, and alternate offers may apply', category: 'other', annualValue: 200, renewalPeriod: 'one-time' },
+      { id: 'bilt-obsidian-hotel-credit', name: '$100 Bilt Travel Hotel Credit', description: '$50 credit in each calendar half for eligible 2-night Bilt Travel Portal bookings', category: 'hotel-credit', annualValue: 100, renewalPeriod: 'semi-annual', periodValue: 50 },
+      { id: 'bilt-obsidian-housing', name: 'Fee-Free Rent, Mortgage & HOA Payments', description: 'No transaction fee on eligible Bilt Housing Payments made through the Bilt App or website', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-obsidian-accelerator', name: 'Bilt Point Accelerator', description: 'Redeem $200 Bilt Cash to add 1X on up to $5,000 qualifying everyday spend; available up to five times per year', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'bilt-obsidian-membership', name: 'Bilt Rewards Membership', description: 'Cardholders must be Bilt Rewards Members and are automatically enrolled with access to partner programs; this is a program requirement, not a card annual fee', category: 'membership', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-obsidian-protections', name: 'World Elite Mastercard Protections', description: 'MasterRental car rental coverage, trip cancellation/interruption, trip delay, purchase assurance, and cellular wireless telephone protection', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'bilt-palladium',
+    name: 'Bilt Palladium Card',
+    issuer: 'Bilt',
+    family: 'bilt-card-2.0',
+    productChangeEligible: false,
+    annualFee: 495,
+    color: '#b6a47a',
+    signupBonus: { points: 50000, spend: 4000, timeMonths: 3, unit: 'points', additionalBonus: { points: 300, spend: 0, description: '$300 Bilt Cash upon approval, plus Bilt Gold status after the spend requirement' } },
+    earningRates: [
+      { category: 'Bilt Housing Payments (Housing-only option)', multiplier: 1.25, limit: 'Up to 1.25X; based on everyday-spend ratio' },
+      { category: 'Bilt Dining partners', multiplier: 5, limit: 'Up to 5X total; partner rate varies' },
+      { category: 'Lyft', multiplier: 4 },
+      { category: 'Bilt Travel Hotels', multiplier: 4 },
+      { category: 'Bilt Travel Flights', multiplier: 3 },
+      { category: 'All Other', multiplier: 2 },
+    ],
+    perks: [
+      { id: 'bilt-palladium-cash', name: '$200 Annual Bilt Cash', description: '$200 Bilt Cash at account opening and each January 1 while the account is open and in good standing; up to $100 rolls over', category: 'other', annualValue: 200, renewalPeriod: 'annual' },
+      { id: 'bilt-palladium-hotel-credit', name: '$400 Bilt Travel Hotel Credit', description: '$200 credit in each calendar half for eligible 2-night Bilt Travel Portal bookings', category: 'hotel-credit', annualValue: 400, renewalPeriod: 'semi-annual', periodValue: 200 },
+      { id: 'bilt-palladium-lounge', name: 'Priority Pass Lounge Access', description: 'Priority Pass membership with access to 1,300+ airport lounges worldwide', category: 'lounge-access', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-palladium-housing', name: 'Fee-Free Rent, Mortgage & HOA Payments', description: 'No transaction fee on eligible Bilt Housing Payments made through the Bilt App or website', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-palladium-accelerator', name: 'Bilt Point Accelerator', description: 'Redeem $200 Bilt Cash to add 1X on up to $5,000 qualifying everyday spend; available up to five times per year', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'bilt-palladium-membership', name: 'Bilt Rewards Membership', description: 'Cardholders must be Bilt Rewards Members and are automatically enrolled with access to partner programs; this is a program requirement, not a card annual fee', category: 'membership', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'bilt-palladium-protections', name: 'World Legend Mastercard Protections', description: 'Rental car, trip cancellation/interruption, trip delay, purchase assurance, cellular telephone protection, and other protections', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+
   // ─── CHASE CO-BRANDED ───────────────────────────────────────
   {
     id: 'amazon-visa',
@@ -642,10 +724,12 @@ export const churningRules: ChurningRule[] = [
   { id: 'capital-one-1-6', issuer: 'Capital One', ruleName: '1/6 Rule', description: 'Capital One generally approves only one new credit card (personal or business) every 6 months.', cooldownMonths: 6 },
   { id: 'capital-one-48', issuer: 'Capital One', ruleName: '48-Month Rule', description: 'You can only receive the Venture/Venture X welcome bonus once per 48 months per product.', cooldownMonths: 48, affectedCards: ['capital-one-venture', 'capital-one-venture-x'] },
   { id: 'citi-48', issuer: 'Citi', ruleName: '48-Month Rule', description: 'Citi limits welcome bonuses to once per 48 months per card family.', cooldownMonths: 48 },
+  { id: 'bilt-card-2-lifetime', issuer: 'Bilt', ruleName: 'Bilt Card 2.0 Welcome Bonus Eligibility', description: 'Bilt Card 2.0 welcome offers are available only if you do not currently hold, have not previously held, and have not received a welcome bonus on any Bilt Card 2.0 product. This is a shared family history rule across Blue, Obsidian, and Palladium.', affectedCards: ['bilt-blue', 'bilt-obsidian', 'bilt-palladium'] },
 ];
 
 // Expose to window for BDD testing
 if (typeof window !== 'undefined') {
-  const w = window as unknown as { cardTemplates: typeof cardTemplates };
+  const w = window as unknown as { cardTemplates: typeof cardTemplates; churningRules: typeof churningRules };
   w.cardTemplates = cardTemplates;
+  w.churningRules = churningRules;
 }

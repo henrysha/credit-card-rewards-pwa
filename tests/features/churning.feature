@@ -28,3 +28,4 @@ Feature: Churning Tracker
     And I should see "Amex" issuer section
     And I should see "Capital One" issuer section
     And I should see "Citi" issuer section
+    And I should see "Bilt" issuer section

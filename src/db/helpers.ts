@@ -165,9 +165,13 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
+  // Products explicitly excluded from the generic flow are not offered.
+  if (currentTemplate.productChangeEligible === false) {
+    return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
+  }
   // Eligible cards must be from the same issuer and not be the same card
   const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id
+    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id && c.productChangeEligible !== false
   );
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
@@ -464,4 +468,3 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   }
   return results;
 }
-

@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Bilt';
 
 /** Category of perk */
 export type PerkCategory =
@@ -60,6 +60,8 @@ export interface CardTemplate {
   id: string;
   name: string;
   issuer: CardIssuer;
+  family?: string;
+  productChangeEligible?: boolean;
   annualFee: number;
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color

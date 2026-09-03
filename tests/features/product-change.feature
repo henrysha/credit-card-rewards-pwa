@@ -44,6 +44,14 @@ Feature: Product Change (Upgrading / Downgrading)
     Then I should see "Chase Sapphire Reserve" on the cards page
     And I should see "product-changed" in the closed cards section
 
+  Scenario: SKYPASS products can product change within U.S. Bank only
+    Given I have added the "SKYPASS SkyBlue Visa" card
+    When I view the card detail for "SKYPASS SkyBlue Visa"
+    And I click "Upgrade / Downgrade"
+    Then I should see "SKYPASS Visa Signature" in the product change options
+    And I should see "SKYPASS Select Visa Signature" in the product change options
+    And I should not see "Chase Sapphire Reserve" in the product change options
+
   Scenario: Hotel product changes stay within the same family
     Given I have added the "Hilton Honors American Express Card" card
     When I view the card detail for "Hilton Honors American Express Card"

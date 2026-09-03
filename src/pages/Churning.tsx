@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { getCardTemplate, getCardsOpenedInLast24Months } from '../db/helpers';
+import { getCardTemplate, getCardsOpenedInLast24Months, getSignupBonusEligibility } from '../db/helpers';
 import { churningRules } from '../db/seed-data';
 import { useState, useEffect } from 'react';
 import type { UserCard, ChurningRule } from '../db/types';
@@ -20,7 +20,18 @@ export default function Churning() {
     getCardsOpenedInLast24Months().then(setFiveOfTwentyFour);
   }, [cards]);
 
-  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi'] as const;
+  // Keep the U.S. Bank status aligned with the same family-history check used
+  // by the signup-bonus tracker. The rule owns the participating products, so
+  // adding a product to the family does not require a second list here.
+  const skypassBonusEligible = useLiveQuery(async () => {
+    const rule = churningRules.find(r => r.id === 'usbank-skypass-family');
+    const affectedCards = rule?.affectedCards ?? [];
+    if (affectedCards.length === 0) return true;
+    const results = await Promise.all(affectedCards.map(getSignupBonusEligibility));
+    return results.every(result => result.eligible);
+  }, []);
+
+  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi', 'U.S. Bank'] as const;
   const getLastOpenedByIssuer = (issuer: string): UserCard | undefined => {
     if (!cards) return undefined;
     const issuerCards = cards
@@ -70,6 +81,7 @@ export default function Churning() {
         let cooldownRemaining = 0;
 
         if (issuer === 'Chase' && fiveOfTwentyFour >= 5) eligible = false;
+        if (issuer === 'U.S. Bank' && skypassBonusEligible === false) eligible = false;
         if (issuer === 'Capital One' && lastCard && months < 6) {
           eligible = false;
           cooldownRemaining = 6 - months;
@@ -83,7 +95,11 @@ export default function Churning() {
                 <span className="badge badge-green">Eligible</span>
               ) : (
                 <span className="badge badge-red">
-                  {cooldownRemaining > 0 ? `${cooldownRemaining}mo cooldown` : 'Restricted'}
+                  {cooldownRemaining > 0
+                    ? `${cooldownRemaining}mo cooldown`
+                    : issuer === 'U.S. Bank'
+                      ? 'SKYPASS bonus ineligible'
+                      : 'Restricted'}
                 </span>
               )}
             </div>

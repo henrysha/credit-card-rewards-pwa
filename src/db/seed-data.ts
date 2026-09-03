@@ -1,7 +1,7 @@
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
-// Complete Card Catalog — 35 Cards
+// Complete Card Catalog — 44 Cards
 // ============================================================
 
 export const cardTemplates: CardTemplate[] = [
@@ -937,6 +937,60 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'aa-globe-ge-tsa', name: 'Global Entry/TSA PreCheck', description: 'Statement credit every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
     ],
   },
+
+// ─── U.S. BANK / KOREAN AIR SKYPASS ───────────────────────────
+// The issuer's current partner-card listing contains these three US consumer products.
+// Source: https://www.usbank.com/credit-cards/co-branded-credit-cards.html
+// Product details: https://ir.usbank.com/news-events/news/news-details/2023/U.S.-Bank-Korean-Air-announce-new-SKYPASS-Visa-benefits-07-25-2023/default.aspx
+  {
+    id: 'usbank-skypass-skyblue',
+    name: 'SKYPASS SkyBlue Visa',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 0,
+    color: '#1769aa',
+    signupBonus: { points: 10000, spend: 1000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'Streaming Services', multiplier: 2 },
+      { category: 'Rideshare', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [],
+  },
+  {
+    id: 'usbank-skypass-signature',
+    name: 'SKYPASS Visa Signature',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 95,
+    color: '#1769aa',
+    signupBonus: { points: 40000, spend: 4000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'Korean Air Tickets', multiplier: 2 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'skypass-signature-ticket-discount', name: '5% Korean Air Ticket Discount', description: '5% discount on Korean Air tickets once annually for the cardholder and one companion', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'usbank-skypass-select',
+    name: 'SKYPASS Select Visa Signature',
+    issuer: 'U.S. Bank',
+    familyId: 'skypass-visa',
+    annualFee: 450,
+    color: '#1769aa',
+    signupBonus: { points: 60000, spend: 5000, timeMonths: 3, unit: 'miles', additionalBonus: { points: 5000, spend: 15000, description: 'Additional bonus miles after $15,000 annual spend' } },
+    earningRates: [
+      { category: 'Korean Air Tickets', multiplier: 3 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'skypass-select-ticket-discount', name: '5% Korean Air Ticket Discount', description: '5% discount on Korean Air tickets twice annually for the cardholder and one companion', category: 'other', annualValue: 0, renewalPeriod: 'semi-annual', periodValue: 0 },
+    ],
+  },
 ];
 
 // ============================================================
@@ -954,6 +1008,7 @@ export const churningRules: ChurningRule[] = [
   { id: 'capital-one-1-6', issuer: 'Capital One', ruleName: '1/6 Rule', description: 'Capital One generally approves only one new credit card (personal or business) every 6 months.', cooldownMonths: 6 },
   { id: 'capital-one-48', issuer: 'Capital One', ruleName: '48-Month Rule', description: 'You can only receive the Venture/Venture X welcome bonus once per 48 months per product.', cooldownMonths: 48, affectedCards: ['capital-one-venture', 'capital-one-venture-x'] },
   { id: 'citi-48', issuer: 'Citi', ruleName: '48-Month Rule', description: 'Citi limits welcome bonuses to once per 48 months per card family.', cooldownMonths: 48 },
+  { id: 'usbank-skypass-family', issuer: 'U.S. Bank', ruleName: 'SKYPASS Family Bonus Eligibility', description: 'The SKYPASS Visa products share one family: check prior SKYPASS cards and issuer terms before applying for another welcome bonus. Product changes preserve account history and do not earn a new bonus.', affectedCards: ['usbank-skypass-skyblue', 'usbank-skypass-signature', 'usbank-skypass-select'] },
 ];
 
 // Expose to window for BDD testing

@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank';
 
 /** Category of perk */
 export type PerkCategory =

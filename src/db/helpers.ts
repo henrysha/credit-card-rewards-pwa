@@ -73,6 +73,7 @@ if (typeof window !== 'undefined') {
     syncCardPerks: typeof syncCardPerks;
     productChangeCard: typeof productChangeCard;
     getEligibleProductChangeTemplates: typeof getEligibleProductChangeTemplates;
+    getSignupBonusEligibility: typeof getSignupBonusEligibility;
     getFamilyIds: typeof getFamilyIds;
     getFamilyTemplates: typeof getFamilyTemplates;
     getFamilyHistory: typeof getFamilyHistory;
@@ -82,6 +83,7 @@ if (typeof window !== 'undefined') {
   w.syncCardPerks = syncCardPerks;
   w.productChangeCard = productChangeCard;
   w.getEligibleProductChangeTemplates = getEligibleProductChangeTemplates;
+  w.getSignupBonusEligibility = getSignupBonusEligibility;
   w.getFamilyIds = getFamilyIds;
   w.getFamilyTemplates = getFamilyTemplates;
   w.getFamilyHistory = getFamilyHistory;
@@ -92,6 +94,17 @@ if (typeof window !== 'undefined') {
 
 export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
+}
+
+export async function getSignupBonusEligibility(cardTemplateId: string): Promise<{ eligible: boolean; history: UserCard[] }> {
+  const template = getCardTemplate(cardTemplateId);
+  if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
+  const allCards = await db.cards.toArray();
+  const history = allCards.filter(card => {
+    const prior = getCardTemplate(card.cardTemplateId);
+    return Boolean(prior?.familyId && template.familyId && prior.familyId === template.familyId);
+  });
+  return { eligible: history.length === 0, history };
 }
 
 /** Return the distinct loyalty families represented in the catalog. */

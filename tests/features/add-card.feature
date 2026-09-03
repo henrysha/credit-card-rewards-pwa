@@ -26,3 +26,8 @@ Feature: Add Card
     When I add the "SKYPASS Visa Signature" card
     Then I should see "SKYPASS Visa Signature" on the cards page
     And I should see "40,000" on the detail page
+
+  Scenario: Robinhood Gold Card can be added from the catalog
+    Given I am on the "Catalog" page
+    When I add the "Robinhood Gold Card" card
+    Then I should see "Robinhood Gold Card" on the detail page

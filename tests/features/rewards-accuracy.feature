@@ -46,3 +46,9 @@ Feature: Rewards Accuracy
     And I have added the "Chase Ink Business Preferred" card
     When I navigate to the "Dashboard"
     Then I should see "Everything Else" in the best card section with "Capital One Venture" and "2x" multiplier
+
+  Scenario: Robinhood legal terms apply 3x to portal and catch-all purchases
+    Given I have added the "Robinhood Gold Card" card
+    When I navigate to the "Dashboard"
+    Then I should see "Travel Portal" in the best card section with "Robinhood Gold Card" and "3x" multiplier
+    And I should see "Everything Else" in the best card section with "Robinhood Gold Card" and "3x" multiplier

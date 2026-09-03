@@ -105,6 +105,9 @@ export default function Dashboard() {
                     <div className="text-sm text-muted">
                       {formatCurrency(bonus.bonusPoints)} {bonus.bonusUnit}
                     </div>
+                    {bonus.additionalBonus && (
+                      <div className="text-sm text-muted mt-sm">Plus: {bonus.additionalBonus.description}</div>
+                    )}
                   </div>
                   <span className={`countdown ${days <= 30 ? 'urgent' : ''}`}>
                     {days > 0 ? `${days}d left` : 'Expired'}
@@ -169,4 +172,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'U.S. Bank';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank';
 
 /** Category of perk */
 export type PerkCategory =
@@ -56,11 +56,24 @@ export interface PerkTemplate {
   requiresEnrollment?: boolean;
 }
 
+/** A second tier or companion benefit awarded with a sign-up offer. */
+export interface SignupBonusAdditional {
+  points: number;
+  spend: number;
+  description: string;
+  /** Optional unit for non-point/mile components such as Free Night Awards. */
+  unit?: string;
+}
+
 export interface CardTemplate {
   id: string;
   name: string;
   issuer: CardIssuer;
+  /** Shared issuer family identifier used for bonus eligibility/history. */
+  familyId?: string;
   annualFee: number;
+  /** Eligibility or account requirements that are not card perks. */
+  requirements?: string[];
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color
   signupBonus: {
@@ -68,17 +81,11 @@ export interface CardTemplate {
     spend: number;
     timeMonths: number;
     unit: string;           // "points", "miles", "cash back"
-    additionalBonus?: {
-      points: number;
-      spend: number;
-      description: string;
-    };
+    additionalBonus?: SignupBonusAdditional;
   };
   earningRates: EarningRate[];
   perks: PerkTemplate[];
   isBusinessCard?: boolean;
-  /** Product family used when welcome-bonus eligibility spans multiple tiers. */
-  familyId?: string;
 }
 
 export interface ChurningRule {
@@ -115,6 +122,8 @@ export interface SignupBonus {
   bonusUnit: string;
   completed: boolean;
   completedDate?: string;
+  /** Persisted copy of the template's second-tier/companion welcome benefit. */
+  additionalBonus?: SignupBonusAdditional;
 }
 
 export interface UserPerk {

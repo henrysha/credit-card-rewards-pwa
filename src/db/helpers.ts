@@ -118,6 +118,7 @@ export async function addCard(
     bonusPoints: template.signupBonus.points,
     bonusUnit: template.signupBonus.unit,
     completed: false,
+    additionalBonus: template.signupBonus.additionalBonus,
   } as SignupBonus);
 
   // Create perk instances
@@ -165,10 +166,16 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
-  // Eligible cards must be from the same issuer and not be the same card
-  const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id
-  );
+  // Product changes require an explicitly modeled family. Missing family IDs
+  // must never make unrelated same-issuer products eligible by accident.
+  const eligible = currentTemplate.familyId
+    ? cardTemplates.filter(
+        c => c.issuer === currentTemplate.issuer
+          && c.id !== currentTemplate.id
+          && Boolean(c.familyId)
+          && c.familyId === currentTemplate.familyId
+      )
+    : [];
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
   const downgrades = eligible.filter(c => c.annualFee < currentTemplate.annualFee);
@@ -198,6 +205,10 @@ export async function productChangeCard(
 
   if (oldTemplate.issuer !== targetTemplate.issuer) {
     throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
+  }
+
+  if (!oldTemplate.familyId || !targetTemplate.familyId || oldTemplate.familyId !== targetTemplate.familyId) {
+    throw new Error('Product change must stay within the same card family');
   }
 
   const today = new Date().toISOString().split('T')[0];
@@ -402,9 +413,11 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
   const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
   const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
   
-  // Only count personal cards that are not closed
+  // A product change creates an active replacement while retaining the old
+  // record for history. Count active records only so one account is not
+  // double-counted in Chase 5/24 after a product change.
   return userCards.filter(c => {
-    if (c.status === 'closed') return false;
+    if (c.status !== 'active') return false;
     const template = getCardTemplate(c.cardTemplateId);
     return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
   }).length;
@@ -464,4 +477,3 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   }
   return results;
 }
-

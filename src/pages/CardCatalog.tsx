@@ -2,6 +2,7 @@ import { cardTemplates } from '../db/seed-data';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { RequestCardModal } from '../components/RequestCardModal';
+import { CardFamilyFilter } from '../components/CardFamilyFilter';
 import { getFamilyIds } from '../db/helpers';
 
 export default function CardCatalog() {
@@ -47,13 +48,11 @@ export default function CardCatalog() {
           </button>
         ))}
       </div>
-      <div className="tabs" aria-label="Card family filters">
-        {families.map(familyId => (
-          <button key={familyId} className={`tab ${familyFilter === familyId ? 'active' : ''}`} onClick={() => setFamilyFilter(familyId)}>
-            {familyId === 'all' ? 'All Families' : familyId}
-          </button>
-        ))}
-      </div>
+      <CardFamilyFilter
+        familyIds={families}
+        selectedFamilyId={familyFilter}
+        onSelect={setFamilyFilter}
+      />
 
       <div className="catalog-list">
         {filtered.map(card => (

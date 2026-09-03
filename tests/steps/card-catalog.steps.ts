@@ -14,6 +14,21 @@ Then('the {string} family should have {int} catalog cards', async function (fami
   await expect(this.page.locator('.page .glass-card')).toHaveCount(count, { timeout: 5000 });
 });
 
+Then('the card family filters should be labeled {string}', async function (labels: string) {
+  const familyFilters = this.page.getByRole('group', { name: 'Card family filters' });
+  await expect(familyFilters.getByRole('button')).toHaveText(labels.split(', '));
+});
+
+Then('the card family filters should not show slug labels', async function () {
+  const familyFilters = this.page.getByRole('group', { name: 'Card family filters' });
+  const labels = await familyFilters.getByRole('button').allTextContents();
+  expect(labels).not.toContain('chase-ultimate-rewards-consumer');
+  expect(labels).not.toContain('chase-united');
+  expect(labels).not.toContain('chase-marriott-bonvoy');
+  expect(labels).not.toContain('bilt-card-2.0');
+  expect(labels).not.toContain('skypass-visa');
+});
+
 When('I click the {string} filter button', async function (issuer: string) {
   const tabName = issuer === 'all' ? 'All' : issuer;
   await this.page.getByRole('button', { name: tabName, exact: true }).click();

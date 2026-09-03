@@ -37,6 +37,22 @@ Then('I should not see {string} perk', async function (perkName: string) {
   await expect(perk).toHaveCount(0, { timeout: 5000 });
 });
 
+Then('the {string} perk description should mention {string}', async function (perkName: string, text: string) {
+  const perk = this.page.locator('.perk-item').filter({ hasText: perkName }).first();
+  await expect(perk.locator('.perk-desc')).toContainText(text, { timeout: 5000 });
+});
+
+Then('I should see {string} earning rate with {string}', async function (category: string, multiplier: string) {
+  const rate = this.page.locator('.earning-rate').filter({ hasText: category }).first();
+  await expect(rate).toBeVisible({ timeout: 5000 });
+  await expect(rate.locator('.earning-multiplier')).toHaveText(multiplier);
+});
+
+Then('I should not see {string} earning rate', async function (category: string) {
+  const rate = this.page.locator('.earning-rate').filter({ hasText: category });
+  await expect(rate).toHaveCount(0, { timeout: 5000 });
+});
+
 Then('I should see {string} button', async function (buttonText: string) {
   const button = this.page.getByRole('button', { name: buttonText });
   await expect(button).toBeVisible({ timeout: 5000 });

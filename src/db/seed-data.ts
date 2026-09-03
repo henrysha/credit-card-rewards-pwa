@@ -707,6 +707,29 @@ export const cardTemplates: CardTemplate[] = [
     ],
     perks: [],
   },
+
+  // ─── ROBINHOOD ────────────────────────────────────────────
+  // Source note (checked 2026-09-03): the current Rewards Program Rules
+  // (last updated 2026-09-01) award 3x on eligible purchases, including the
+  // Travel Portal, and explicitly remove the former portal bonus. The public
+  // support article still advertises up to 5x but has no effective date.
+  {
+    id: 'robinhood-gold-card',
+    name: 'Robinhood Gold Card',
+    issuer: 'Robinhood',
+    annualFee: 0,
+    requirements: [
+      'Annual Robinhood Gold subscription ($50) required to apply and maintain the card; no 30-day free trial is included.',
+    ],
+    color: '#00c805',
+    signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
+    earningRates: [
+      { category: 'All Other Eligible Purchases (including Travel Portal)', multiplier: 3 },
+    ],
+    perks: [
+      { id: 'rh-points-redemption', name: 'Flexible Points Redemptions', description: 'Redeem points for statement credit, brokerage cash back, travel, gift cards, and other options in the Robinhood Banking app; a Robinhood investing account is required for cash back.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
   // ─── CITI CO-BRANDED ───────────────────────────────────────
   {
     id: 'citi-aa-executive',

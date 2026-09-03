@@ -74,6 +74,15 @@ export function CardHeader({ card, template }: CardHeaderProps) {
         {card?.lastFourDigits && <div className="card-last-four" style={{ marginTop: 8 }}>•••• {card.lastFourDigits}</div>}
       </div>
 
+      {template.requirements && template.requirements.length > 0 && (
+        <div className="glass-card mt-md card-requirements">
+          <h3 className="section-title">Requirements</h3>
+          <ul className="text-sm text-muted" style={{ margin: '8px 0 0', paddingLeft: '20px' }}>
+            {template.requirements.map(requirement => <li key={requirement}>{requirement}</li>)}
+          </ul>
+        </div>
+      )}
+
       {showEditDetails && (
         <div className="modal-overlay" onClick={() => setShowEditDetails(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>

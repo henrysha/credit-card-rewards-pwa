@@ -30,8 +30,9 @@ Feature: Card Catalog
     Given I am on the "Catalog" page
     When I click on the card "Robinhood Gold Card"
     Then I should see "Robinhood Gold Card"
-    And I should see "Robinhood Gold Membership Required" perk
-    And the "Robinhood Gold Membership Required" perk description should mention "active annual Robinhood Gold subscription ($50) is required"
+    And I should see "Annual Robinhood Gold subscription"
+    And I should see "No 30-day free trial"
+    And I should not see "Robinhood Gold Membership Required" perk
     And I should see "All Other Eligible Purchases (including Travel Portal)" earning rate with "3x"
     And I should not see "Robinhood Travel Portal (select purchases)" earning rate
 

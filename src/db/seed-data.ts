@@ -535,13 +535,15 @@ export const cardTemplates: CardTemplate[] = [
     name: 'Robinhood Gold Card',
     issuer: 'Robinhood',
     annualFee: 0,
+    requirements: [
+      'Annual Robinhood Gold subscription ($50) required to apply and maintain the card; no 30-day free trial is included.',
+    ],
     color: '#00c805',
     signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
     earningRates: [
       { category: 'All Other Eligible Purchases (including Travel Portal)', multiplier: 3 },
     ],
     perks: [
-      { id: 'rh-gold-membership', name: 'Robinhood Gold Membership Required', description: 'The card has no annual fee, but an active annual Robinhood Gold subscription ($50) is required to apply, maintain the card, and earn points; no 30-day trial.', category: 'membership', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'rh-points-redemption', name: 'Flexible Points Redemptions', description: 'Redeem points for statement credit, brokerage cash back, travel, gift cards, and other options in the Robinhood Banking app; a Robinhood investing account is required for cash back.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
     ],
   },

@@ -61,6 +61,8 @@ export interface CardTemplate {
   name: string;
   issuer: CardIssuer;
   annualFee: number;
+  /** Eligibility or account requirements that are not card perks. */
+  requirements?: string[];
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color
   signupBonus: {

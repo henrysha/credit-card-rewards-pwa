@@ -12,6 +12,8 @@ Feature: Product Change (Upgrading / Downgrading)
     And I should see "Chase Freedom Unlimited" in the product change options
     And I should not see "American Express Platinum" in the product change options
     And I should not see "Capital One Venture X" in the product change options
+    And I should not see "United Gateway Card" in the product change options
+    And I should not see "Marriott Bonvoy Boundless Card" in the product change options
 
   Scenario: Upgrade a card to a higher annual fee product
     Given I have added the "Chase Sapphire Preferred" card
@@ -48,3 +50,18 @@ Feature: Product Change (Upgrading / Downgrading)
     And I click "Upgrade / Downgrade"
     Then I should see "United Quest Card" in the product change options
     And I should not see "Marriott Bonvoy Boundless Card" in the product change options
+
+  Scenario: Direct product change rejects a core-to-United mutation
+    Given I have added the "Chase Sapphire Preferred" card
+    When I attempt a direct product change to "United Gateway Card"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Direct product change rejects a United-to-Marriott mutation
+    Given I have added the "United Explorer Card" card
+    When I attempt a direct product change to "Marriott Bonvoy Boundless Card"
+    Then the direct product change should be rejected without mutating the account
+
+  Scenario: Direct product change rejects a Marriott-to-core mutation
+    Given I have added the "Marriott Bonvoy Bold Card" card
+    When I attempt a direct product change to "Chase Freedom Unlimited"
+    Then the direct product change should be rejected without mutating the account

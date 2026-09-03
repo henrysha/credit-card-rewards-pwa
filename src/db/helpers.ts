@@ -165,12 +165,12 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
-  // Eligible cards must be from the same issuer and not be the same card.
-  // Co-branded Chase families have issuer-specific product-change paths; do
-  // not offer a United or Marriott product as a cross-family conversion.
+  // Eligible cards must be from the same issuer, in the same family, and not
+  // be the same card. A missing familyId means a core issuer product, so core
+  // products can only change to other core products.
   const eligible = cardTemplates.filter(
     c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id &&
-      (!currentTemplate.familyId || c.familyId === currentTemplate.familyId)
+      c.familyId === currentTemplate.familyId
   );
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
@@ -201,6 +201,10 @@ export async function productChangeCard(
 
   if (oldTemplate.issuer !== targetTemplate.issuer) {
     throw new Error(`Product change must be within the same publisher (${oldTemplate.issuer})`);
+  }
+
+  if (oldTemplate.familyId !== targetTemplate.familyId) {
+    throw new Error('Product change must stay within the same card family');
   }
 
   const today = new Date().toISOString().split('T')[0];
@@ -405,9 +409,11 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
   const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
   const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
   
-  // Only count personal cards that are not closed
+  // A product change creates an active replacement while retaining the old
+  // record for history. Count active records only so one account is not
+  // double-counted in Chase 5/24 after a product change.
   return userCards.filter(c => {
-    if (c.status === 'closed') return false;
+    if (c.status !== 'active') return false;
     const template = getCardTemplate(c.cardTemplateId);
     return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
   }).length;

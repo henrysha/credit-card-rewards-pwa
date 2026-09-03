@@ -74,6 +74,8 @@ export interface CardTemplate {
       points: number;
       spend: number;
       description: string;
+      /** Optional unit for non-point/mile components such as Free Night Awards. */
+      unit?: string;
     };
   };
   earningRates: EarningRate[];

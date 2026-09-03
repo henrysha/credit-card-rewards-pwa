@@ -2,6 +2,7 @@ import { cardTemplates } from '../db/seed-data';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { RequestCardModal } from '../components/RequestCardModal';
+import { getFamilyIds } from '../db/helpers';
 
 export default function CardCatalog() {
   const navigate = useNavigate();
@@ -11,14 +12,14 @@ export default function CardCatalog() {
   const [showRequestModal, setShowRequestModal] = useState(false);
 
   const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
-  const families = ['all', 'Hilton', 'IHG'];
+  const families = ['all', ...getFamilyIds()];
 
   let filtered = cardTemplates;
   if (issuerFilter !== 'all') {
     filtered = filtered.filter(c => c.issuer === issuerFilter);
   }
   if (familyFilter !== 'all') {
-    filtered = filtered.filter(c => c.family === familyFilter);
+    filtered = filtered.filter(c => c.familyId === familyFilter);
   }
   if (search) {
     const q = search.toLowerCase();
@@ -47,9 +48,9 @@ export default function CardCatalog() {
         ))}
       </div>
       <div className="tabs" aria-label="Hotel family filters">
-        {families.map(family => (
-          <button key={family} className={`tab ${familyFilter === family ? 'active' : ''}`} onClick={() => setFamilyFilter(family)}>
-            {family === 'all' ? 'All Families' : family}
+        {families.map(familyId => (
+          <button key={familyId} className={`tab ${familyFilter === familyId ? 'active' : ''}`} onClick={() => setFamilyFilter(familyId)}>
+            {familyId === 'all' ? 'All Families' : familyId}
           </button>
         ))}
       </div>
@@ -63,7 +64,7 @@ export default function CardCatalog() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="font-bold" style={{ fontSize: '0.9rem' }}>{card.name}</div>
-                <div className="text-xs text-muted">{card.issuer}{card.family ? ` • ${card.family}` : ''} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
+                <div className="text-xs text-muted">{card.issuer}{card.familyId ? ` • ${card.familyId}` : ''} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div className="text-gold font-bold" style={{ fontSize: '0.85rem' }}>

@@ -48,3 +48,8 @@ Feature: Product Change (Upgrading / Downgrading)
     And I click "Upgrade / Downgrade"
     Then I should see "Hilton Honors American Express Surpass Card" in the product change options
     And I should not see "IHG One Rewards Premier Credit Card" in the product change options
+
+  Scenario: Direct cross-family product changes are rejected
+    Given I have added the "Hilton Honors American Express Card" card
+    When I attempt a direct product change to "American Express Gold"
+    Then the direct product change should be rejected

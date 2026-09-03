@@ -61,7 +61,7 @@ export interface CardTemplate {
   name: string;
   issuer: CardIssuer;
   /** Loyalty family, when the card is co-branded with a hotel or airline program. */
-  family?: string;
+  familyId?: string;
   annualFee: number;
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color

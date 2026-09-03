@@ -1,7 +1,7 @@
 Feature: Hotel card family history and eligibility
   As a rewards tracker user
   I want Hilton and IHG products grouped into their card families
-  So that product changes and bonus eligibility preserve family history
+  So that product changes preserve family history and bonus tracking stays transparent
 
   Scenario: Hotel families appear in eligibility tracking
     Given I open the app
@@ -14,3 +14,5 @@ Feature: Hotel card family history and eligibility
     When I navigate to the "Churning"
     Then I should see "Prior family history"
     And I should see "IHG One Rewards Traveler Credit Card" on the detail page
+    When I view the card detail for "IHG One Rewards Traveler Credit Card"
+    And I should see "Sign-up Bonus" on the detail page

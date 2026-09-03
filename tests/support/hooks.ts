@@ -15,6 +15,8 @@ declare module '@cucumber/cucumber' {
     page: Page;
     testDbId?: string;
     baseUrl: string;
+    directProductChangeError?: string;
+    directProductChangeStatus?: string;
   }
 }
 

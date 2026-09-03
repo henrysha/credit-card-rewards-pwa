@@ -165,9 +165,12 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
-  // Eligible cards must be from the same issuer and not be the same card
+  // Eligible cards must be from the same issuer and not be the same card.
+  // Co-branded Chase families have issuer-specific product-change paths; do
+  // not offer a United or Marriott product as a cross-family conversion.
   const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id
+    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id &&
+      (!currentTemplate.familyId || c.familyId === currentTemplate.familyId)
   );
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
@@ -464,4 +467,3 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   }
   return results;
 }
-

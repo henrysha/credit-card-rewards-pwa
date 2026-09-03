@@ -4,12 +4,12 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 29 cards in the catalog
+    Then I should see 35 cards in the catalog
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page
     When I click the "Chase" filter button
-    Then I should see 9 cards in the catalog
+    Then I should see 15 cards in the catalog
     And I should see "Chase Sapphire Preferred"
     And I should see "Chase Sapphire Reserve"
     And I should see "Chase Freedom Flex"
@@ -55,3 +55,16 @@ Feature: Card Catalog
     And I should not see "$50 Hotel Credit" perk
     And I should not see "10% Anniversary Points Bonus" perk
 
+  Scenario: View Chase United family cards
+    Given I am on the "Catalog" page
+    When I search for "United"
+    Then I should see "United Gateway Card"
+    And I should see "United Explorer Card"
+    And I should see "United Quest Card"
+    And I should see "United Club Card"
+
+  Scenario: View Chase Marriott Bonvoy family cards
+    Given I am on the "Catalog" page
+    When I search for "Marriott"
+    Then I should see "Marriott Bonvoy Bold Card"
+    And I should see "Marriott Bonvoy Boundless Card"

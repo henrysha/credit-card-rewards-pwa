@@ -41,3 +41,10 @@ Feature: Product Change (Upgrading / Downgrading)
     And I navigate to the "Cards"
     Then I should see "Chase Sapphire Reserve" on the cards page
     And I should see "product-changed" in the closed cards section
+
+  Scenario: Co-branded product changes stay within the card family
+    Given I have added the "United Explorer Card" card
+    When I view the card detail for "United Explorer Card"
+    And I click "Upgrade / Downgrade"
+    Then I should see "United Quest Card" in the product change options
+    And I should not see "Marriott Bonvoy Boundless Card" in the product change options

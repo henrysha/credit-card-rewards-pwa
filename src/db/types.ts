@@ -60,6 +60,8 @@ export interface CardTemplate {
   id: string;
   name: string;
   issuer: CardIssuer;
+  /** Shared issuer family identifier used for bonus eligibility/history. */
+  familyId?: string;
   annualFee: number;
   firstYearFeeWaived?: boolean;
   color: string;            // brand hex color

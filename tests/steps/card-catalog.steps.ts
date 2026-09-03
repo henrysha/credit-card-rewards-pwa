@@ -42,3 +42,21 @@ Then('I should see {string} button', async function (buttonText: string) {
   await expect(button).toBeVisible({ timeout: 5000 });
 });
 
+Then('the cards {string}, {string}, {string}, and {string} should share a family identifier', async function (first: string, second: string, third: string, fourth: string) {
+  const names = [first, second, third, fourth];
+  const familyIds = await this.page.evaluate((cardNames: string[]) => {
+    const templates = (window as unknown as { cardTemplates: Array<{ name: string; familyId?: string }> }).cardTemplates;
+    return cardNames.map(name => templates.find(card => card.name === name)?.familyId);
+  }, names);
+  expect(familyIds[0]).toBeTruthy();
+  expect(new Set(familyIds).size).toBe(1);
+});
+
+Then('the cards {string} and {string} should share a family identifier', async function (first: string, second: string) {
+  const familyIds = await this.page.evaluate((cardNames: string[]) => {
+    const templates = (window as unknown as { cardTemplates: Array<{ name: string; familyId?: string }> }).cardTemplates;
+    return cardNames.map(name => templates.find(card => card.name === name)?.familyId);
+  }, [first, second]);
+  expect(familyIds[0]).toBeTruthy();
+  expect(familyIds[0]).toBe(familyIds[1]);
+});

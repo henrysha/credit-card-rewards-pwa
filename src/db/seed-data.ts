@@ -1,7 +1,7 @@
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
-// Complete Card Catalog — 29 Cards
+// Complete Card Catalog — 35 Cards
 // ============================================================
 
 export const cardTemplates: CardTemplate[] = [
@@ -175,6 +175,132 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'cip-trip-insurance', name: 'Travel Insurance Suite', description: 'Trip cancellation/delay, lost luggage, baggage delay', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cip-purchase-protection', name: 'Purchase Protection', description: 'Covers purchases for 120 days, up to $10K/claim', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cip-extended-warranty', name: 'Extended Warranty', description: 'Adds 1 year to eligible warranties', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+
+  // ─── CHASE UNITED FAMILY (US CONSUMER) ─────────────────────
+  {
+    id: 'chase-united-gateway',
+    name: 'United Gateway Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 0,
+    color: '#003b70',
+    signupBonus: { points: 30000, spend: 1000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 2 },
+      { category: 'Gas Stations', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'ug-checked-bags', name: 'Two 5,000-mile Checked Bag Awards', description: 'Earn two 5,000-mile awards each year after qualifying United purchases', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ug-inflight', name: '25% United Inflight Savings', description: '25% back as a statement credit on eligible United inflight and Club premium drink purchases', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'chase-united-explorer',
+    name: 'United Explorer Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 150,
+    firstYearFeeWaived: true,
+    color: '#003b70',
+    signupBonus: { points: 70000, spend: 4000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 3 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'Hotels (direct)', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'ue-bag', name: 'First Checked Bag Free', description: 'First standard checked bag free for the primary cardmember and one companion on the same reservation', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'ue-club-passes', name: 'Two United Club Passes', description: 'Two one-time United Club passes each year', category: 'lounge-access', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'ue-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit for a Global Entry, TSA PreCheck or NEXUS application fee every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'ue-instacart', name: 'Instacart+ Membership', description: 'Complimentary Instacart+ membership when activated, subject to offer terms', category: 'membership', annualValue: 0, renewalPeriod: 'annual', requiresEnrollment: true },
+    ],
+  },
+  {
+    id: 'chase-united-quest',
+    name: 'United Quest Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 350,
+    color: '#003b70',
+    signupBonus: { points: 70000, spend: 4000, timeMonths: 3, unit: 'miles + 500 PQP' },
+    earningRates: [
+      { category: 'United Purchases', multiplier: 3 },
+      { category: 'Travel', multiplier: 2 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'uq-travel-credit', name: '$200 United Travel Credit', description: 'Annual statement credit toward eligible United purchases', category: 'travel-credit', annualValue: 200, renewalPeriod: 'annual' },
+      { id: 'uq-award-discount', name: '10,000-Mile Award Flight Discount', description: 'Annual 10,000-mile discount on eligible United award flights', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'uq-bags', name: 'Two Free Checked Bags', description: 'First and second standard checked bags free for the primary cardmember and one companion', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uq-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit for a Global Entry, TSA PreCheck or NEXUS application fee every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+    ],
+  },
+  {
+    id: 'chase-united-club',
+    name: 'United Club Card',
+    issuer: 'Chase',
+    familyId: 'chase-united',
+    annualFee: 695,
+    color: '#003b70',
+    signupBonus: { points: 80000, spend: 5000, timeMonths: 3, unit: 'miles' },
+    earningRates: [
+      { category: 'Eligible United Flights', multiplier: 5 },
+      { category: 'United Purchases', multiplier: 5 },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'Travel', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'uc-club', name: 'United Club Membership', description: 'Unlimited United Club access for the primary cardmember and an eligible guest', category: 'lounge-access', annualValue: 750, renewalPeriod: 'annual' },
+      { id: 'uc-bags', name: 'Two Free Checked Bags', description: 'First and second standard checked bags free for the primary cardmember and one companion', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'uc-ge-tsa', name: '$120 Global Entry/TSA PreCheck', description: 'Statement credit for a Global Entry, TSA PreCheck or NEXUS application fee every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'uc-instacart', name: 'Instacart+ Membership', description: 'Complimentary Instacart+ membership when activated, subject to offer terms', category: 'membership', annualValue: 0, renewalPeriod: 'annual', requiresEnrollment: true },
+    ],
+  },
+
+  // ─── CHASE MARRIOTT BONVOY FAMILY (US CONSUMER) ────────────
+  {
+    id: 'chase-marriott-bold',
+    name: 'Marriott Bonvoy Bold Card',
+    issuer: 'Chase',
+    familyId: 'chase-marriott-bonvoy',
+    annualFee: 0,
+    color: '#8b1e2d',
+    signupBonus: { points: 60000, spend: 1000, timeMonths: 3, unit: 'points' },
+    earningRates: [
+      { category: 'Marriott Bonvoy Hotels', multiplier: 3 },
+      { category: 'Grocery Stores / Rideshare / Select Delivery / Streaming / Internet / Cable / Phone', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'mbb-silver', name: 'Marriott Bonvoy Silver Elite Status', description: 'Automatic Silver Elite status each calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbb-enc', name: '5 Elite Night Credits', description: 'Five Elite Night Credits deposited annually', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbb-payback', name: 'Pay Yourself Back', description: 'Redeem Marriott Bonvoy points for qualifying airline and Marriott travel purchases, up to $750 annually', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+    ],
+  },
+  {
+    id: 'chase-marriott-boundless',
+    name: 'Marriott Bonvoy Boundless Card',
+    issuer: 'Chase',
+    familyId: 'chase-marriott-bonvoy',
+    annualFee: 95,
+    color: '#8b1e2d',
+    signupBonus: { points: 125000, spend: 3000, timeMonths: 3, unit: 'points + Free Night Award' },
+    earningRates: [
+      { category: 'Marriott Bonvoy Hotels', multiplier: 6 },
+      { category: 'Gas Stations / Grocery Stores / Dining', multiplier: 3, limit: 'First $6,000/yr combined' },
+      { category: 'All Other', multiplier: 2 },
+    ],
+    perks: [
+      { id: 'mbbl-silver', name: 'Marriott Bonvoy Silver Elite Status', description: 'Automatic Silver Elite status each calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-enc', name: '15 Elite Night Credits', description: 'Fifteen Elite Night Credits deposited annually', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-free-night', name: 'Annual 35,000-Point Free Night Award', description: 'One Free Night Award after each account anniversary, redeemable up to 35,000 points', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'mbbl-gold', name: 'Path to Marriott Gold Elite Status', description: 'Earn Gold Elite status after $35,000 in purchases each calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
     ],
   },
 
@@ -636,6 +762,8 @@ export const cardTemplates: CardTemplate[] = [
 export const churningRules: ChurningRule[] = [
   { id: 'chase-5-24', issuer: 'Chase', ruleName: 'Chase 5/24', description: 'Chase will likely deny your application if you\'ve opened 5+ personal credit cards across all issuers in the past 24 months. Business cards from most issuers don\'t count.', cooldownMonths: 24 },
   { id: 'chase-sapphire-lifetime', issuer: 'Chase', ruleName: 'Sapphire Once-Per-Card', description: 'As of Jan 2026, you can earn the bonus on EACH Sapphire card once per lifetime. You no longer need to wait 48 months between a Preferred and Reserve bonus.', affectedCards: ['chase-sapphire-preferred', 'chase-sapphire-reserve'] },
+  { id: 'chase-united-family', issuer: 'Chase', ruleName: 'United Family Eligibility', description: 'United welcome-offer eligibility is shown at the individual product level; review the offer terms before applying. Product changes within the United family do not earn a welcome bonus.', affectedCards: ['chase-united-gateway', 'chase-united-explorer', 'chase-united-quest', 'chase-united-club'] },
+  { id: 'chase-marriott-family', issuer: 'Chase', ruleName: 'Marriott Bonvoy Family Eligibility', description: 'Marriott Bonvoy welcome-offer eligibility is subject to the product offer terms; product changes within the Marriott Bonvoy family do not earn a welcome bonus.', affectedCards: ['chase-marriott-bold', 'chase-marriott-boundless'] },
   { id: 'amex-lifetime', issuer: 'Amex', ruleName: 'Once-Per-Lifetime', description: 'Amex limits welcome bonuses to once per lifetime per card product. Clock may reset after ~7 years. Watch for targeted "No Lifetime Language" (NLL) offers.', cooldownMonths: 84 },
   { id: 'amex-1-5', issuer: 'Amex', ruleName: '1/5 Rule', description: 'You can hold a maximum of 5 Amex credit cards at the same time.', affectedCards: [] },
   { id: 'amex-2-90', issuer: 'Amex', ruleName: '2/90 Rule', description: 'You can be approved for at most 2 new Amex credit cards within any 90-day period.', cooldownMonths: 3 },

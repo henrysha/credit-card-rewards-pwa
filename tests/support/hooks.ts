@@ -15,8 +15,11 @@ declare module '@cucumber/cucumber' {
     page: Page;
     testDbId?: string;
     baseUrl: string;
-    directProductChangeError?: string;
-    directProductChangeStatus?: string;
+    directProductChangeResult?: {
+      rejected: boolean;
+      cardsBefore: Array<{ id?: number; cardTemplateId: string; status: string; openedDate?: string }>;
+      cardsAfter: Array<{ id?: number; cardTemplateId: string; status: string; openedDate?: string }>;
+    };
   }
 }
 

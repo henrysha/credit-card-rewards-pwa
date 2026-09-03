@@ -11,7 +11,7 @@ export default function CardCatalog() {
   const [familyFilter, setFamilyFilter] = useState('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi'];
+  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'Robinhood'];
   const families = ['all', ...getFamilyIds()];
 
   let filtered = cardTemplates;
@@ -47,7 +47,7 @@ export default function CardCatalog() {
           </button>
         ))}
       </div>
-      <div className="tabs" aria-label="Hotel family filters">
+      <div className="tabs" aria-label="Card family filters">
         {families.map(familyId => (
           <button key={familyId} className={`tab ${familyFilter === familyId ? 'active' : ''}`} onClick={() => setFamilyFilter(familyId)}>
             {familyId === 'all' ? 'All Families' : familyId}

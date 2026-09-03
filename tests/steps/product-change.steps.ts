@@ -1,36 +1,11 @@
 import { When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { cardTemplates } from '../../src/db/seed-data';
 
-When('I attempt a direct product change to {string}', async function (targetCardName: string) {
-  const targetTemplate = cardTemplates.find(card => card.name === targetCardName);
-  if (!targetTemplate) throw new Error(`Unable to find direct product change target: ${targetCardName}`);
-  const result = await this.page.evaluate(async (targetName: string) => {
-    const win = window as unknown as {
-      db: { cards: { toArray: () => Promise<Array<{ id?: number }>> } };
-      productChangeCard: (cardId: number, targetTemplateId: string) => Promise<number>;
-    };
-    const cards = await win.db.cards.toArray();
-    if (!cards[0]?.id) throw new Error(`Unable to find current card for direct product change: ${targetName}`);
-    try {
-      await win.productChangeCard(cards[0].id, targetName);
-      return { error: '', status: '' };
-    } catch (error) {
-      const unchangedCards = await win.db.cards.toArray();
-      return {
-        error: error instanceof Error ? error.message : String(error),
-        status: unchangedCards[0]?.status ?? '',
-      };
-    }
-  }, targetTemplate.id);
-  this.directProductChangeError = result.error;
-  this.directProductChangeStatus = result.status;
-});
-
-Then('the direct product change should be rejected', async function () {
-  expect(this.directProductChangeError).toContain('same card family');
-  expect(this.directProductChangeStatus).toBe('active');
-});
+interface ProductChangeTestWindow {
+  cardTemplates: Array<{ name: string; id: string }>;
+  productChangeCard: (cardId: number, targetTemplateId: string) => Promise<number>;
+  db: { cards: { toArray: () => Promise<Array<{ id?: number; cardTemplateId: string; status: string; openedDate?: string }>> } };
+}
 
 Then('I should see the product change modal', async function () {
   await this.page.waitForSelector('.modal-overlay', { state: 'visible', timeout: 5000 });
@@ -61,6 +36,38 @@ When('I confirm the product change', async function () {
   await confirmBtn.click();
   await this.page.waitForURL(/\/card\/\d+/, { timeout: 8000 });
   await this.page.waitForTimeout(500);
+});
+
+When('I attempt a direct product change to {string}', async function (targetCardName: string) {
+  const currentCardId = Number(this.page.url().match(/\/card\/(\d+)/)?.[1]);
+  if (!currentCardId) throw new Error('Expected to be on a user card detail page');
+
+  this.directProductChangeResult = await this.page.evaluate(async ({ currentCardId, targetCardName }) => {
+    const w = window as unknown as ProductChangeTestWindow;
+    const targetTemplate = w.cardTemplates.find(template => template.name === targetCardName);
+    if (!targetTemplate) throw new Error(`Unknown target card: ${targetCardName}`);
+    const before = await w.db.cards.toArray();
+    let rejected = false;
+    try {
+      await w.productChangeCard(currentCardId, targetTemplate.id);
+    } catch {
+      rejected = true;
+    }
+    const after = await w.db.cards.toArray();
+    return {
+      rejected,
+      cardsBefore: before,
+      cardsAfter: after,
+    };
+  }, { currentCardId, targetCardName });
+});
+
+Then('the direct product change should be rejected without mutating the account', async function () {
+  expect(this.directProductChangeResult).toEqual({
+    rejected: true,
+    cardsBefore: this.directProductChangeResult.cardsBefore,
+    cardsAfter: this.directProductChangeResult.cardsBefore,
+  });
 });
 
 Then('I should see {string} in the closed cards section', async function (statusText: string) {

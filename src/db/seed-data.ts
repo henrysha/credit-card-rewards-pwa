@@ -524,6 +524,24 @@ export const cardTemplates: CardTemplate[] = [
     ],
     perks: [],
   },
+
+  // ─── ROBINHOOD ────────────────────────────────────────────
+  {
+    id: 'robinhood-gold-card',
+    name: 'Robinhood Gold Card',
+    issuer: 'Robinhood',
+    annualFee: 0,
+    color: '#00c805',
+    signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
+    earningRates: [
+      { category: 'Eligible Purchases', multiplier: 3 },
+      { category: 'Robinhood Travel Portal (select purchases)', multiplier: 5, limit: 'When paying with card instead of points' },
+    ],
+    perks: [
+      { id: 'rh-gold-membership', name: 'Robinhood Gold Membership Required', description: 'The card has no annual fee, but an active annual Robinhood Gold subscription ($50) is required to apply, maintain the card, and earn points; no 30-day trial.', category: 'membership', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'rh-points-redemption', name: 'Flexible Points Redemptions', description: 'Redeem points for statement credit, brokerage cash back, travel, gift cards, and other options in the Robinhood Banking app; a Robinhood investing account is required for cash back.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
   // ─── CITI CO-BRANDED ───────────────────────────────────────
   {
     id: 'citi-aa-executive',

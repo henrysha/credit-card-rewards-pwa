@@ -4,7 +4,7 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 29 cards in the catalog
+    Then I should see 30 cards in the catalog
 
   Scenario: Filter cards by issuer
     Given I am on the "Catalog" page
@@ -19,6 +19,19 @@ Feature: Card Catalog
     Given I am on the "Catalog" page
     When I click the "Amex" filter button
     Then I should see 9 cards in the catalog
+
+  Scenario: Robinhood Gold Card is present and filterable
+    Given I am on the "Catalog" page
+    When I click the "Robinhood" filter button
+    Then I should see 1 cards in the catalog
+    And I should see "Robinhood Gold Card"
+
+  Scenario: Robinhood Gold Card shows current eligibility and fee terms
+    Given I am on the "Catalog" page
+    When I click on the card "Robinhood Gold Card"
+    Then I should see "Robinhood Gold Card"
+    And I should see "Robinhood Gold Membership Required" perk
+    And the "Robinhood Gold Membership Required" perk description should mention "active annual Robinhood Gold subscription ($50) is required"
 
   Scenario: Search cards by name
     Given I am on the "Catalog" page
@@ -54,4 +67,3 @@ Feature: Card Catalog
     And I should see "Emergency Evacuation & Transportation" perk
     And I should not see "$50 Hotel Credit" perk
     And I should not see "10% Anniversary Points Bonus" perk
-

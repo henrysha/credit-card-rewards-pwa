@@ -28,6 +28,7 @@ Feature: Churning Tracker
     And I should see "Amex" issuer section
     And I should see "Capital One" issuer section
     And I should see "Citi" issuer section
+    And I should see "Bilt" issuer section
     And I should see "U.S. Bank" issuer section
     And I should see "SKYPASS Family Bonus Eligibility" rule
 

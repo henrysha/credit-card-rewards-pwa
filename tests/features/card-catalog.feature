@@ -4,7 +4,7 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 44 cards in the catalog
+    Then I should see 47 cards in the catalog
 
   Scenario: SKYPASS consumer cards are listed and filterable
     Given I am on the "Catalog" page

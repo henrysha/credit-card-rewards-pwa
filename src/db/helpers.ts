@@ -149,10 +149,12 @@ export async function addCard(
     status: 'active',
   } as UserCard);
 
-  // Family history is informational only; every newly added card gets its own signup-bonus tracker.
-  // Product changes intentionally skip this block because they do not earn a signup bonus.
-  // Create signup bonus tracker
-  const deadline = addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
+  // A zero-spend offer is awarded on approval. Persist it as complete and use
+  // a non-expiring sentinel so consumers never treat it as a spend tracker.
+  const isAutomaticallyAwarded = template.signupBonus.spend <= 0;
+  const deadline = isAutomaticallyAwarded
+    ? '9999-12-31'
+    : addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
   await db.signupBonuses.add({
     cardId: cardId as number,
     cardTemplateId,
@@ -161,7 +163,8 @@ export async function addCard(
     deadline,
     bonusPoints: template.signupBonus.points,
     bonusUnit: template.signupBonus.unit,
-    completed: false,
+    completed: isAutomaticallyAwarded,
+    completedDate: isAutomaticallyAwarded ? openedDate : undefined,
     additionalBonus: template.signupBonus.additionalBonus,
   } as SignupBonus);
 
@@ -210,6 +213,11 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   const currentTemplate = getCardTemplate(currentTemplateId);
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
+  // Products explicitly excluded from the generic flow are not offered.
+  if (currentTemplate.productChangeEligible === false) {
+    return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
+  }
+
   // Product changes require an explicitly modeled family. Missing family IDs
   // must never make unrelated same-issuer products eligible by accident.
   const eligible = currentTemplate.familyId
@@ -218,6 +226,7 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
           && c.id !== currentTemplate.id
           && Boolean(c.familyId)
           && c.familyId === currentTemplate.familyId
+          && c.productChangeEligible !== false
       )
     : [];
 
@@ -245,6 +254,10 @@ export async function productChangeCard(
 
   if (!oldTemplate || !targetTemplate) {
     throw new Error('Invalid card template for product change');
+  }
+
+  if (oldTemplate.productChangeEligible === false || targetTemplate.productChangeEligible === false) {
+    throw new Error('This card is not eligible for product changes');
   }
 
   if (oldTemplate.issuer !== targetTemplate.issuer) {
@@ -309,9 +322,10 @@ export async function productChangeCard(
 export async function updateBonusSpend(bonusId: number, newSpend: number): Promise<void> {
   const bonus = await db.signupBonuses.get(bonusId);
   if (!bonus) return;
-  const completed = newSpend >= bonus.targetSpend;
+  const currentSpend = Number.isFinite(newSpend) ? Math.max(0, newSpend) : 0;
+  const completed = bonus.targetSpend <= 0 || currentSpend >= bonus.targetSpend;
   await db.signupBonuses.update(bonusId, {
-    currentSpend: newSpend,
+    currentSpend,
     completed,
     completedDate: completed && !bonus.completed ? new Date().toISOString().split('T')[0] : bonus.completedDate,
   });
@@ -325,7 +339,7 @@ export async function updateSignupBonus(
   if (!bonus) return;
 
   const newTargetSpend = updates.targetSpend ?? bonus.targetSpend;
-  const newCompleted = bonus.currentSpend >= newTargetSpend;
+  const newCompleted = newTargetSpend <= 0 || bonus.currentSpend >= newTargetSpend;
 
   await db.signupBonuses.update(bonusId, {
     ...updates,

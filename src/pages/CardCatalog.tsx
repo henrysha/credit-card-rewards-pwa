@@ -11,7 +11,7 @@ export default function CardCatalog() {
   const [familyFilter, setFamilyFilter] = useState('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'Robinhood', 'U.S. Bank'];
+  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'Robinhood', 'U.S. Bank', 'Bilt'];
   const families = ['all', ...getFamilyIds()];
 
   let filtered = cardTemplates;

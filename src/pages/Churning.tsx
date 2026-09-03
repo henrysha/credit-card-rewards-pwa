@@ -31,7 +31,7 @@ export default function Churning() {
     return results.every(result => result.eligible);
   }, []);
 
-  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi', 'U.S. Bank'] as const;
+  const issuerGroups = ['Chase', 'Amex', 'Capital One', 'Citi', 'U.S. Bank', 'Bilt'] as const;
   const getLastOpenedByIssuer = (issuer: string): UserCard | undefined => {
     if (!cards) return undefined;
     const issuerCards = cards

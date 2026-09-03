@@ -13,7 +13,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank' | 'Bilt';
 
 /** Category of perk */
 export type PerkCategory =
@@ -71,6 +71,7 @@ export interface CardTemplate {
   issuer: CardIssuer;
   /** Shared issuer family identifier used for bonus eligibility/history. */
   familyId?: string;
+  productChangeEligible?: boolean;
   annualFee: number;
   /** Eligibility or account requirements that are not card perks. */
   requirements?: string[];

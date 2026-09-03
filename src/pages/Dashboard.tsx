@@ -40,7 +40,9 @@ export default function Dashboard() {
   }, []);
 
   const activeCards = cards?.length ?? 0;
-  const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed) ?? [];
+  // Zero-spend welcome benefits are completed on add. The spend guard also
+  // protects dashboards containing an older malformed zero-target record.
+  const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed && b.targetSpend > 0) ?? [];
   const unusedPerks = perks?.filter((p: UserPerk) => !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
   const totalPerkValue = unusedPerks.reduce((sum: number, p: UserPerk) => sum + (p.periodValue ?? p.annualValue), 0);
 

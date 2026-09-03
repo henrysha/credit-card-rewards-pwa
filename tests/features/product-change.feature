@@ -53,3 +53,8 @@ Feature: Product Change (Upgrading / Downgrading)
     Given I have added the "Hilton Honors American Express Card" card
     When I attempt a direct product change to "American Express Gold"
     Then the direct product change should be rejected
+
+  Scenario: Cards without an explicit family cannot be product changed
+    Given I have added the "American Express Gold" card
+    When I attempt a direct product change to "American Express Platinum"
+    Then the direct product change should be rejected

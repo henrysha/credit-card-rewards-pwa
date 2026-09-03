@@ -197,9 +197,14 @@ export function getEligibleProductChangeTemplates(currentTemplateId: string): {
   if (!currentTemplate) return { upgrades: [], downgrades: [], sameTier: [], allEligible: [] };
 
   // Eligible cards must be from the same issuer and not be the same card
-  const eligible = cardTemplates.filter(
-    c => c.issuer === currentTemplate.issuer && c.id !== currentTemplate.id && c.familyId === currentTemplate.familyId
-  );
+  const eligible = currentTemplate.familyId
+    ? cardTemplates.filter(
+        c => c.issuer === currentTemplate.issuer
+          && c.id !== currentTemplate.id
+          && Boolean(c.familyId)
+          && c.familyId === currentTemplate.familyId
+      )
+    : [];
 
   const upgrades = eligible.filter(c => c.annualFee > currentTemplate.annualFee);
   const downgrades = eligible.filter(c => c.annualFee < currentTemplate.annualFee);
@@ -235,7 +240,7 @@ export async function productChangeCard(
     throw new Error('Product change target must be different from the current card');
   }
 
-  if (oldTemplate.familyId !== targetTemplate.familyId) {
+  if (!oldTemplate.familyId || !targetTemplate.familyId || oldTemplate.familyId !== targetTemplate.familyId) {
     throw new Error('Product change must stay within the same card family');
   }
 

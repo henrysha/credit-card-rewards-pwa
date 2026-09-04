@@ -1,5 +1,6 @@
 import { When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
+import { cardFamilyLabels } from '../../src/db/card-families';
 
 Then('I should see {int} cards in the catalog', async function (count: number) {
   // Catalog page uses the .glass-card selector for card entries
@@ -12,6 +13,15 @@ Then('I should see {int} cards in the catalog', async function (count: number) {
 Then('the {string} family should have {int} catalog cards', async function (family: string, count: number) {
   await this.page.getByRole('button', { name: family, exact: true }).click();
   await expect(this.page.locator('.page .glass-card')).toHaveCount(count, { timeout: 5000 });
+});
+
+Then('the card family label mappings should exactly cover the catalog family IDs', async function () {
+  const catalogFamilyIds = await this.page.evaluate(() => {
+    const templates = (window as unknown as { cardTemplates: Array<{ familyId?: string }> }).cardTemplates;
+    return [...new Set(templates.map(card => card.familyId).filter((familyId): familyId is string => Boolean(familyId)))];
+  });
+
+  expect(Object.keys(cardFamilyLabels).sort()).toEqual(catalogFamilyIds.sort());
 });
 
 Then('the card family filters should be labeled {string}', async function (labels: string) {

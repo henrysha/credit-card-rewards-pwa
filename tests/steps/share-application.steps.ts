@@ -4,14 +4,14 @@ import { expect } from '@playwright/test';
 const applicationUrlPattern = /\/credit-card-rewards-pwa\/$/;
 
 Given('native application sharing is available', async function () {
-  await this.page.evaluate(() => {
+  await this.page.evaluate(`
     Object.defineProperty(navigator, 'share', {
       configurable: true,
-      value: async (data: ShareData) => {
-        (window as typeof window & { sharedApplication?: ShareData }).sharedApplication = data;
+      value: async function (data) {
+        window.sharedApplication = data;
       },
     });
-  });
+  `);
 });
 
 Given('native application sharing is unavailable', async function () {

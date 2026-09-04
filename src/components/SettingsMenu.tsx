@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FeatureRequestModal } from './FeatureRequestModal';
 import { RequestCardModal } from './RequestCardModal';
+import { ShareApplicationButton } from './ShareApplicationButton';
 
 export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,6 +79,7 @@ export function SettingsMenu() {
             </svg>
             Request Feature
           </button>
+          <ShareApplicationButton onShare={() => setIsOpen(false)} />
         </div>
       )}
 

@@ -41,6 +41,7 @@ Feature: Card Catalog
 
   Scenario: Family filter tabs use human-friendly labels
     Given I am on the "Catalog" page
+    Then the card family label mappings should exactly cover the catalog family IDs
     Then the card family filters should be labeled "All Families, Chase Ultimate Rewards Consumer, Chase United, Chase Marriott Bonvoy, Hilton, IHG, Bilt Card 2.0, SKYPASS Visa"
     And the card family filters should not show slug labels
     And the "Chase United" family should have 4 catalog cards

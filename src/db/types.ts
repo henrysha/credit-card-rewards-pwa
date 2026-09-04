@@ -2,6 +2,8 @@
 // Credit Card Rewards PWA — Core Types
 // ============================================================
 
+import type { CardFamilyId } from './card-families';
+
 /** Renewal period for a perk credit */
 export type RenewalPeriod =
   | 'monthly'
@@ -70,7 +72,7 @@ export interface CardTemplate {
   name: string;
   issuer: CardIssuer;
   /** Shared issuer family identifier used for bonus eligibility/history. */
-  familyId?: string;
+  familyId?: CardFamilyId;
   productChangeEligible?: boolean;
   annualFee: number;
   /** Eligibility or account requirements that are not card perks. */

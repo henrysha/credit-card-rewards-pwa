@@ -1,5 +1,7 @@
 import { db } from './database';
-import { cardFamilies, cardTemplates } from './seed-data';
+import { cardFamilyLabels } from './card-families';
+import type { CardFamilyId } from './card-families';
+import { cardTemplates } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
 
 // ── Helpers for computing renewal dates ──
@@ -108,28 +110,28 @@ export async function getSignupBonusEligibility(cardTemplateId: string): Promise
 }
 
 /** Return the distinct loyalty families represented in the catalog. */
-export function getFamilyIds(): string[] {
-  return [...new Set(cardTemplates.map(card => card.familyId).filter((familyId): familyId is string => Boolean(familyId)))];
+export function getFamilyIds(): CardFamilyId[] {
+  return [...new Set(cardTemplates.map(card => card.familyId).filter((familyId): familyId is CardFamilyId => Boolean(familyId)))];
 }
 
 /** Return the user-facing label for a card family identifier. */
-export function getFamilyLabel(familyId: string): string {
-  return cardFamilies.find(family => family.id === familyId)?.label ?? familyId;
+export function getFamilyLabel(familyId: CardFamilyId): string {
+  return cardFamilyLabels[familyId];
 }
 
 /** Return catalog products belonging to a loyalty family. */
-export function getFamilyTemplates(familyId: string): CardTemplate[] {
+export function getFamilyTemplates(familyId: CardFamilyId): CardTemplate[] {
   return cardTemplates.filter(c => c.familyId === familyId);
 }
 
 /** Return a user's complete family history, including closed/product-changed cards. */
-export async function getFamilyHistory(familyId: string): Promise<UserCard[]> {
+export async function getFamilyHistory(familyId: CardFamilyId): Promise<UserCard[]> {
   const cards = await db.cards.toArray();
   return cards.filter(card => getCardTemplate(card.cardTemplateId)?.familyId === familyId);
 }
 
 /** Informational family status: false means prior family history exists; it does not block addCard. */
-export async function isFamilyEligible(familyId: string): Promise<boolean> {
+export async function isFamilyEligible(familyId: CardFamilyId): Promise<boolean> {
   return (await getFamilyHistory(familyId)).length === 0;
 }
 

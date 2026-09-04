@@ -1,9 +1,10 @@
 import { getFamilyLabel } from '../db/helpers';
+import type { CardFamilyId } from '../db/card-families';
 
 interface CardFamilyFilterProps {
-  familyIds: string[];
-  selectedFamilyId: string;
-  onSelect: (familyId: string) => void;
+  familyIds: Array<'all' | CardFamilyId>;
+  selectedFamilyId: 'all' | CardFamilyId;
+  onSelect: (familyId: 'all' | CardFamilyId) => void;
 }
 
 export function CardFamilyFilter({ familyIds, selectedFamilyId, onSelect }: CardFamilyFilterProps) {

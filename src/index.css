@@ -280,6 +280,14 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .dropdown-item:hover { background: var(--bg-glass); }
 .dropdown-item svg { width: 18px; height: 18px; color: var(--text-secondary); }
 
+.data-transfer-modal h2, .data-transfer-modal h3 { margin: 0; }
+.data-transfer-section { padding: var(--space-lg) 0; border-top: 1px solid var(--bg-glass-border); }
+.data-transfer-section:first-of-type { border-top: none; }
+.data-transfer-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.data-transfer-file-input { display: none; }
+.data-transfer-preview { padding: var(--space-md); background: var(--bg-glass); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-md); }
+.data-transfer-error { color: var(--accent-red); }
+
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: var(--radius-full); }

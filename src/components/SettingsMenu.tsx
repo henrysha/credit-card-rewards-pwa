@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { FeatureRequestModal } from './FeatureRequestModal';
 import { RequestCardModal } from './RequestCardModal';
 import { ShareApplicationButton } from './ShareApplicationButton';
+import { DataTransferModal } from './DataTransferModal';
 
 export function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
+  const [showDataTransfer, setShowDataTransfer] = useState(false);
   const [isCompact, setIsCompact] = useState(() => localStorage.getItem('compact_mode') === 'true');
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +57,19 @@ export function SettingsMenu() {
             />
           </div>
           <div style={{ height: '1px', background: 'var(--bg-glass-border)', margin: '4px 0' }} />
+          <button
+            className="dropdown-item"
+            onClick={() => {
+              setShowDataTransfer(true);
+              setIsOpen(false);
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3v12"/><polyline points="8 11 12 15 16 11"/><path d="M4 17v3h16v-3"/>
+            </svg>
+            Export / Import Data
+          </button>
+          <div style={{ height: '1px', background: 'var(--bg-glass-border)', margin: '4px 0' }} />
           <button 
             className="dropdown-item" 
             onClick={() => {
@@ -89,6 +104,10 @@ export function SettingsMenu() {
 
       {showFeatureModal && (
         <FeatureRequestModal onClose={() => setShowFeatureModal(false)} />
+      )}
+
+      {showDataTransfer && (
+        <DataTransferModal onClose={() => setShowDataTransfer(false)} />
       )}
     </div>
   );

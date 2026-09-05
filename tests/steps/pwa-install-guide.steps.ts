@@ -21,6 +21,10 @@ Given('I am browsing on Android', async function () {
   await useUserAgent(this.page, userAgents.android);
 });
 
+Given('PWA installation is available', function () {
+  this.pwaInstallAvailable = true;
+});
+
 Given('I am browsing on a desktop computer', async function () {
   await useUserAgent(this.page, userAgents.desktop);
 });
@@ -35,6 +39,21 @@ Given('the application is running as an installed PWA', async function () {
 });
 
 When('I load the application in the browser', async function () {
+  await this.page.reload();
+  await this.page.waitForLoadState('networkidle');
+
+  if (this.pwaInstallAvailable) {
+    await this.page.evaluate(() => {
+      window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }));
+    });
+  }
+});
+
+When('I dismiss the PWA installation guide', async function () {
+  await this.page.getByRole('button', { name: 'Got it' }).click();
+});
+
+When('I reload the application', async function () {
   await this.page.reload();
   await this.page.waitForLoadState('networkidle');
 });

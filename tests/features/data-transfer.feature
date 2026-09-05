@@ -3,6 +3,7 @@ Feature: Export and import persisted data
 
   Scenario: Export all saved data as JSON
     Given I have added the "Chase Sapphire Preferred" card
+    And I navigate to the "Cards"
     When I open the settings menu
     And I open data transfer
     And I export a JSON backup
@@ -10,6 +11,7 @@ Feature: Export and import persisted data
 
   Scenario: Export all saved data as CSV
     Given I have added the "Chase Sapphire Preferred" card
+    And I navigate to the "Cards"
     When I open the settings menu
     And I open data transfer
     And I export a CSV backup
@@ -17,6 +19,7 @@ Feature: Export and import persisted data
 
   Scenario: Importing a backup replaces the saved data
     Given I have added the "Chase Sapphire Preferred" card
+    And I navigate to the "Cards"
     When I open the settings menu
     And I open data transfer
     And I choose a backup containing an Amex Gold card

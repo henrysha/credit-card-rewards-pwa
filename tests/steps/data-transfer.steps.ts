@@ -66,3 +66,81 @@ When('I replace the device data with the backup', async function () {
   await this.page.getByRole('button', { name: 'Replace data and import' }).click();
   await expect(this.page.getByText('Backup imported successfully!')).toBeVisible();
 });
+
+When('I choose a backup with an incomplete sign-up bonus', async function () {
+  const backup = {
+    format: 'credit-card-rewards-backup',
+    version: 1,
+    exportedAt: '2026-09-04T12:00:00.000Z',
+    data: {
+      cards: [{ id: 1, cardTemplateId: 'amex-gold', openedDate: '2026-01-01', annualFeeDate: '2027-01-01', status: 'active' }],
+      signupBonuses: [{
+        id: 1,
+        cardId: 1,
+        cardTemplateId: 'amex-gold',
+        targetSpend: 6000,
+        currentSpend: 0,
+        deadline: '2027-01-01',
+        bonusUnit: 'points',
+        completed: false,
+      }],
+      perks: [],
+    },
+  };
+  await this.page.getByLabel('Choose backup file').setInputFiles({
+    name: 'incomplete.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
+});
+
+Then('I should see the backup error {string}', async function (message: string) {
+  await expect(this.page.getByRole('alert')).toHaveText(message);
+});
+
+Then('I should not be able to replace the device data', async function () {
+  await expect(this.page.getByRole('button', { name: 'Replace data and import' })).toHaveCount(0);
+});
+
+When('two backup file reads finish out of order', async function () {
+  await this.page.evaluate(() => {
+    const originalText = File.prototype.text;
+    let readNumber = 0;
+    File.prototype.text = function () {
+      readNumber += 1;
+      const result = originalText.call(this);
+      if (readNumber !== 1) return result;
+      return new Promise<string>((resolve, reject) => {
+        window.setTimeout(() => result.then(resolve, reject), 250);
+      });
+    };
+  });
+
+  const makeBackup = (cardCount: number) => JSON.stringify({
+    format: 'credit-card-rewards-backup',
+    version: 1,
+    exportedAt: '2026-09-04T12:00:00.000Z',
+    data: {
+      cards: Array.from({ length: cardCount }, (_, index) => ({
+        id: index + 1,
+        cardTemplateId: 'amex-gold',
+        openedDate: '2026-01-01',
+        annualFeeDate: '2027-01-01',
+        status: 'active',
+      })),
+      signupBonuses: [],
+      perks: [],
+    },
+  });
+  const input = this.page.getByLabel('Choose backup file');
+  await input.setInputFiles({ name: 'older.json', mimeType: 'application/json', buffer: Buffer.from(makeBackup(2)) });
+  await input.setInputFiles({ name: 'newer.json', mimeType: 'application/json', buffer: Buffer.from(makeBackup(1)) });
+});
+
+Then('the newer backup should remain selected', async function () {
+  await expect(this.page.getByText('newer.json')).toBeVisible();
+  await expect(this.page.getByText('1 cards · 0 bonuses · 0 perks')).toBeVisible();
+  await this.page.waitForTimeout(350);
+  await expect(this.page.getByText('newer.json')).toBeVisible();
+  await expect(this.page.getByText('1 cards · 0 bonuses · 0 perks')).toBeVisible();
+});

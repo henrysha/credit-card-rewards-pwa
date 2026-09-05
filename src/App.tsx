@@ -10,6 +10,7 @@ import Churning from './pages/Churning';
 import CardCatalog from './pages/CardCatalog';
 import { CatalogDetail } from './pages/CatalogDetail';
 import ReloadPrompt from './components/ReloadPrompt';
+import PwaInstallGuide from './components/PwaInstallGuide';
 import { ToastProvider } from './components/ToastContext';
 
 function BottomNav() {
@@ -95,6 +96,7 @@ function AppContent() {
       </main>
       <BottomNav />
       <ReloadPrompt />
+      <PwaInstallGuide />
     </div>
   );
 }

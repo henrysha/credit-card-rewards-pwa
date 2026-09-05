@@ -17,6 +17,17 @@ export interface DataBackup {
 type BackupRecordType = keyof DataBackup['data'];
 
 const recordTypes: BackupRecordType[] = ['cards', 'signupBonuses', 'perks'];
+const cardStatuses = ['active', 'closed', 'product-changed'] as const;
+const perkCategories = [
+  'travel-credit', 'hotel-credit', 'dining-credit', 'entertainment-credit',
+  'shopping-credit', 'rideshare-credit', 'delivery-credit', 'wellness-credit',
+  'streaming-credit', 'lounge-access', 'elite-status', 'insurance', 'membership',
+  'companion-certificate', 'global-entry-tsa', 'other',
+] as const;
+const renewalPeriods = [
+  'monthly', 'quarterly', 'semi-annual', 'annual', 'every-4-years',
+  'one-time', 'ongoing',
+] as const;
 
 export async function createBackup(): Promise<DataBackup> {
   const [cards, signupBonuses, perks] = await Promise.all([
@@ -94,13 +105,64 @@ function isObject(value: unknown): value is Record<string, unknown> {
 }
 
 function requireString(record: Record<string, unknown>, field: string, label: string) {
-  if (typeof record[field] !== 'string') throw new Error(`${label} has an invalid ${field}.`);
+  if (typeof record[field] !== 'string' || record[field].length === 0) {
+    throw new Error(`${label} has an invalid ${field}.`);
+  }
 }
 
 function requireNumber(record: Record<string, unknown>, field: string, label: string) {
   if (typeof record[field] !== 'number' || !Number.isFinite(record[field])) {
     throw new Error(`${label} has an invalid ${field}.`);
   }
+}
+
+function requireBoolean(record: Record<string, unknown>, field: string, label: string) {
+  if (typeof record[field] !== 'boolean') throw new Error(`${label} has an invalid ${field}.`);
+}
+
+function requireEnum(
+  record: Record<string, unknown>,
+  field: string,
+  values: readonly string[],
+  label: string,
+) {
+  requireString(record, field, label);
+  if (!values.includes(record[field] as string)) throw new Error(`${label} has an invalid ${field}.`);
+}
+
+function validateOptionalString(record: Record<string, unknown>, field: string, label: string) {
+  if (record[field] !== undefined && typeof record[field] !== 'string') {
+    throw new Error(`${label} has an invalid ${field}.`);
+  }
+}
+
+function validateOptionalNumber(record: Record<string, unknown>, field: string, label: string) {
+  if (record[field] !== undefined && (typeof record[field] !== 'number' || !Number.isFinite(record[field]))) {
+    throw new Error(`${label} has an invalid ${field}.`);
+  }
+}
+
+function validateOptionalBoolean(record: Record<string, unknown>, field: string, label: string) {
+  if (record[field] !== undefined && typeof record[field] !== 'boolean') {
+    throw new Error(`${label} has an invalid ${field}.`);
+  }
+}
+
+function validateOptionalId(record: Record<string, unknown>, label: string, ids: Set<number>) {
+  if (record.id === undefined) return;
+  requireNumber(record, 'id', label);
+  const id = record.id as number;
+  if (!Number.isInteger(id) || id <= 0 || ids.has(id)) throw new Error(`${label} has a duplicate or invalid id.`);
+  ids.add(id);
+}
+
+function validateAdditionalBonus(value: unknown, label: string) {
+  if (value === undefined) return;
+  if (!isObject(value)) throw new Error(`${label} has an invalid additionalBonus.`);
+  requireNumber(value, 'points', `${label} additional bonus`);
+  requireNumber(value, 'spend', `${label} additional bonus`);
+  requireString(value, 'description', `${label} additional bonus`);
+  validateOptionalString(value, 'unit', `${label} additional bonus`);
 }
 
 function validateBackup(value: unknown): DataBackup {
@@ -122,6 +184,8 @@ function validateBackup(value: unknown): DataBackup {
   const bonuses = value.data.signupBonuses as unknown[];
   const perks = value.data.perks as unknown[];
   const cardIds = new Set<number>();
+  const bonusIds = new Set<number>();
+  const perkIds = new Set<number>();
 
   cards.forEach((item, index) => {
     if (!isObject(item)) throw new Error(`Card ${index + 1} is invalid.`);
@@ -129,7 +193,11 @@ function validateBackup(value: unknown): DataBackup {
     requireString(item, 'cardTemplateId', `Card ${index + 1}`);
     requireString(item, 'openedDate', `Card ${index + 1}`);
     requireString(item, 'annualFeeDate', `Card ${index + 1}`);
-    requireString(item, 'status', `Card ${index + 1}`);
+    requireEnum(item, 'status', cardStatuses, `Card ${index + 1}`);
+    validateOptionalString(item, 'nickname', `Card ${index + 1}`);
+    validateOptionalString(item, 'lastFourDigits', `Card ${index + 1}`);
+    validateOptionalString(item, 'closedDate', `Card ${index + 1}`);
+    validateOptionalString(item, 'notes', `Card ${index + 1}`);
     const id = item.id as number;
     if (!Number.isInteger(id) || id <= 0 || cardIds.has(id)) throw new Error(`Card ${index + 1} has a duplicate or invalid id.`);
     cardIds.add(id);
@@ -137,21 +205,37 @@ function validateBackup(value: unknown): DataBackup {
 
   bonuses.forEach((item, index) => {
     if (!isObject(item)) throw new Error(`Sign-up bonus ${index + 1} is invalid.`);
-    requireNumber(item, 'cardId', `Sign-up bonus ${index + 1}`);
-    requireString(item, 'cardTemplateId', `Sign-up bonus ${index + 1}`);
-    requireNumber(item, 'targetSpend', `Sign-up bonus ${index + 1}`);
-    requireNumber(item, 'currentSpend', `Sign-up bonus ${index + 1}`);
-    requireString(item, 'deadline', `Sign-up bonus ${index + 1}`);
+    const label = `Sign-up bonus ${index + 1}`;
+    validateOptionalId(item, label, bonusIds);
+    requireNumber(item, 'cardId', label);
+    requireString(item, 'cardTemplateId', label);
+    requireNumber(item, 'targetSpend', label);
+    requireNumber(item, 'currentSpend', label);
+    requireString(item, 'deadline', label);
+    requireNumber(item, 'bonusPoints', label);
+    requireString(item, 'bonusUnit', label);
+    requireBoolean(item, 'completed', label);
+    validateOptionalString(item, 'completedDate', label);
+    validateAdditionalBonus(item.additionalBonus, label);
     if (!cardIds.has(item.cardId as number)) throw new Error(`Sign-up bonus ${index + 1} refers to a missing card.`);
   });
 
   perks.forEach((item, index) => {
     if (!isObject(item)) throw new Error(`Perk ${index + 1} is invalid.`);
-    requireNumber(item, 'cardId', `Perk ${index + 1}`);
-    requireString(item, 'perkTemplateId', `Perk ${index + 1}`);
-    requireString(item, 'perkName', `Perk ${index + 1}`);
-    requireString(item, 'currentPeriodStart', `Perk ${index + 1}`);
-    requireString(item, 'currentPeriodEnd', `Perk ${index + 1}`);
+    const label = `Perk ${index + 1}`;
+    validateOptionalId(item, label, perkIds);
+    requireNumber(item, 'cardId', label);
+    requireString(item, 'perkTemplateId', label);
+    requireString(item, 'perkName', label);
+    requireEnum(item, 'category', perkCategories, label);
+    requireBoolean(item, 'used', label);
+    validateOptionalString(item, 'usedDate', label);
+    validateOptionalBoolean(item, 'active', label);
+    requireString(item, 'currentPeriodStart', label);
+    requireString(item, 'currentPeriodEnd', label);
+    requireEnum(item, 'renewalPeriod', renewalPeriods, label);
+    requireNumber(item, 'annualValue', label);
+    validateOptionalNumber(item, 'periodValue', label);
     if (!cardIds.has(item.cardId as number)) throw new Error(`Perk ${index + 1} refers to a missing card.`);
   });
 

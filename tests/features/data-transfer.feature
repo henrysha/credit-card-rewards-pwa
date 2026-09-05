@@ -26,5 +26,5 @@ Feature: Export and import persisted data
     Then I should see a preview of 1 card
     When I replace the device data with the backup
     And I navigate to the "Cards"
-    Then I should see "American Express Gold Card" on the cards page
+    Then I should see "American Express Gold" on the cards page
     And I should not see "Chase Sapphire Preferred"

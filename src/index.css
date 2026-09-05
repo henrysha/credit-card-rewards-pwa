@@ -200,6 +200,14 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .modal-content { background: var(--bg-secondary); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: var(--space-lg); padding-bottom: calc(var(--space-lg) + var(--safe-bottom)); width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; animation: slideUp var(--transition-base); }
 .modal-handle { width: 40px; height: 4px; background: var(--text-muted); border-radius: var(--radius-full); margin: 0 auto var(--space-lg); }
 
+.install-guide { text-align: center; }
+.install-guide-icon { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin: 0 auto var(--space-md); border-radius: var(--radius-lg); background: var(--accent-gold-dim); color: var(--accent-gold-light); }
+.install-guide-icon svg { width: 30px; height: 30px; }
+.install-guide-intro { margin: var(--space-sm) auto var(--space-lg); max-width: 420px; color: var(--text-secondary); font-size: 0.875rem; }
+.install-guide-steps { display: grid; gap: var(--space-sm); margin: 0 0 var(--space-lg); padding: 0; list-style: none; counter-reset: install-step; text-align: left; }
+.install-guide-steps li { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-md); background: var(--bg-glass); color: var(--text-secondary); font-size: 0.875rem; counter-increment: install-step; }
+.install-guide-steps li::before { content: counter(install-step); display: flex; flex: 0 0 28px; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--accent-gold-dim); color: var(--accent-gold-light); font-weight: 700; }
+
 .search-bar { position: relative; margin-bottom: var(--space-md); }
 .search-bar input { width: 100%; padding: var(--space-sm) var(--space-md) var(--space-sm) 40px; background: var(--bg-glass); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-full); color: var(--text-primary); font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color var(--transition-fast); }
 .search-bar input:focus { border-color: var(--accent-gold); }

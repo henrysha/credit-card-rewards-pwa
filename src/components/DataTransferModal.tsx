@@ -11,6 +11,7 @@ import { useToast } from './ToastContext';
 export function DataTransferModal({ onClose }: { onClose: () => void }) {
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileReadIdRef = useRef(0);
   const [backup, setBackup] = useState<DataBackup | null>(null);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
@@ -23,6 +24,7 @@ export function DataTransferModal({ onClose }: { onClose: () => void }) {
   };
 
   const handleFile = async (file?: File) => {
+    const fileReadId = ++fileReadIdRef.current;
     setBackup(null);
     setError('');
     setFileName(file?.name ?? '');
@@ -32,8 +34,11 @@ export function DataTransferModal({ onClose }: { onClose: () => void }) {
       return;
     }
     try {
-      setBackup(parseBackup(await file.text(), file.name));
+      const parsedBackup = parseBackup(await file.text(), file.name);
+      if (fileReadId !== fileReadIdRef.current) return;
+      setBackup(parsedBackup);
     } catch (reason) {
+      if (fileReadId !== fileReadIdRef.current) return;
       setError(reason instanceof Error ? reason.message : 'The backup could not be read.');
     }
   };

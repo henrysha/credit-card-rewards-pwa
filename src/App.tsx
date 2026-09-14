@@ -65,17 +65,24 @@ function BottomNav() {
 
 function AppContent() {
   useEffect(() => {
-    // Sync perks from catalog, then auto-refresh expired ones
-    syncCardPerks().then(() => refreshExpiredPerks());
-
-    // Run notification checks on app load
-    runNotificationChecks();
-
-    // Re-check when app comes to foreground (critical for mobile PWA)
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        runNotificationChecks();
+    // Serialize refreshes so rapid resume events cannot overlap database writes.
+    let pending: Promise<void> | undefined;
+    const refresh = () => {
+      if (!pending) {
+        pending = (async () => {
+          await syncCardPerks();
+          await refreshExpiredPerks();
+          await runNotificationChecks();
+        })().catch(error => {
+          console.error('Unable to refresh rewards', error);
+        }).finally(() => { pending = undefined; });
       }
+      return pending;
+    };
+    void refresh();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') void refresh();
     };
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);

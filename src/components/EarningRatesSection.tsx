@@ -1,3 +1,4 @@
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { currentQuarterRewards } from '../db/quarterly-rewards';
 import type { EarningRate } from '../db/types';
 
@@ -6,13 +7,14 @@ interface EarningRatesSectionProps {
 }
 
 export function EarningRatesSection({ earningRates }: EarningRatesSectionProps) {
+  const now = useCurrentDate();
   return (
     <div className="glass-card mt-md">
       <div className="section-header">
         <h3 className="section-title">Earning Rates</h3>
       </div>
       {earningRates.map((rate, i) => {
-        const quarter = currentQuarterRewards(rate);
+        const quarter = currentQuarterRewards(rate, now);
         return (
           <div key={i} className="earning-rate">
             <div className="earning-multiplier">{rate.multiplier}x</div>

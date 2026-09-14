@@ -40,3 +40,44 @@ Given('the rewards clock starts just before the quarter ends', async function ()
 When('the rewards clock passes midnight', async function () {
   await this.page.clock.fastForward(61_000);
 });
+
+Given('the rewards viewport is a narrow phone', async function () {
+  await this.page.setViewportSize({ width: 320, height: 800 });
+});
+
+Then('each quarterly category should have its own 5x earning row', async function () {
+  const section = this.page.getByTestId('quarterly-categories');
+  await expect(section.locator('.earning-rate')).toHaveCount(5);
+  for (const category of ['Gas Stations', 'Public Transit', 'EV Charging', 'Select Live Entertainment', 'United Way']) {
+    const row = section.locator('.earning-rate').filter({ hasText: category });
+    await expect(row.locator('.earning-category')).toHaveText(category);
+    await expect(row.locator('.earning-multiplier')).toHaveText('5x');
+  }
+});
+
+Then('each quarterly recommendation should have readable category, card, and multiplier columns', async function () {
+  for (const category of ['Gas', 'Public Transit', 'EV Charging', 'Select Live Entertainment', 'United Way']) {
+    const row = this.page.locator(`.best-card-row[data-category="${category}"]`);
+    await expect(row).toBeVisible();
+    const columns = row.locator(':scope > div');
+    await expect(columns.nth(0)).toContainText(category);
+    await expect(columns.nth(1)).toHaveText('Chase Freedom');
+    await expect(columns.nth(2)).toHaveText('5x');
+    const boxes = await columns.evaluateAll(elements => elements.map(el => {
+      const rect = el.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width, overflow: el.scrollWidth > el.clientWidth + 1 };
+    }));
+    expect(boxes[0].width).toBeGreaterThan(40);
+    expect(boxes[1].width).toBeGreaterThan(40);
+    expect(boxes.every(box => !box.overflow && box.left >= 0 && box.right <= 320)).toBe(true);
+    expect(boxes[0].right).toBeLessThanOrEqual(boxes[1].left);
+    expect(boxes[1].right).toBeLessThanOrEqual(boxes[2].left);
+  }
+});
+
+Then('quarterly recommendation terms should appear once outside the rows', async function () {
+  const terms = this.page.getByTestId('quarterly-recommendation-terms');
+  await expect(terms).toHaveCount(1);
+  await expect(terms).toContainText('$1,500 combined/quarter');
+  await expect(this.page.locator('.best-card-row').filter({ hasText: 'If activated' })).toHaveCount(0);
+});

@@ -3,7 +3,8 @@ Feature: Actual quarterly rotating categories
     Given the rewards date is "2026-09-14"
     And I have added the "<card>" card
     When I view the card detail for "<card>"
-    Then the quarterly earning rates should show "Q3 2026: Gas Stations, Public Transit, EV Charging, Select Live Entertainment, United Way"
+    Then each quarterly category should have its own 5x earning row
+    And the quarterly earning rates should show "Q3 2026"
     And the quarterly earning rates should show "Activate by 2026-09-14"
     When I navigate to the "Dashboard"
     Then I should see "Gas" in the best card section with "<card>" and "5x" multiplier
@@ -65,3 +66,12 @@ Feature: Actual quarterly rotating categories
     When the PWA resumes on "2026-10-01"
     Then the "$400 Resy Credit" perk should not be marked as used
     And the "$400 Resy Credit" perk should have a Deactivate button
+
+
+  Scenario: Quarterly recommendations remain readable on a narrow phone
+    Given the rewards date is "2026-09-14"
+    And the rewards viewport is a narrow phone
+    And I have added the "Chase Freedom" card
+    When I navigate to the "Dashboard"
+    Then each quarterly recommendation should have readable category, card, and multiplier columns
+    And quarterly recommendation terms should appear once outside the rows

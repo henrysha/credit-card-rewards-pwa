@@ -302,7 +302,7 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 .font-bold { font-weight: 700; } .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .best-card-row {
   display: grid;
-  grid-template-columns: 1fr 1.2fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) max-content;
   align-items: center;
   gap: var(--space-sm);
 }
@@ -353,3 +353,19 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
   display: flex;
   justify-content: flex-end;
 }
+
+/* Keep reward labels readable while limiting the multiplier to its own column. */
+.best-card-row > div:nth-child(-n+2),
+.best-card-row > div:first-child > span {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.quarterly-terms {
+  padding: var(--space-sm) 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.quarterly-terms a { color: var(--accent-gold); }

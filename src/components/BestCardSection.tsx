@@ -31,6 +31,8 @@ export function BestCardSection() {
 
   const bestCards = getBestCardPerCategory(templates, now).filter(result => result.multiplier > 0);
 
+  const quarterlyTerms = [...new Set(bestCards.map(result => result.limit).filter((limit): limit is string => Boolean(limit?.startsWith('If activated'))) )];
+
   if (templates.length === 0 || bestCards.length === 0) return null;
 
   return (
@@ -70,7 +72,6 @@ export function BestCardSection() {
                    }
                 }}>
                   <div className="text-lg font-black text-gold leading-none">{result.multiplier}x</div>
-                  {result.limit?.startsWith('If activated') && <div className="text-xs text-secondary">{result.limit}</div>}
                 </div>
               </div>
               
@@ -103,6 +104,12 @@ export function BestCardSection() {
           );
         })}
       </div>
+
+      {quarterlyTerms.length > 0 && (
+        <div className="quarterly-terms" data-testid="quarterly-recommendation-terms">
+          {quarterlyTerms.map(terms => <div key={terms}>Quarterly 5x: {terms}</div>)}
+        </div>
+      )}
 
       <div className="mt-sm p-sm glass-card" style={{ background: 'rgba(245, 158, 11, 0.03)', border: '1px solid rgba(245, 158, 11, 0.1)' }}>
         <p className="text-[11px] text-secondary leading-tight">

@@ -33,7 +33,8 @@ When('the PWA resumes on {string}', async function (date: string) {
 Given('the rewards clock starts just before the quarter ends', async function () {
   const time = new Date('2026-09-30T23:59:00');
   await this.page.clock.install({ time });
-  await this.page.clock.pauseAt(time);
+  // Keep timers running while Dexie and React finish rendering the card.
+  // Pausing here also freezes their scheduled work before the first assertion.
 });
 
 When('the rewards clock passes midnight', async function () {

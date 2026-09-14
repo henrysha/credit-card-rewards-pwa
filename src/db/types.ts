@@ -56,6 +56,10 @@ export interface PerkTemplate {
   periodValue?: number;     // value per period (e.g. $10/mo)
   expirationDate?: string;  // ISO date if the perk expires (e.g. "2027-12-31")
   requiresEnrollment?: boolean;
+  /** Enrollment must be confirmed again when each renewal period starts. */
+  requiresEnrollmentEachPeriod?: boolean;
+  /** Non-credit reward display; excluded from dollar-value totals. */
+  rewardLabel?: string;
 }
 
 /** A second tier or companion benefit awarded with a sign-up offer. */

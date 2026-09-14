@@ -38,7 +38,7 @@ export default function Perks() {
     t?.perks.forEach(p => perkTemplateMap.set(p.id, p));
   });
 
-  let filtered = (perks ?? []).filter((p: UserPerk) => p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
+  let filtered = (perks ?? []).filter((p: UserPerk) => (p.annualValue > 0 || perkTemplateMap.get(p.perkTemplateId)?.requiresEnrollmentEachPeriod) && p.renewalPeriod !== 'ongoing');
 
   if (filter === 'inactive') {
     filtered = filtered.filter((p: UserPerk) => p.active === false);
@@ -149,7 +149,7 @@ export default function Perks() {
                             <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
                           </div>
                         ) : (
-                          <div className="perk-value">${perk.annualValue}</div>
+                          <div className="perk-value">{pt?.rewardLabel ?? `$${perk.annualValue}`}</div>
                         )}
                         <button 
                           className="btn btn-primary" 
@@ -193,7 +193,7 @@ export default function Perks() {
                             <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
                           </>
                         ) : (
-                          <div className="perk-value">${perk.annualValue}</div>
+                          <div className="perk-value">{pt?.rewardLabel ?? `$${perk.annualValue}`}</div>
                         )}
                       </div>
                     </div>

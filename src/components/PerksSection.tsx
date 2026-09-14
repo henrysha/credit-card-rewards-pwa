@@ -74,7 +74,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
                   <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
                 </div>
               ) : (
-                <div className="perk-value">${perk.annualValue}</div>
+                <div className="perk-value">{pt?.rewardLabel ?? `$${perk.annualValue}`}</div>
               )}
               {!readOnly && (
                 <button 
@@ -124,7 +124,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
                   <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
                 </>
               ) : (
-                <div className="perk-value">${perk.annualValue}</div>
+                <div className="perk-value">{pt?.rewardLabel ?? `$${perk.annualValue}`}</div>
               )}
             </div>
           </div>

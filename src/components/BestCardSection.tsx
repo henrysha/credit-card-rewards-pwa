@@ -1,3 +1,4 @@
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
@@ -18,6 +19,7 @@ const ChevronRight = () => (
 );
 
 export function BestCardSection() {
+  const now = useCurrentDate();
   const navigate = useNavigate();
   const userCards = useLiveQuery(() => db.cards.where('status').equals('active').toArray());
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
@@ -27,7 +29,7 @@ export function BestCardSection() {
     return t!;
   }).filter(Boolean);
 
-  const bestCards = getBestCardPerCategory(templates).filter(result => result.multiplier > 0);
+  const bestCards = getBestCardPerCategory(templates, now).filter(result => result.multiplier > 0);
 
   if (templates.length === 0 || bestCards.length === 0) return null;
 

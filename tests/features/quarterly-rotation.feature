@@ -30,3 +30,38 @@ Feature: Actual quarterly rotating categories
 
   Scenario: Quarter boundaries and scoped rewards are accurate
     Then quarterly reward date boundaries and recommendations should be accurate
+
+  Scenario: Category details refresh when the PWA resumes in a new quarter
+    Given the rewards date is "2026-09-30"
+    And I have added the "Chase Freedom" card
+    When I view the card detail for "Chase Freedom"
+    Then the quarterly earning rates should show "Q3 2026"
+    When the PWA resumes on "2026-10-01"
+    Then the quarterly earning rates should show "Current quarter categories not available."
+
+  Scenario: Dashboard recommendations refresh on resume without navigation
+    Given the rewards date is "2026-09-30"
+    And I have added the "Chase Freedom" card
+    When I navigate to the "Dashboard"
+    Then I should see "Gas" in the best card section with "Chase Freedom" and "5x" multiplier
+    When the PWA resumes on "2026-10-01"
+    Then I should see "Gas" in the best card section with "Chase Freedom" and "1x" multiplier
+
+  Scenario: Category details refresh at midnight while the app stays open
+    Given the rewards clock starts just before the quarter ends
+    And I have added the "Chase Freedom" card
+    When I view the card detail for "Chase Freedom"
+    Then the quarterly earning rates should show "Q3 2026"
+    When the rewards clock passes midnight
+    Then the quarterly earning rates should show "Current quarter categories not available."
+
+  Scenario: Expired perk usage refreshes on resume
+    Given the rewards date is "2026-09-30"
+    And I have added the "American Express Platinum" card
+    When I view the card detail for "American Express Platinum"
+    And I activate the "$400 Resy Credit" perk
+    And I toggle the "$400 Resy Credit" perk
+    Then the "$400 Resy Credit" perk should be marked as used
+    When the PWA resumes on "2026-10-01"
+    Then the "$400 Resy Credit" perk should not be marked as used
+    And the "$400 Resy Credit" perk should have a Deactivate button

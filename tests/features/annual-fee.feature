@@ -20,7 +20,7 @@ Feature: Annual Fee Tracking
   Scenario: User can update the annual fee date after card is registered
     Given I have added the "Chase Sapphire Reserve" card with annual fee date in 45 days
     And I navigate to the detail page for "Chase Sapphire Reserve"
-    When I click the edit icon next to the annual fee date
+    When I open the card details editor
     And I change the annual fee date to 15 days from now
     And I click "Save Changes"
     Then I should see the annual fee date updated to 15 days from now

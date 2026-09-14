@@ -1,3 +1,4 @@
+import { freedomQuarterlySchedule } from './quarterly-rewards';
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
@@ -81,7 +82,7 @@ export const cardTemplates: CardTemplate[] = [
     color: '#1a3c6e',
     signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
     earningRates: [
-      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter' },
+      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter', quarterlySchedule: freedomQuarterlySchedule },
       { category: 'Chase Travel', multiplier: 5 },
       { category: 'Lyft', multiplier: 5, limit: 'Through 9/30/2027' },
       { category: 'Dining', multiplier: 3 },
@@ -89,7 +90,6 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [
-      { id: 'cff-quarterly-rotation', name: '5% Quarterly Rotating Categories', description: 'Activate each quarter to earn 5% cash back on up to $1,500 in combined bonus-category purchases.', details: 'Categories change every calendar quarter. Check Chase for the current categories, exclusions, and activation deadline. Activate with Chase first, then mark this perk activated here; this app only tracks your confirmation. Earn up to $75 total cash back on eligible quarterly spending, then 1% after the cap. This is a spending-based reward, not a statement credit.', usageLink: 'https://www.chase.com/personal/credit-cards/freedom/freedomfive', category: 'other', annualValue: 0, renewalPeriod: 'quarterly', requiresEnrollment: true, requiresEnrollmentEachPeriod: true, rewardLabel: '5%' },
       { id: 'cff-cell-protection', name: 'Cell Phone Protection', description: 'Up to $800 per claim ($1,000/year, max 2 claims/12mo, $50 deductible) against theft or damage when paying cell phone bill with card', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cff-dashpass', name: 'DashPass 3-Month Trial', description: 'Complimentary 3 months of DashPass + 9 months at 50% off (through 12/31/2027)', category: 'membership', annualValue: 60, renewalPeriod: 'one-time', expirationDate: '2027-12-31', requiresEnrollment: true },
       { id: 'cff-purchase-protection', name: 'Purchase Protection', description: 'Covers new purchases against damage/theft for 120 days, up to $500/item', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
@@ -107,13 +107,12 @@ export const cardTemplates: CardTemplate[] = [
     color: '#1a3c6e',
     signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
     earningRates: [
-      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter' },
+      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter', quarterlySchedule: freedomQuarterlySchedule },
       { category: 'Chase Travel', multiplier: 5 },
       { category: 'Lyft', multiplier: 5, limit: 'Through 9/30/2027' },
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [
-      { id: 'cf-quarterly-rotation', name: '5% Quarterly Rotating Categories', description: 'Activate each quarter to earn 5% cash back on up to $1,500 in combined bonus-category purchases.', details: 'Categories change every calendar quarter. Check Chase for the current categories, exclusions, and activation deadline. Activate with Chase first, then mark this perk activated here; this app only tracks your confirmation. Earn up to $75 total cash back on eligible quarterly spending, then 1% after the cap. This is a spending-based reward, not a statement credit.', usageLink: 'https://www.chase.com/personal/credit-cards/freedom/freedomfive', category: 'other', annualValue: 0, renewalPeriod: 'quarterly', requiresEnrollment: true, requiresEnrollmentEachPeriod: true, rewardLabel: '5%' },
       { id: 'cf-purchase-protection', name: 'Purchase Protection', description: 'Covers new purchases against damage/theft for 120 days, up to $500/item', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cf-extended-warranty', name: 'Extended Warranty', description: 'Adds 1 year to eligible manufacturer warranties (3yr or less)', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'cf-trip-insurance', name: 'Trip Cancellation Insurance', description: 'Up to $1,500/traveler, $6,000/trip', category: 'insurance', annualValue: 0, renewalPeriod: 'ongoing' },

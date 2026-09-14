@@ -68,6 +68,7 @@ export function BestCardSection() {
                    }
                 }}>
                   <div className="text-lg font-black text-gold leading-none">{result.multiplier}x</div>
+                  {result.limit?.startsWith('If activated') && <div className="text-xs text-secondary">{result.limit}</div>}
                 </div>
               </div>
               

@@ -38,9 +38,20 @@ export type PerkCategory =
 
 // ---- Card Template (seed data) ----
 
+export interface QuarterlyRewards {
+  start: string;
+  end: string;
+  activationDeadline: string;
+  categories: string[];
+  source: string;
+}
+
 export interface EarningRate {
   category: string;
   multiplier: number;
+  quarterlySchedule?: QuarterlyRewards[];
+  /** Exact recommendation category for a scoped quarterly offer. */
+  recommendationCategory?: string;
   limit?: string; // e.g. "$25K/yr", "first $500/cycle"
 }
 
@@ -56,10 +67,6 @@ export interface PerkTemplate {
   periodValue?: number;     // value per period (e.g. $10/mo)
   expirationDate?: string;  // ISO date if the perk expires (e.g. "2027-12-31")
   requiresEnrollment?: boolean;
-  /** Enrollment must be confirmed again when each renewal period starts. */
-  requiresEnrollmentEachPeriod?: boolean;
-  /** Non-credit reward display; excluded from dollar-value totals. */
-  rewardLabel?: string;
 }
 
 /** A second tier or companion benefit awarded with a sign-up offer. */

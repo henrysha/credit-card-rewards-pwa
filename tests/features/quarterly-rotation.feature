@@ -1,51 +1,32 @@
-Feature: Quarterly rotating rewards
-  Scenario Outline: Track quarterly activation on eligible Freedom cards
-    Given I have added the "<card>" card
+Feature: Actual quarterly rotating categories
+  Scenario Outline: Show the current quarter's categories on Freedom cards
+    Given the rewards date is "2026-09-14"
+    And I have added the "<card>" card
     When I view the card detail for "<card>"
-    Then I should see "5% Quarterly Rotating Categories" in the perks list
-    And the "5% Quarterly Rotating Categories" perk should have an Activate button
-    And the "5% Quarterly Rotating Categories" perk should expire on "the end of quarter"
-    When I click the info icon for the "5% Quarterly Rotating Categories" perk
-    Then I should see a link to "https://www.chase.com/personal/credit-cards/freedom/freedomfive" in the modal
-    And I should see "this app only tracks your confirmation" in the modal
-    When I click the close button on the perk details modal
-    And I activate the "5% Quarterly Rotating Categories" perk
-    And I navigate to the "Perks"
-    Then I should see "5% Quarterly Rotating Categories" on the perks page
-    When I view the card detail for "<card>"
-    And the app syncs catalog perks
-    Then the "5% Quarterly Rotating Categories" perk should have a Deactivate button
-    When I toggle the "5% Quarterly Rotating Categories" perk
-    And the renewal period for "5% Quarterly Rotating Categories" expires
-    And the app refreshes expired perks
-    Then the "5% Quarterly Rotating Categories" perk should have an Activate button
-    And the perk "5% Quarterly Rotating Categories" active status in DB should be "false"
-    And the rotating reward should have no fixed credit value and be unused
+    Then the quarterly earning rates should show "Q3 2026: Gas Stations, Public Transit, EV Charging, Select Live Entertainment, United Way"
+    And the quarterly earning rates should show "Activate by 2026-09-14"
+    When I navigate to the "Dashboard"
+    Then I should see "Gas" in the best card section with "<card>" and "5x" multiplier
+    And I should see "Public Transit" in the best card section with "<card>" and "5x" multiplier
+    And I should see "Streaming" in the best card section with "<card>" and "1x" multiplier
 
     Examples:
       | card               |
       | Chase Freedom      |
       | Chase Freedom Flex |
 
-  Scenario: Existing card receives the new perk exactly once
-    Given I have added the "Chase Freedom" card
-    When the rotating reward is missing from my saved card
-    And the app syncs catalog perks
-    And the app syncs catalog perks
-    And I view the card detail for "Chase Freedom"
-    Then I should see "5% Quarterly Rotating Categories" in the perks list
-    And the "5% Quarterly Rotating Categories" perk should have an Activate button
-    And the rotating reward should have no fixed credit value and be unused
+  Scenario: Missing quarter does not reuse expired categories
+    Given the rewards date is "2026-10-01"
+    And I have added the "Chase Freedom" card
+    When I view the card detail for "Chase Freedom"
+    Then the quarterly earning rates should show "Current quarter categories not available."
+    When I navigate to the "Dashboard"
+    Then I should see "Gas" in the best card section with "Chase Freedom" and "1x" multiplier
 
-  Scenario: Freedom Unlimited does not have rotating categories
+  Scenario: Freedom Unlimited has no quarterly category schedule
     Given I have added the "Chase Freedom Unlimited" card
     When I view the card detail for "Chase Freedom Unlimited"
-    Then I should not see "5% Quarterly Rotating Categories" in the perks list
+    Then no quarterly category schedule should be displayed
 
-  Scenario: One-time enrollment remains active after quarterly renewal
-    Given I have added the "American Express Platinum" card
-    When I view the card detail for "American Express Platinum"
-    And I activate the "$400 Resy Credit" perk
-    And the renewal period for "$400 Resy Credit" expires
-    And the app refreshes expired perks
-    Then the "$400 Resy Credit" perk should have a Deactivate button
+  Scenario: Quarter boundaries and scoped rewards are accurate
+    Then quarterly reward date boundaries and recommendations should be accurate

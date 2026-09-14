@@ -1,3 +1,4 @@
+import { resolveEarningRates } from '../db/quarterly-rewards';
 import type { CardTemplate } from '../db/types';
 
 
@@ -157,7 +158,7 @@ class CategoryTracker {
   }
 }
 
-export function getBestCardPerCategory(templates: CardTemplate[]): BestCardResult[] {
+export function getBestCardPerCategory(templates: CardTemplate[], now = new Date()): BestCardResult[] {
   const broadTrackers: Record<string, CategoryTracker> = {};
   STANDARD_CATEGORIES.forEach(c => broadTrackers[c] = new CategoryTracker());
   
@@ -169,8 +170,21 @@ export function getBestCardPerCategory(templates: CardTemplate[]): BestCardResul
   if (!vendorTrackers['Transit & Rideshare']) vendorTrackers['Transit & Rideshare'] = {};
   vendorTrackers['Transit & Rideshare']['Uber'] = new CategoryTracker();
 
+  // Establish scoped categories before processing catch-all rates on any card.
+  const categories = [...STANDARD_CATEGORIES];
+  templates.flatMap(t => resolveEarningRates(t.earningRates, now)).forEach(rate => {
+    if (rate.recommendationCategory && !broadTrackers[rate.recommendationCategory]) {
+      categories.push(rate.recommendationCategory);
+      broadTrackers[rate.recommendationCategory] = new CategoryTracker();
+    }
+  });
+
   templates.forEach(template => {
-    template.earningRates.forEach(rate => {
+    resolveEarningRates(template.earningRates, now).forEach(rate => {
+      if (rate.recommendationCategory) {
+        broadTrackers[rate.recommendationCategory].update(rate, template);
+        return;
+      }
       const parsed = normalizeCategory(rate.category);
       
       parsed.broad.forEach(b => {
@@ -213,7 +227,7 @@ export function getBestCardPerCategory(templates: CardTemplate[]): BestCardResul
   });
 
   const finalResults: BestCardResult[] = [];
-  STANDARD_CATEGORIES.forEach(cat => {
+  categories.forEach(cat => {
       const tracker = broadTrackers[cat];
       const result = tracker.bestCard || {
           category: cat, cardName: 'None', issuer: '', multiplier: 0, cardTemplateId: ''

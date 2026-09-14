@@ -466,7 +466,7 @@ export async function refreshExpiredPerks(): Promise<number> {
       annualValue: perkTemplate.annualValue,
       periodValue: perkTemplate.periodValue,
       used: false,
-      active: perkTemplate.requiresEnrollmentEachPeriod ? false : perk.active !== false,
+      active: perk.active !== false,
       usedDate: undefined,
       currentPeriodStart: newPeriod.start,
       currentPeriodEnd: newPeriod.end,

@@ -44,8 +44,19 @@ Feature: Quarterly Rewards Queue and Rotation
     When I navigate to the "Dashboard"
     Then I should see "Online Shopping" in the best card section with "Chase Freedom Flex" and "5x" multiplier
 
-  Scenario: Year rollover boundary rotation from Q4 to Q1
-    Given the current date is in Q4
+  Scenario: Automatic rotation at local midnight in a timezone ahead of UTC
+    Given I open the app in a timezone ahead of UTC
+    And I have added the "Chase Freedom Flex" card
+    When I navigate to the card detail page for "Chase Freedom Flex"
+    And I add a current quarter reward for "Gas" with "5x" multiplier
+    And I queue a next quarter reward for "Online Shopping" with "5x" multiplier
+    When local midnight arrives for the new quarter while UTC is still the previous day
+    When I navigate to the "Dashboard"
+    Then I should see "Online Shopping" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+    And I should not see "Gas" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+
+  Scenario: December-January rollover and reopening
+    Given the current date is in December
     And I have added the "Chase Freedom Flex" card
     When I navigate to the card detail page for "Chase Freedom Flex"
     Then the next quarter queue should be for "Q1" of next year
@@ -54,6 +65,33 @@ Feature: Quarterly Rewards Queue and Rotation
     And I reopen the app
     When I navigate to the "Dashboard"
     Then I should see "Groceries" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+
+  Scenario: Merchant, payment-method, and wholesale categories activate without broad inflation
+    Given I have added the "Chase Freedom Flex" card
+    When I navigate to the card detail page for "Chase Freedom Flex"
+    And I queue a next quarter reward for "PayPal" with "5x" multiplier
+    And I queue a next quarter reward for "Target" with "5x" multiplier
+    And I queue a next quarter reward for "Wholesale Clubs" with "5x" multiplier
+    And I queue a next quarter reward for "Select Live Entertainment" with "5x" multiplier
+    When the calendar reaches the next quarter boundary while the app is open
+    When I navigate to the "Dashboard"
+    Then "Online Shopping" broad category should remain at "1x"
+    And "Groceries" broad category should remain at "1x"
+    And "Streaming" broad category should remain at "1x"
+    When I click to expand the "Online Shopping" category
+    Then I should see the "PayPal" subcategory with "5x" multiplier
+    And I should see the "Target" subcategory with "5x" multiplier
+    When I click to expand the "Groceries" category
+    Then I should see the "Wholesale Clubs" subcategory with "5x" multiplier
+    When I click to expand the "Streaming" category
+    Then I should see the "Live Entertainment" subcategory with "5x" multiplier
+
+  Scenario: Optional quarterly limit clearing and custom multiplier feedback
+    Given I have added the "Chase Freedom Flex" card
+    When I navigate to the card detail page for "Chase Freedom Flex"
+    When I queue a next quarter reward for "Gas" with "7x" multiplier and cleared limit
+    Then I should see a toast confirming "Queued Gas (7x)"
+    And the queued reward for "Gas" should not have a spend limit displayed
 
   Scenario: Managing queued rewards by removing an item from the queue
     Given I have added the "Chase Freedom Flex" card

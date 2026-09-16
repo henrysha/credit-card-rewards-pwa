@@ -42,6 +42,33 @@ When('I queue a next quarter reward for {string} with {string} multiplier', asyn
   await this.page.waitForTimeout(300);
 });
 
+When('I queue a next quarter reward for {string} with {string} multiplier and cleared limit', async function (category: string, multiplierStr: string) {
+  const queueBtn = this.page.locator('[data-testid="queue-next-quarter-btn"]');
+  await queueBtn.waitFor({ state: 'visible', timeout: 5000 });
+  await queueBtn.click();
+
+  const modal = this.page.locator('[data-testid="quarterly-reward-modal"]');
+  await modal.waitFor({ state: 'visible', timeout: 5000 });
+
+  await this.page.locator('[data-testid="quarter-select"]').selectOption('next');
+
+  const categoryInput = this.page.locator('[data-testid="reward-category-input"]');
+  await categoryInput.fill(category);
+
+  const multiplierNum = multiplierStr.replace(/[^0-9.]/g, '') || '5';
+  const multiplierInput = this.page.locator('[data-testid="reward-multiplier-input"]');
+  await multiplierInput.fill(multiplierNum);
+
+  const limitInput = this.page.locator('[data-testid="reward-limit-input"]');
+  await limitInput.fill('');
+
+  const saveBtn = this.page.locator('[data-testid="save-reward-btn"]');
+  await saveBtn.click();
+
+  await modal.waitFor({ state: 'hidden', timeout: 5000 });
+  await this.page.waitForTimeout(300);
+});
+
 When('I add a current quarter reward for {string} with {string} multiplier', async function (category: string, multiplierStr: string) {
   const addBtn = this.page.locator('[data-testid="add-current-quarter-btn"]');
   await addBtn.waitFor({ state: 'visible', timeout: 5000 });
@@ -77,6 +104,12 @@ Then(/^I should (?:still )?see "([^"]*)" in the next quarter queue with "([^"]*)
   await expect(item).toContainText(statusText);
 });
 
+Then('the queued reward for {string} should not have a spend limit displayed', async function (category: string) {
+  const item = this.page.locator(`[data-testid="queued-reward-item"][data-category="${category}"]`);
+  await expect(item).toBeVisible({ timeout: 5000 });
+  await expect(item.locator('.text-muted')).toHaveCount(0);
+});
+
 Then('I should not see {string} in the next quarter queue', async function (category: string) {
   const item = this.page.locator(`[data-testid="queued-reward-item"][data-category="${category}"]`);
   await expect(item).toHaveCount(0, { timeout: 5000 });
@@ -91,18 +124,16 @@ When('I remove {string} from the next quarter queue', async function (category: 
 });
 
 When('the calendar reaches the next quarter boundary while the app is open', async function () {
-  await this.page.evaluate(async () => {
+  await this.page.evaluate(() => {
     const w = window as unknown as {
       getNextQuarter: () => { startDate: string };
       setMockDate: (d: string) => void;
-      rotateQuarterlyRewards: () => Promise<void>;
     };
     const nextQ = w.getNextQuarter();
     w.setMockDate(nextQ.startDate);
-    await w.rotateQuarterlyRewards();
   });
-  // Wait for React re-render and Dexie live query propagation
-  await this.page.waitForTimeout(1500);
+  // Observe production interval timer (runs every 1000ms) without calling rotateQuarterlyRewards directly
+  await this.page.waitForTimeout(2000);
 });
 
 When('the calendar reaches the next quarter boundary', async function () {
@@ -122,13 +153,40 @@ When('I reopen the app', async function () {
   await this.page.waitForTimeout(500);
 });
 
-Given('the current date is in Q4', async function () {
+Given('I open the app in a timezone ahead of UTC', async function () {
+  await this.page?.close();
+  await this.context?.close();
+  this.context = await this.browser.newContext({
+    timezoneId: 'Pacific/Kiritimati',
+    permissions: ['notifications', 'clipboard-read', 'clipboard-write']
+  });
+  this.page = await this.context.newPage();
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.evaluate((id: string) => {
+    sessionStorage.setItem('test_db', id);
+  }, this.testDbId!);
+  await this.page.waitForLoadState('networkidle');
+});
+
+When('local midnight arrives for the new quarter while UTC is still the previous day', async function () {
   await this.page.evaluate(() => {
     const w = window as unknown as {
       setMockDate: (d: string) => void;
     };
-    // Set mock date to mid-Q4 (Nov 15, 2026)
-    w.setMockDate('2026-11-15');
+    // In Pacific/Kiritimati (+14), Oct 1 local midnight occurs while UTC is Sep 30 10:00 AM
+    w.setMockDate('2026-10-01');
+  });
+  // Wait for production interval timer
+  await this.page.waitForTimeout(2000);
+});
+
+Given(/^the current date is in (?:Q4|December)$/, async function () {
+  await this.page.evaluate(() => {
+    const w = window as unknown as {
+      setMockDate: (d: string) => void;
+    };
+    // Set mock date to Dec 15, 2026
+    w.setMockDate('2026-12-15');
   });
   await this.page.reload();
   await this.page.waitForLoadState('networkidle');
@@ -141,13 +199,32 @@ Then('the next quarter queue should be for {string} of next year', async functio
 });
 
 When('the calendar reaches January 1st of next year', async function () {
-  await this.page.evaluate(async () => {
+  await this.page.evaluate(() => {
     const w = window as unknown as {
       setMockDate: (d: string) => void;
-      rotateQuarterlyRewards: () => Promise<void>;
     };
     w.setMockDate('2027-01-01');
-    await w.rotateQuarterlyRewards();
   });
-  await this.page.waitForTimeout(1000);
+  // Wait for production interval timer
+  await this.page.waitForTimeout(2000);
+});
+
+Then('{string} broad category should remain at {string}', async function (category: string, multiplier: string) {
+  const row = this.page.locator(`.best-card-row[data-category="${category}"]`).first();
+  await row.scrollIntoViewIfNeeded();
+  await expect(row).toBeVisible({ timeout: 5000 });
+  await expect(row.locator('.text-gold').first()).toHaveText(multiplier);
+});
+
+Then('I should see the {string} subcategory with {string} multiplier', async function (subcategory: string, multiplier: string) {
+  const row = this.page.locator(`.best-card-row[data-category="${subcategory}"]`).first();
+  await row.scrollIntoViewIfNeeded();
+  await expect(row).toBeVisible({ timeout: 5000 });
+  await expect(row.locator('[class*="text-gold"]').first()).toHaveText(multiplier);
+});
+
+Then('I should see a toast confirming {string}', async function (text: string) {
+  const toast = this.page.locator('.toast').first();
+  await expect(toast).toBeVisible({ timeout: 5000 });
+  await expect(toast).toContainText(text);
 });

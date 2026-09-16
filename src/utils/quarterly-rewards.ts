@@ -124,11 +124,16 @@ export async function addQuarterlyReward(
     status = 'active';
   }
 
+  const resolvedLimit =
+    params.limit !== undefined
+      ? params.limit.trim() || undefined
+      : 'Up to $1,500/quarter';
+
   const id = await db.quarterlyRewards.add({
     cardId: params.cardId,
     category: params.category.trim(),
     multiplier: params.multiplier ?? 5,
-    limit: params.limit ?? 'Up to $1,500/quarter',
+    limit: resolvedLimit,
     quarter: params.quarter,
     year: params.year,
     status,
@@ -142,13 +147,6 @@ export async function addQuarterlyReward(
 
 export async function removeQuarterlyReward(rewardId: number): Promise<void> {
   await db.quarterlyRewards.delete(rewardId);
-}
-
-export async function updateQuarterlyReward(
-  rewardId: number,
-  updates: Partial<QuarterlyReward>
-): Promise<void> {
-  await db.quarterlyRewards.update(rewardId, updates);
 }
 
 export async function getQuarterlyRewardsForCard(cardId: number): Promise<QuarterlyReward[]> {

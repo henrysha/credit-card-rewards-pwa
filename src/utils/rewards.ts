@@ -38,11 +38,15 @@ const VENDOR_RULES: VendorMap[] = [
   { broad: 'Dining', vendor: 'Uber Eats', keywords: ['uber eats'] },
   { broad: 'Groceries', vendor: 'Whole Foods', keywords: ['whole foods'] },
   { broad: 'Groceries', vendor: 'Amazon Fresh', keywords: ['amazon fresh'] },
+  { broad: 'Groceries', vendor: 'Wholesale Clubs', keywords: ['wholesale', 'costco', "sam's club", "bj's"] },
   { broad: 'Online Shopping', vendor: 'Amazon.com', keywords: ['amazon.com'] },
   { broad: 'Online Shopping', vendor: 'Apple', keywords: ['apple'] },
   { broad: 'Online Shopping', vendor: 'Nike', keywords: ['nike'] },
   { broad: 'Online Shopping', vendor: 'Ace Hardware', keywords: ['ace hardware'] },
+  { broad: 'Online Shopping', vendor: 'Target', keywords: ['target'] },
+  { broad: 'Online Shopping', vendor: 'PayPal', keywords: ['paypal'] },
   { broad: 'Gas', vendor: 'Exxon', keywords: ['exxon'] },
+  { broad: 'Streaming', vendor: 'Live Entertainment', keywords: ['live entertainment'] },
   { broad: 'Transit & Rideshare', vendor: 'Lyft', keywords: ['lyft'] },
   { broad: 'Drugstores', vendor: 'Walgreens', keywords: ['walgreens'] },
 ];
@@ -106,7 +110,7 @@ export function normalizeCategory(category: string): ParsedCategories {
     broad.push('Gas');
   }
 
-  if (cat.includes('streaming') || cat.includes('entertainment') || cat.includes('disney')) {
+  if ((cat.includes('streaming') || cat.includes('entertainment') || cat.includes('disney')) && !cat.includes('live entertainment')) {
     broad.push('Streaming');
   }
 

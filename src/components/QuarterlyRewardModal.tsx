@@ -56,19 +56,20 @@ export function QuarterlyRewardModal({
     setError('');
 
     try {
+      const finalMultiplier = Number(multiplier) || 5;
       const rewardId = await addQuarterlyReward({
         cardId,
         category: category.trim(),
-        multiplier: Number(multiplier) || 5,
-        limit: limit.trim() || undefined,
+        multiplier: finalMultiplier,
+        limit: limit.trim(),
         quarter: targetQuarter.quarter,
         year: targetQuarter.year,
       });
 
       const msg =
         selectedQuarterMode === 'next'
-          ? `Queued ${category.trim()} (5x) for ${targetQuarter.label}!`
-          : `Added ${category.trim()} (5x) to ${targetQuarter.label}!`;
+          ? `Queued ${category.trim()} (${finalMultiplier}x) for ${targetQuarter.label}!`
+          : `Added ${category.trim()} (${finalMultiplier}x) to ${targetQuarter.label}!`;
       showToast(msg);
 
       if (onSuccess) onSuccess(rewardId);

@@ -108,9 +108,15 @@ Feature: Product Change (Upgrading / Downgrading)
     And I should see the rotating rewards section
     And I should see "Gas" in the rotating rewards section
     And I should see "Online Shopping" in the next quarter queue
+    And the active quarterly rewards should be rekeyed to the replacement card in the database
     When I navigate to the "Dashboard"
     Then I should see "Gas" in the best card section with "Chase Freedom" and "5x" multiplier
     And I should not see "Gas" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+    When the calendar reaches the next quarter boundary while the app is open
+    When I navigate to the "Dashboard"
+    Then I should see "Online Shopping" in the best card section with "Chase Freedom" and "5x" multiplier
+    And I should not see "Online Shopping" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+    And I should not see "Gas" in the best card section with "Chase Freedom" and "5x" multiplier
 
   Scenario: Product change to incompatible non-rotating card removes quarterly rewards
     Given I have added the "Chase Freedom Flex" card
@@ -122,7 +128,12 @@ Feature: Product Change (Upgrading / Downgrading)
     And I confirm the product change
     Then I should see "Chase Freedom Unlimited"
     And I should not see the rotating rewards section
+    And all quarterly rewards should be removed from the database
     When I navigate to the "Dashboard"
     Then I should not see "Gas" in the best card section with "Chase Freedom Unlimited" and "5x" multiplier
     And I should not see "Gas" in the best card section with "Chase Freedom Flex" and "5x" multiplier
-    And I should not see "Online Shopping" in the best card section with "Chase Freedom Unlimited" and "5x" multiplier
+    When the calendar reaches the next quarter boundary while the app is open
+    When I navigate to the "Dashboard"
+    Then I should not see "Online Shopping" in the best card section with "Chase Freedom Unlimited" and "5x" multiplier
+    And I should not see "Online Shopping" in the best card section with "Chase Freedom Flex" and "5x" multiplier
+    And all quarterly rewards should be removed from the database

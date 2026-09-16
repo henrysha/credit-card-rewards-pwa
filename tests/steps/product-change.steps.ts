@@ -74,3 +74,41 @@ Then('I should see {string} in the closed cards section', async function (status
   const badge = this.page.locator('.badge-red').filter({ hasText: statusText }).first();
   await expect(badge).toBeVisible({ timeout: 5000 });
 });
+
+Then('the active quarterly rewards should be rekeyed to the replacement card in the database', async function () {
+  const result = await this.page.evaluate(async () => {
+    const w = window as unknown as {
+      db: {
+        cards: { toArray: () => Promise<Array<{ id: number; status: string; cardTemplateId: string }>> };
+        quarterlyRewards: { toArray: () => Promise<Array<{ id: number; cardId: number; status: string; category: string }>> };
+      };
+    };
+    const cards = await w.db.cards.toArray();
+    const activeCard = cards.find(c => c.status === 'active');
+    const closedCard = cards.find(c => c.status === 'product-changed');
+    const rewards = await w.db.quarterlyRewards.toArray();
+    return {
+      activeCardId: activeCard?.id,
+      closedCardId: closedCard?.id,
+      rewards,
+    };
+  });
+
+  expect(result.activeCardId).toBeDefined();
+  expect(result.rewards.length).toBeGreaterThan(0);
+  for (const r of result.rewards) {
+    expect(r.cardId).toBe(result.activeCardId);
+  }
+});
+
+Then('all quarterly rewards should be removed from the database', async function () {
+  const rewards = await this.page.evaluate(async () => {
+    const w = window as unknown as {
+      db: {
+        quarterlyRewards: { toArray: () => Promise<Array<{ id: number; cardId: number }>> };
+      };
+    };
+    return w.db.quarterlyRewards.toArray();
+  });
+  expect(rewards).toHaveLength(0);
+});

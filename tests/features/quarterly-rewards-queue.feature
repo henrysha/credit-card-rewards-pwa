@@ -118,3 +118,6 @@ Feature: Quarterly Rewards Queue and Rotation
     Then I should see the "Live Entertainment" subcategory with "5x" multiplier
     And I should see "Chase Freedom Flex" as the recommended card for "Live Entertainment"
 
+  Scenario: Rewards lifecycle cleans up without polling or dangling timers
+    Then the rewards lifecycle handles cleanup without rescheduling or orphan timers
+

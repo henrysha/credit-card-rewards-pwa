@@ -143,7 +143,7 @@ When('the calendar reaches the next quarter boundary while the app is open', asy
     const nextQ = w.getNextQuarter();
     w.setMockDate(nextQ.startDate);
   });
-  // Observe production interval timer (runs every 1000ms) without calling rotateQuarterlyRewards directly
+  // Observe mock date event triggering boundary refresh without calling rotateQuarterlyRewards directly
   await this.page.waitForTimeout(2000);
 });
 
@@ -193,8 +193,8 @@ Given('I open the app in a timezone ahead of UTC', async function () {
 });
 
 When('local midnight arrives for the new quarter while UTC is still the previous day', async function () {
-  // Advance across midnight to 2026-09-30 10:00:02 UTC = 2026-10-01 00:00:02 local
-  await this.page.clock.setSystemTime(new Date('2026-09-30T10:00:02Z'));
+  // Advance installed clock across midnight to 2026-09-30 10:00:02 UTC = 2026-10-01 00:00:02 local, firing scheduled midnight timer
+  await this.page.clock.fastForward(3602_000);
   const dates = await this.page.evaluate(() => {
     const now = new Date();
     const localStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -203,8 +203,8 @@ When('local midnight arrives for the new quarter while UTC is still the previous
   });
   expect(dates.local).toBe('2026-10-01');
   expect(dates.utc).toBe('2026-09-30');
-  // Wait for production interval timer (1000ms) to trigger rotation
-  await this.page.waitForTimeout(2000);
+  // Wait for async refresh and IndexedDB rotation to settle
+  await this.page.waitForTimeout(500);
 });
 
 Given(/^the current date is in (?:Q4|December)$/, async function () {
@@ -255,4 +255,42 @@ Then('I should see a toast confirming {string}', async function (text: string) {
   const toast = this.page.locator('.toast').first();
   await expect(toast).toBeVisible({ timeout: 5000 });
   await expect(toast).toContainText(text);
+});
+
+Then('the rewards lifecycle handles cleanup without rescheduling or orphan timers', async function () {
+  const result = await this.page.evaluate(async () => {
+    const w = window as unknown as {
+      setupRewardsLifecycle: () => () => void;
+    };
+    if (typeof w.setupRewardsLifecycle !== 'function') {
+      throw new Error('setupRewardsLifecycle is not exposed on window');
+    }
+    const origSetTimeout = window.setTimeout;
+    const origClearTimeout = window.clearTimeout;
+    const activeTimers = new Set<number>();
+
+    window.setTimeout = function (fn: TimerHandler, delay?: number, ...args: unknown[]) {
+      const id = origSetTimeout(fn, delay, ...args);
+      activeTimers.add(id as unknown as number);
+      return id;
+    } as typeof window.setTimeout;
+
+    window.clearTimeout = function (id?: number) {
+      if (id !== undefined) activeTimers.delete(id);
+      origClearTimeout(id);
+    };
+
+    const cleanup = w.setupRewardsLifecycle();
+    const timersDuring = activeTimers.size;
+    cleanup();
+    const timersAfter = activeTimers.size;
+
+    window.setTimeout = origSetTimeout;
+    window.clearTimeout = origClearTimeout;
+
+    return { timersDuring, timersAfter };
+  });
+
+  expect(result.timersDuring).toBeGreaterThanOrEqual(1);
+  expect(result.timersAfter).toBe(0);
 });

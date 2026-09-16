@@ -1,5 +1,5 @@
 import { syncCardPerks, refreshExpiredPerks } from '../db/helpers';
-import { rotateQuarterlyRewards, getMsUntilNextDateBoundary, getLocalDateString } from './quarterly-rewards';
+import { rotateQuarterlyRewards, getMsUntilNextDateBoundary } from './quarterly-rewards';
 import { runNotificationChecks } from '../notifications';
 
 /**
@@ -7,15 +7,17 @@ import { runNotificationChecks } from '../notifications';
  * - Serializes refreshes and quarterly rotations to prevent overlapping database writes.
  * - Schedules rotation at the next local date boundary (midnight).
  * - Refreshes on PWA resume (visibilitychange).
- * - Reacts to date changes in test/mock environments.
+ * - Reacts to date changes in test/mock environments via mockdatechange.
+ * - Disposed guard prevents re-arming timers or running queued refreshes after cleanup.
  */
 export function setupRewardsLifecycle(): () => void {
+  let disposed = false;
   let pending: Promise<void> | undefined;
   let rerunRequested = false;
   let boundaryTimer: ReturnType<typeof setTimeout> | undefined;
-  let lastRotatedDate = getLocalDateString();
 
   const refresh = () => {
+    if (disposed) return Promise.resolve();
     if (pending) {
       rerunRequested = true;
       return pending;
@@ -23,15 +25,20 @@ export function setupRewardsLifecycle(): () => void {
 
     pending = (async () => {
       do {
+        if (disposed) break;
         rerunRequested = false;
         await syncCardPerks();
+        if (disposed) break;
         await refreshExpiredPerks();
+        if (disposed) break;
         await rotateQuarterlyRewards();
+        if (disposed) break;
         await runNotificationChecks();
-        lastRotatedDate = getLocalDateString();
-      } while (rerunRequested);
+      } while (rerunRequested && !disposed);
     })().catch(error => {
-      console.error('Unable to refresh rewards', error);
+      if (!disposed) {
+        console.error('Unable to refresh rewards', error);
+      }
     }).finally(() => {
       pending = undefined;
     });
@@ -40,10 +47,13 @@ export function setupRewardsLifecycle(): () => void {
   };
 
   const scheduleNextDateBoundary = () => {
+    if (disposed) return;
     if (boundaryTimer) clearTimeout(boundaryTimer);
     const msUntilMidnight = getMsUntilNextDateBoundary();
     boundaryTimer = setTimeout(async () => {
+      if (disposed) return;
       await refresh();
+      if (disposed) return;
       scheduleNextDateBoundary();
     }, msUntilMidnight);
   };
@@ -54,6 +64,7 @@ export function setupRewardsLifecycle(): () => void {
 
   // Re-check when app comes to foreground (critical for mobile PWA)
   const handleVisibility = () => {
+    if (disposed) return;
     if (document.visibilityState === 'visible') {
       void refresh();
       scheduleNextDateBoundary();
@@ -61,27 +72,26 @@ export function setupRewardsLifecycle(): () => void {
   };
 
   const handleMockDateChange = () => {
+    if (disposed) return;
     void refresh();
     scheduleNextDateBoundary();
   };
-
-  // In-memory date check that triggers rotation only when local calendar date shifts across midnight
-  // Avoids continuous IndexedDB polling while retaining support for clock shifts
-  const dateCheckInterval = setInterval(() => {
-    const today = getLocalDateString();
-    if (today !== lastRotatedDate) {
-      void refresh();
-      scheduleNextDateBoundary();
-    }
-  }, 1000);
 
   document.addEventListener('visibilitychange', handleVisibility);
   window.addEventListener('mockdatechange', handleMockDateChange);
 
   return () => {
-    if (boundaryTimer) clearTimeout(boundaryTimer);
-    clearInterval(dateCheckInterval);
+    disposed = true;
+    rerunRequested = false;
+    if (boundaryTimer) {
+      clearTimeout(boundaryTimer);
+      boundaryTimer = undefined;
+    }
     document.removeEventListener('visibilitychange', handleVisibility);
     window.removeEventListener('mockdatechange', handleMockDateChange);
   };
+}
+
+if (typeof window !== 'undefined') {
+  (window as unknown as { setupRewardsLifecycle: typeof setupRewardsLifecycle }).setupRewardsLifecycle = setupRewardsLifecycle;
 }

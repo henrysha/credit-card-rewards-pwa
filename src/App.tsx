@@ -11,6 +11,7 @@ import Churning from './pages/Churning';
 import CardCatalog from './pages/CardCatalog';
 import { CatalogDetail } from './pages/CatalogDetail';
 import ReloadPrompt from './components/ReloadPrompt';
+import PwaInstallGuide from './components/PwaInstallGuide';
 import { ToastProvider } from './components/ToastContext';
 
 function BottomNav() {
@@ -65,26 +66,29 @@ function BottomNav() {
 
 function AppContent() {
   useEffect(() => {
-    // Sync perks from catalog, then auto-refresh expired ones
-    syncCardPerks().then(() => refreshExpiredPerks());
+    // Serialize refreshes so rapid resume events cannot overlap database writes.
+    let pending: Promise<void> | undefined;
+    const refresh = () => {
+      if (!pending) {
+        pending = (async () => {
+          await syncCardPerks();
+          await refreshExpiredPerks();
+          await rotateQuarterlyRewards();
+          await runNotificationChecks();
+        })().catch(error => {
+          console.error('Unable to refresh rewards', error);
+        }).finally(() => { pending = undefined; });
+      }
+      return pending;
+    };
+    void refresh();
 
-    // Rotate quarterly rewards on app load
-    rotateQuarterlyRewards();
-
-    // Run notification checks on app load
-    runNotificationChecks();
-
-    // Check quarterly rotation periodically while app remains open
     const rotationInterval = setInterval(() => {
       rotateQuarterlyRewards();
     }, 1000);
 
-    // Re-check when app comes to foreground (critical for mobile PWA)
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        runNotificationChecks();
-        rotateQuarterlyRewards();
-      }
+      if (document.visibilityState === 'visible') void refresh();
     };
     document.addEventListener('visibilitychange', handleVisibility);
     return () => {
@@ -108,6 +112,7 @@ function AppContent() {
       </main>
       <BottomNav />
       <ReloadPrompt />
+      <PwaInstallGuide />
     </div>
   );
 }

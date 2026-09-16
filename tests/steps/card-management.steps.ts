@@ -6,8 +6,8 @@ async function addCardViaUI(page: Page, cardName: string, baseUrl: string) {
   await page.goto(`${baseUrl}catalog`);
   await page.waitForLoadState('networkidle');
 
-  // Loosen the card selector for production build robustness
-  const card = page.locator('.glass-card').filter({ hasText: cardName }).first();
+  // Match the exact product: Freedom must not select Freedom Flex.
+  const card = page.locator('.glass-card').filter({ has: page.getByText(cardName, { exact: true }) });
   await card.waitFor({ state: 'visible', timeout: 5000 });
   await card.click();
 

@@ -56,3 +56,4 @@ To ensure the application remains stable and meets requirements, Behavior-Driven
 ### Verification Requirement
 - Agents **MUST** run the relevant BDD tests locally using `npm run test:bdd:run` (or specific feature path) and ensure they pass before concluding the task.
 - If a test fails or is ambiguous, the agent **MUST** resolve the conflict or fix the regression immediately.
+- **Playwright runtime exception:** If the runtime environment does not have a Playwright browser installed and cannot access the Playwright browser download, agents may skip local BDD execution. They must still add or update the required BDD coverage and clearly document the skipped validation and its environment limitation in the PR. PR CI remains responsible for running the BDD suite.

@@ -1,3 +1,4 @@
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
@@ -20,6 +21,7 @@ const ChevronRight = () => (
 import type { CardTemplate } from '../db/types';
 
 export function BestCardSection() {
+  const now = useCurrentDate();
   const navigate = useNavigate();
   const userCards = useLiveQuery(() => db.cards.where('status').equals('active').toArray());
   const activeQuarterlyRewards = useLiveQuery(() => db.quarterlyRewards.where('status').equals('active').toArray());
@@ -43,7 +45,9 @@ export function BestCardSection() {
     };
   }).filter((t): t is CardTemplate => Boolean(t));
 
-  const bestCards = getBestCardPerCategory(templates).filter(result => result.multiplier > 0);
+  const bestCards = getBestCardPerCategory(templates, now).filter(result => result.multiplier > 0);
+
+  const quarterlyTerms = [...new Set(bestCards.map(result => result.limit).filter((limit): limit is string => Boolean(limit?.startsWith('If activated'))) )];
 
   if (templates.length === 0 || bestCards.length === 0) return null;
 
@@ -116,6 +120,12 @@ export function BestCardSection() {
           );
         })}
       </div>
+
+      {quarterlyTerms.length > 0 && (
+        <div className="quarterly-terms" data-testid="quarterly-recommendation-terms">
+          {quarterlyTerms.map(terms => <div key={terms}>Quarterly 5x: {terms}</div>)}
+        </div>
+      )}
 
       <div className="mt-sm p-sm glass-card" style={{ background: 'rgba(245, 158, 11, 0.03)', border: '1px solid rgba(245, 158, 11, 0.1)' }}>
         <p className="text-[11px] text-secondary leading-tight">

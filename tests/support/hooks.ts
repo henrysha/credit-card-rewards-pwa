@@ -16,6 +16,8 @@ declare module '@cucumber/cucumber' {
     testDbId?: string;
     baseUrl: string;
     postBoundaryTime?: Date;
+    pwaInstallAvailable?: boolean;
+    downloadedBackup?: string;
     directProductChangeResult?: {
       rejected: boolean;
       cardsBefore: Array<{ id?: number; cardTemplateId: string; status: string; openedDate?: string }>;

@@ -38,9 +38,20 @@ export type PerkCategory =
 
 // ---- Card Template (seed data) ----
 
+export interface QuarterlyRewards {
+  start: string;
+  end: string;
+  activationDeadline: string;
+  categories: string[];
+  source: string;
+}
+
 export interface EarningRate {
   category: string;
   multiplier: number;
+  quarterlySchedule?: QuarterlyRewards[];
+  /** Exact recommendation category for a scoped quarterly offer. */
+  recommendationCategory?: string;
   limit?: string; // e.g. "$25K/yr", "first $500/cycle"
 }
 

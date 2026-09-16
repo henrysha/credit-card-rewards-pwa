@@ -17,15 +17,31 @@ const ChevronRight = () => (
   </svg>
 );
 
+import type { CardTemplate } from '../db/types';
+
 export function BestCardSection() {
   const navigate = useNavigate();
   const userCards = useLiveQuery(() => db.cards.where('status').equals('active').toArray());
+  const activeQuarterlyRewards = useLiveQuery(() => db.quarterlyRewards.where('status').equals('active').toArray());
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
   
   const templates = (userCards ?? []).map(uc => {
     const t = getCardTemplate(uc.cardTemplateId);
-    return t!;
-  }).filter(Boolean);
+    if (!t) return null;
+    const cardRewards = (activeQuarterlyRewards ?? []).filter(r => r.cardId === uc.id);
+    if (cardRewards.length === 0) return t;
+    return {
+      ...t,
+      earningRates: [
+        ...t.earningRates,
+        ...cardRewards.map(r => ({
+          category: r.category,
+          multiplier: r.multiplier,
+          limit: r.limit,
+        }))
+      ]
+    };
+  }).filter((t): t is CardTemplate => Boolean(t));
 
   const bestCards = getBestCardPerCategory(templates).filter(result => result.multiplier > 0);
 

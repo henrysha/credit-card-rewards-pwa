@@ -8,6 +8,8 @@ import { SignupBonusSection } from '../components/SignupBonusSection';
 import { EarningRatesSection } from '../components/EarningRatesSection';
 import { PerksSection } from '../components/PerksSection';
 import { ProductChangeModal } from '../components/ProductChangeModal';
+import { QuarterlyRewardsSection } from '../components/QuarterlyRewardsSection';
+import { hasRotatingRewards } from '../utils/quarterly-rewards';
 
 export default function CardDetail() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +19,7 @@ export default function CardDetail() {
   const card = useLiveQuery(() => db.cards.get(cardId), [cardId]);
   const bonus = useLiveQuery(() => db.signupBonuses.where('cardId').equals(cardId).first(), [cardId]);
   const perks = useLiveQuery(() => db.perks.where('cardId').equals(cardId).toArray(), [cardId]);
+  const quarterlyRewards = useLiveQuery(() => db.quarterlyRewards.where('cardId').equals(cardId).toArray(), [cardId]);
 
   const [showDelete, setShowDelete] = useState(false);
   const [showProductChange, setShowProductChange] = useState(false);
@@ -45,6 +48,10 @@ export default function CardDetail() {
       {bonus && <SignupBonusSection bonus={bonus} />}
 
       <EarningRatesSection earningRates={template.earningRates} />
+
+      {hasRotatingRewards(template, quarterlyRewards) && (
+        <QuarterlyRewardsSection card={card} template={template} />
+      )}
 
       {perks && <PerksSection perks={perks} template={template} />}
 

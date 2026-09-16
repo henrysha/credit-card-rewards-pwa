@@ -199,6 +199,7 @@ export async function addCard(
 }
 
 export async function removeCard(cardId: number): Promise<void> {
+  await db.quarterlyRewards.where('cardId').equals(cardId).delete();
   await db.perks.where('cardId').equals(cardId).delete();
   await db.signupBonuses.where('cardId').equals(cardId).delete();
   await db.cards.delete(cardId);

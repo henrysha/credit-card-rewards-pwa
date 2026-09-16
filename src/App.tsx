@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { refreshExpiredPerks, syncCardPerks } from './db/helpers';
+import { rotateQuarterlyRewards } from './utils/quarterly-rewards';
 import { runNotificationChecks } from './notifications';
 import Dashboard from './pages/Dashboard';
 import MyCards from './pages/MyCards';
@@ -67,17 +68,29 @@ function AppContent() {
     // Sync perks from catalog, then auto-refresh expired ones
     syncCardPerks().then(() => refreshExpiredPerks());
 
+    // Rotate quarterly rewards on app load
+    rotateQuarterlyRewards();
+
     // Run notification checks on app load
     runNotificationChecks();
+
+    // Check quarterly rotation periodically while app remains open
+    const rotationInterval = setInterval(() => {
+      rotateQuarterlyRewards();
+    }, 1000);
 
     // Re-check when app comes to foreground (critical for mobile PWA)
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         runNotificationChecks();
+        rotateQuarterlyRewards();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
+    return () => {
+      clearInterval(rotationInterval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   return (

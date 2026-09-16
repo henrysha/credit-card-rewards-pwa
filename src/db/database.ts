@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
-import type { UserCard, SignupBonus, UserPerk } from './types';
+import type { UserCard, SignupBonus, UserPerk, QuarterlyReward } from './types';
 
 const getDbName = () => {
   if (typeof window !== 'undefined') {
@@ -19,12 +19,20 @@ const db = new Dexie(getDbName()) as Dexie & {
   cards: EntityTable<UserCard, 'id'>;
   signupBonuses: EntityTable<SignupBonus, 'id'>;
   perks: EntityTable<UserPerk, 'id'>;
+  quarterlyRewards: EntityTable<QuarterlyReward, 'id'>;
 };
 
 db.version(1).stores({
   cards: '++id, cardTemplateId, status, openedDate',
   signupBonuses: '++id, cardId, cardTemplateId, completed',
   perks: '++id, cardId, perkTemplateId, used, currentPeriodEnd',
+});
+
+db.version(2).stores({
+  cards: '++id, cardTemplateId, status, openedDate',
+  signupBonuses: '++id, cardId, cardTemplateId, completed',
+  perks: '++id, cardId, perkTemplateId, used, currentPeriodEnd',
+  quarterlyRewards: '++id, cardId, status, quarter, year, startDate, endDate',
 });
 
 // Expose to window for BDD testing

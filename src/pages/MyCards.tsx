@@ -24,6 +24,7 @@ export default function MyCards() {
 
   const activeCards = cards?.filter((c: UserCard) => c.status === 'active') ?? [];
   const closedCards = cards?.filter((c: UserCard) => c.status !== 'active') ?? [];
+  const activeRewards = useLiveQuery(() => db.quarterlyRewards.where('status').equals('active').toArray());
 
   const copyToClipboard = () => {
     if (activeCards.length === 0) {
@@ -37,7 +38,17 @@ export default function MyCards() {
       let info = `${template.issuer}: ${card.nickname || template.name}`;
       if (card.lastFourDigits) info += ` (•••• ${card.lastFourDigits})`;
       
-      const rates = template.earningRates
+      const cardActiveRewards = (activeRewards ?? []).filter(r => r.cardId === card.id);
+      const allRates = [
+        ...template.earningRates,
+        ...cardActiveRewards.map(r => ({
+          multiplier: r.multiplier,
+          category: r.category,
+          limit: r.limit,
+        }))
+      ];
+
+      const rates = allRates
         .map(r => `  - ${r.multiplier}x on ${r.category}${r.limit ? ` (up to ${r.limit})` : ''}`)
         .join('\n');
       

@@ -6,8 +6,9 @@ async function addCardViaUI(page: Page, cardName: string, baseUrl: string) {
   await page.goto(`${baseUrl}catalog`);
   await page.waitForLoadState('networkidle');
 
-  // Match the exact product: Freedom must not select Freedom Flex.
-  const card = page.locator('.glass-card').filter({ has: page.getByText(cardName, { exact: true }) });
+  // Match the exact product: Freedom must not select Freedom Flex, while tolerating optional symbol like ®.
+  const escaped = cardName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const card = page.locator('.glass-card').filter({ has: page.getByText(new RegExp(`^${escaped}[®]?$`), { exact: true }) });
   await card.waitFor({ state: 'visible', timeout: 5000 });
   await card.click();
 

@@ -18,6 +18,17 @@ Then('I should see the rotating rewards section', async function () {
   await expect(section).toBeVisible({ timeout: 5000 });
 });
 
+Then('I should not see the rotating rewards section', async function () {
+  const section = this.page.locator('[data-testid="quarterly-rewards-section"]');
+  await expect(section).toHaveCount(0);
+});
+
+Then('I should see {string} in the rotating rewards section', async function (category: string) {
+  const section = this.page.locator('[data-testid="quarterly-rewards-section"]');
+  await expect(section).toBeVisible({ timeout: 5000 });
+  await expect(section).toContainText(category);
+});
+
 When('I queue a next quarter reward for {string} with {string} multiplier', async function (category: string, multiplierStr: string) {
   const queueBtn = this.page.locator('[data-testid="queue-next-quarter-btn"]');
   await queueBtn.waitFor({ state: 'visible', timeout: 5000 });

@@ -1,29 +1,31 @@
 import { useEffect, useState } from 'react';
+import { getEffectiveDate, getMsUntilNextDateBoundary } from '../utils/quarterly-rewards';
 
 /** Re-evaluate date-based UI at local midnight and after a suspended PWA resumes. */
 export function useCurrentDate(): Date {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(() => getEffectiveDate());
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
     const schedule = () => {
       clearTimeout(timer);
-      const current = new Date();
-      const midnight = new Date(current.getFullYear(), current.getMonth(), current.getDate() + 1);
-      timer = setTimeout(refresh, midnight.getTime() - current.getTime());
+      timer = setTimeout(refresh, getMsUntilNextDateBoundary());
     };
     const refresh = () => {
-      setNow(new Date());
+      setNow(getEffectiveDate());
       schedule();
     };
     const onVisibility = () => {
       if (document.visibilityState === 'visible') refresh();
     };
+    const onMockDate = () => refresh();
     schedule();
     document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('mockdatechange', onMockDate);
     return () => {
       clearTimeout(timer);
       document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('mockdatechange', onMockDate);
     };
   }, []);
 

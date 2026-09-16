@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { refreshExpiredPerks, syncCardPerks } from './db/helpers';
-import { rotateQuarterlyRewards } from './utils/quarterly-rewards';
-import { runNotificationChecks } from './notifications';
+import { setupRewardsLifecycle } from './utils/rewards-lifecycle';
 import Dashboard from './pages/Dashboard';
 import MyCards from './pages/MyCards';
 import CardDetail from './pages/CardDetail';
@@ -66,35 +64,7 @@ function BottomNav() {
 
 function AppContent() {
   useEffect(() => {
-    // Serialize refreshes so rapid resume events cannot overlap database writes.
-    let pending: Promise<void> | undefined;
-    const refresh = () => {
-      if (!pending) {
-        pending = (async () => {
-          await syncCardPerks();
-          await refreshExpiredPerks();
-          await rotateQuarterlyRewards();
-          await runNotificationChecks();
-        })().catch(error => {
-          console.error('Unable to refresh rewards', error);
-        }).finally(() => { pending = undefined; });
-      }
-      return pending;
-    };
-    void refresh();
-
-    const rotationInterval = setInterval(() => {
-      rotateQuarterlyRewards();
-    }, 1000);
-
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') void refresh();
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => {
-      clearInterval(rotationInterval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
+    return setupRewardsLifecycle();
   }, []);
 
   return (

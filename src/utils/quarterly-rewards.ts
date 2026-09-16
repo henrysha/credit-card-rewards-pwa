@@ -94,10 +94,15 @@ export function formatDateLabel(isoDate: string): string {
   return `${monthNames[m - 1]} ${d}, ${yearStr}`;
 }
 
+export function getMsUntilNextDateBoundary(now: Date = getEffectiveDate()): number {
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 50);
+  return Math.max(100, nextMidnight.getTime() - now.getTime());
+}
+
 export function hasRotatingRewards(template?: CardTemplate, cardRewards?: QuarterlyReward[]): boolean {
   if (cardRewards && cardRewards.length > 0) return true;
   if (!template) return false;
-  return template.earningRates.some(r => r.category.toLowerCase().includes('rotating'));
+  return template.earningRates.some(r => r.category.toLowerCase().includes('rotating') || Boolean(r.quarterlySchedule));
 }
 
 export async function addQuarterlyReward(
@@ -153,8 +158,11 @@ export async function getQuarterlyRewardsForCard(cardId: number): Promise<Quarte
   return db.quarterlyRewards.where('cardId').equals(cardId).toArray();
 }
 
-export async function rotateQuarterlyRewards(
-  referenceDate: Date = getEffectiveDate()
+let activeRotationPromise: Promise<{ activated: number; expired: number }> | null = null;
+let pendingRotationDate: Date | null = null;
+
+async function executeRotation(
+  referenceDate: Date
 ): Promise<{ activated: number; expired: number }> {
   const today = getLocalDateString(referenceDate);
 
@@ -193,6 +201,33 @@ export async function rotateQuarterlyRewards(
   return { activated, expired };
 }
 
+export async function rotateQuarterlyRewards(
+  referenceDate: Date = getEffectiveDate()
+): Promise<{ activated: number; expired: number }> {
+  if (activeRotationPromise) {
+    pendingRotationDate = referenceDate;
+    return activeRotationPromise;
+  }
+
+  activeRotationPromise = (async () => {
+    let result = await executeRotation(referenceDate);
+    while (pendingRotationDate) {
+      const nextDate = pendingRotationDate;
+      pendingRotationDate = null;
+      const nextResult = await executeRotation(nextDate);
+      result = {
+        activated: result.activated + nextResult.activated,
+        expired: result.expired + nextResult.expired,
+      };
+    }
+    return result;
+  })().finally(() => {
+    activeRotationPromise = null;
+  });
+
+  return activeRotationPromise;
+}
+
 // Expose to window for testing
 if (typeof window !== 'undefined') {
   const w = window as unknown as {
@@ -220,5 +255,6 @@ if (typeof window !== 'undefined') {
       const str = typeof date === 'string' ? date : getLocalDateString(parsed);
       sessionStorage.setItem('mock_date', str);
     }
+    window.dispatchEvent(new CustomEvent('mockdatechange'));
   };
 }

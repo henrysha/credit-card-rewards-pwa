@@ -3,6 +3,7 @@ import { cardFamilyLabels } from './card-families';
 import type { CardFamilyId } from './card-families';
 import { cardTemplates } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
+import { hasRotatingRewards } from '../utils/quarterly-rewards';
 
 // ── Helpers for computing renewal dates ──
 
@@ -321,6 +322,35 @@ export async function productChangeCard(
   });
 
   await db.perks.bulkAdd(perksToAdd);
+
+  // 5. Handle quarterly rotating categories:
+  // Rekey active and queued rewards when product-changing between rotating cards,
+  // or explicitly remove them when changing to an incompatible non-rotating card.
+  const targetHasRotating = hasRotatingRewards(targetTemplate);
+  if (targetHasRotating) {
+    const rewardsToRekey = await db.quarterlyRewards
+      .where('cardId')
+      .equals(cardId)
+      .and(r => r.status === 'active' || r.status === 'queued')
+      .toArray();
+
+    for (const reward of rewardsToRekey) {
+      await db.quarterlyRewards.update(reward.id!, { cardId: newCardId as number });
+    }
+
+    // Clean up any remaining expired rewards on old card so they do not linger stranded
+    await db.quarterlyRewards
+      .where('cardId')
+      .equals(cardId)
+      .delete();
+  } else {
+    // Incompatible non-rotating card: explicitly remove all quarterly rewards
+    // so active or queued rewards do not linger, strand, or trigger invalid activations/recommendations
+    await db.quarterlyRewards
+      .where('cardId')
+      .equals(cardId)
+      .delete();
+  }
 
   // Note: Product changes do not earn a sign-up bonus according to issuer rules.
 

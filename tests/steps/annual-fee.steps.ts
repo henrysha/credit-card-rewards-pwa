@@ -49,9 +49,8 @@ Then('I should see an urgency indicator for the annual fee', async function () {
   await expect(urgencyLabel).toBeVisible();
 });
 
-When('I click the edit icon next to the annual fee date', async function () {
-  // On the card detail page, the edit button is typically an icon button near the header or details
-  const editBtn = this.page.locator('button[aria-label="Edit card details"], button:has(svg)').first();
+When('I open the card details editor', async function () {
+  const editBtn = this.page.getByRole('button', { name: 'Edit card details', exact: true });
   await editBtn.click();
   await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
 });

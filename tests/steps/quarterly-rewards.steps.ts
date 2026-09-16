@@ -207,6 +207,24 @@ When('local midnight arrives for the new quarter while UTC is still the previous
   await this.page.waitForTimeout(500);
 });
 
+Given(/^the current date is in (?:Q3|September)$/, async function () {
+  await this.page?.close();
+  await this.context?.close();
+  this.context = await this.browser.newContext({
+    timezoneId: 'America/New_York',
+    permissions: ['notifications', 'clipboard-read', 'clipboard-write'],
+  });
+  this.page = await this.context.newPage();
+  // Install deterministic clock in mid-September 2026 (Q3) before navigation
+  await this.page.clock.install({ time: new Date('2026-09-15T12:00:00Z') });
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.evaluate((id: string) => {
+    sessionStorage.setItem('test_db', id);
+    sessionStorage.removeItem('mock_date');
+  }, this.testDbId!);
+  await this.page.waitForLoadState('networkidle');
+});
+
 Given(/^the current date is in (?:Q4|December)$/, async function () {
   await this.page?.close();
   await this.context?.close();
@@ -258,39 +276,76 @@ Then('I should see a toast confirming {string}', async function (text: string) {
 });
 
 Then('the rewards lifecycle handles cleanup without rescheduling or orphan timers', async function () {
-  const result = await this.page.evaluate(async () => {
-    const w = window as unknown as {
-      setupRewardsLifecycle: () => () => void;
-    };
+  const result = await this.page.evaluate(`(async () => {
+    const w = window;
     if (typeof w.setupRewardsLifecycle !== 'function') {
       throw new Error('setupRewardsLifecycle is not exposed on window');
     }
     const origSetTimeout = window.setTimeout;
     const origClearTimeout = window.clearTimeout;
-    const activeTimers = new Set<number>();
+    const origSetInterval = window.setInterval;
+    let intervalsCreated = 0;
 
-    window.setTimeout = function (fn: TimerHandler, delay?: number, ...args: unknown[]) {
-      const id = origSetTimeout(fn, delay, ...args);
-      activeTimers.add(id as unknown as number);
-      return id;
-    } as typeof window.setTimeout;
-
-    window.clearTimeout = function (id?: number) {
-      if (id !== undefined) activeTimers.delete(id);
-      origClearTimeout(id);
+    window.setInterval = function (...args) {
+      intervalsCreated++;
+      return origSetInterval.apply(window, args);
     };
 
-    const cleanup = w.setupRewardsLifecycle();
-    const timersDuring = activeTimers.size;
-    cleanup();
-    const timersAfter = activeTimers.size;
+    const lifecycleTimers = new Set();
+    const capturedCallbacks = [];
+    let tracking = false;
 
-    window.setTimeout = origSetTimeout;
-    window.clearTimeout = origClearTimeout;
+    window.setTimeout = function (fn, delay) {
+      if (tracking) {
+        capturedCallbacks.push(fn);
+      }
+      const id = origSetTimeout.call(window, fn, delay);
+      if (tracking) {
+        lifecycleTimers.add(id);
+      }
+      return id;
+    };
 
-    return { timersDuring, timersAfter };
-  });
+    window.clearTimeout = function (id) {
+      if (id !== undefined) lifecycleTimers.delete(id);
+      origClearTimeout.call(window, id);
+    };
 
-  expect(result.timersDuring).toBeGreaterThanOrEqual(1);
-  expect(result.timersAfter).toBe(0);
+    try {
+      tracking = true;
+      const cleanup = w.setupRewardsLifecycle();
+      tracking = false;
+
+      const initialTimerCount = lifecycleTimers.size;
+      const callback = capturedCallbacks[0];
+
+      // Cleanup cancels active timers
+      cleanup();
+      const timerCountAfterCleanup = lifecycleTimers.size;
+
+      // Invoking callback after cleanup must not rearm timers
+      if (callback) {
+        tracking = true;
+        await callback();
+        tracking = false;
+      }
+      const timerCountAfterCallback = lifecycleTimers.size;
+
+      return {
+        intervalsCreated,
+        initialTimerCount,
+        timerCountAfterCleanup,
+        timerCountAfterCallback,
+      };
+    } finally {
+      window.setTimeout = origSetTimeout;
+      window.clearTimeout = origClearTimeout;
+      window.setInterval = origSetInterval;
+    }
+  })()`);
+
+  expect(result.intervalsCreated).toBe(0);
+  expect(result.initialTimerCount).toBe(1);
+  expect(result.timerCountAfterCleanup).toBe(0);
+  expect(result.timerCountAfterCallback).toBe(0);
 });

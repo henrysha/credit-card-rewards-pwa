@@ -100,3 +100,21 @@ Feature: Quarterly Rewards Queue and Rotation
     Then I should see "Online Shopping" in the next quarter queue
     When I remove "Online Shopping" from the next quarter queue
     Then I should not see "Online Shopping" in the next quarter queue
+
+  Scenario: Mixed-card recommendations preserve Wholesale Clubs and Live Entertainment without broad rate suppression
+    Given I have added the "Amex Blue Cash Preferred" card
+    And I have added the "Chase Freedom Flex" card
+    When I navigate to the card detail page for "Chase Freedom Flex"
+    And I queue a next quarter reward for "Wholesale Clubs" with "5x" multiplier
+    And I queue a next quarter reward for "Select Live Entertainment" with "5x" multiplier
+    When the calendar reaches the next quarter boundary while the app is open
+    When I navigate to the "Dashboard"
+    Then "Groceries" broad category should remain at "6x"
+    And "Streaming" broad category should remain at "6x"
+    When I click to expand the "Groceries" category
+    Then I should see the "Wholesale Clubs" subcategory with "5x" multiplier
+    And I should see "Chase Freedom Flex" as the recommended card for "Wholesale Clubs"
+    When I click to expand the "Streaming" category
+    Then I should see the "Live Entertainment" subcategory with "5x" multiplier
+    And I should see "Chase Freedom Flex" as the recommended card for "Live Entertainment"
+

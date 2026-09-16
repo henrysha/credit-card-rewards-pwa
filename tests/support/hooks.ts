@@ -15,6 +15,7 @@ declare module '@cucumber/cucumber' {
     page: Page;
     testDbId?: string;
     baseUrl: string;
+    postBoundaryTime?: Date;
     directProductChangeResult?: {
       rejected: boolean;
       cardsBefore: Array<{ id?: number; cardTemplateId: string; status: string; openedDate?: string }>;

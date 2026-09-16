@@ -137,18 +137,27 @@ When('the calendar reaches the next quarter boundary while the app is open', asy
 });
 
 When('the calendar reaches the next quarter boundary', async function () {
-  await this.page.evaluate(() => {
-    const w = window as unknown as {
-      getNextQuarter: () => { startDate: string };
-      setMockDate: (d: string) => void;
-    };
-    const nextQ = w.getNextQuarter();
-    w.setMockDate(nextQ.startDate);
+  const nextStartDate = await this.page.evaluate(() => {
+    const w = window as unknown as { getNextQuarter: () => { startDate: string } };
+    return w.getNextQuarter().startDate;
   });
+  await this.page.close();
+  this.postBoundaryTime = new Date(`${nextStartDate}T12:00:00Z`);
 });
 
 When('I reopen the app', async function () {
-  await this.page.goto(this.baseUrl);
+  if (this.page && !this.page.isClosed()) {
+    await this.page.close();
+  }
+  this.page = await this.context.newPage();
+  if (this.postBoundaryTime) {
+    await this.page.clock.install({ time: this.postBoundaryTime });
+  }
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.evaluate((id: string) => {
+    sessionStorage.setItem('test_db', id);
+    sessionStorage.removeItem('mock_date');
+  }, this.testDbId!);
   await this.page.waitForLoadState('networkidle');
   await this.page.waitForTimeout(500);
 });
@@ -161,34 +170,47 @@ Given('I open the app in a timezone ahead of UTC', async function () {
     permissions: ['notifications', 'clipboard-read', 'clipboard-write']
   });
   this.page = await this.context.newPage();
+  // Install deterministic clock at 23:00 local time (09:00:00 UTC) at Q3 end
+  // In Pacific/Kiritimati (+14), 2026-09-30 09:00:00 UTC is 2026-09-30 23:00:00 local (Q3)
+  await this.page.clock.install({ time: new Date('2026-09-30T09:00:00Z') });
   await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
   await this.page.evaluate((id: string) => {
     sessionStorage.setItem('test_db', id);
+    sessionStorage.removeItem('mock_date');
   }, this.testDbId!);
   await this.page.waitForLoadState('networkidle');
 });
 
 When('local midnight arrives for the new quarter while UTC is still the previous day', async function () {
-  await this.page.evaluate(() => {
-    const w = window as unknown as {
-      setMockDate: (d: string) => void;
-    };
-    // In Pacific/Kiritimati (+14), Oct 1 local midnight occurs while UTC is Sep 30 10:00 AM
-    w.setMockDate('2026-10-01');
+  // Advance across midnight to 2026-09-30 10:00:02 UTC = 2026-10-01 00:00:02 local
+  await this.page.clock.setSystemTime(new Date('2026-09-30T10:00:02Z'));
+  const dates = await this.page.evaluate(() => {
+    const now = new Date();
+    const localStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const utcStr = now.toISOString().slice(0, 10);
+    return { local: localStr, utc: utcStr };
   });
-  // Wait for production interval timer
+  expect(dates.local).toBe('2026-10-01');
+  expect(dates.utc).toBe('2026-09-30');
+  // Wait for production interval timer (1000ms) to trigger rotation
   await this.page.waitForTimeout(2000);
 });
 
 Given(/^the current date is in (?:Q4|December)$/, async function () {
-  await this.page.evaluate(() => {
-    const w = window as unknown as {
-      setMockDate: (d: string) => void;
-    };
-    // Set mock date to Dec 15, 2026
-    w.setMockDate('2026-12-15');
+  await this.page?.close();
+  await this.context?.close();
+  this.context = await this.browser.newContext({
+    timezoneId: 'America/New_York',
+    permissions: ['notifications', 'clipboard-read', 'clipboard-write']
   });
-  await this.page.reload();
+  this.page = await this.context.newPage();
+  // Install deterministic clock in mid-December 2026 before navigation
+  await this.page.clock.install({ time: new Date('2026-12-15T12:00:00Z') });
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.evaluate((id: string) => {
+    sessionStorage.setItem('test_db', id);
+    sessionStorage.removeItem('mock_date');
+  }, this.testDbId!);
   await this.page.waitForLoadState('networkidle');
 });
 
@@ -199,14 +221,9 @@ Then('the next quarter queue should be for {string} of next year', async functio
 });
 
 When('the calendar reaches January 1st of next year', async function () {
-  await this.page.evaluate(() => {
-    const w = window as unknown as {
-      setMockDate: (d: string) => void;
-    };
-    w.setMockDate('2027-01-01');
-  });
-  // Wait for production interval timer
-  await this.page.waitForTimeout(2000);
+  // Close the old page before advancing time to ensure startup rotation is tested on reopen
+  await this.page.close();
+  this.postBoundaryTime = new Date('2027-01-01T12:00:00Z');
 });
 
 Then('{string} broad category should remain at {string}', async function (category: string, multiplier: string) {

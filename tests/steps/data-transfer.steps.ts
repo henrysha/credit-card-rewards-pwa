@@ -267,3 +267,48 @@ When('I choose a backup with an invalid quarterly reward', async function () {
     buffer: Buffer.from(JSON.stringify(backup)),
   });
 });
+
+When('I close the data transfer modal', async function () {
+  await this.page.getByRole('button', { name: 'Close data transfer' }).click();
+  await expect(this.page.getByRole('dialog', { name: 'Export or import data' })).toHaveCount(0);
+});
+
+When('I choose a backup with a quarterly reward patch {string} and value {string}', async function (patchKey: string, patchVal: string) {
+  let val: unknown = patchVal;
+  if (patchKey === 'multiplier' || patchKey === 'year' || patchKey === 'quarter' || patchKey === 'cardId') {
+    val = Number(patchVal);
+  }
+  const backup = {
+    format: 'credit-card-rewards-backup',
+    version: 1,
+    exportedAt: '2026-09-04T12:00:00.000Z',
+    data: {
+      cards: [{
+        id: 1,
+        cardTemplateId: 'chase-sapphire-preferred',
+        openedDate: '2026-01-01',
+        annualFeeDate: '2027-01-01',
+        status: 'active',
+      }],
+      signupBonuses: [],
+      perks: [],
+      quarterlyRewards: [{
+        id: 1,
+        cardId: 1,
+        category: 'Gas',
+        multiplier: 5,
+        quarter: 3,
+        year: 2026,
+        status: 'active',
+        startDate: '2026-07-01',
+        endDate: '2026-09-30',
+        [patchKey]: val,
+      }],
+    },
+  };
+  await this.page.getByLabel('Choose backup file').setInputFiles({
+    name: 'malformed-reward.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
+});

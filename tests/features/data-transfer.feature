@@ -113,3 +113,24 @@ Feature: Export and import persisted data
     And I choose a backup with an invalid quarterly reward
     Then I should see the backup error "Quarterly reward 1 refers to a missing card."
     And I should not be able to replace the device data
+
+  Scenario Outline: Reject malformed or inconsistent quarterly rewards without mutating stored data
+    Given I have added the "Chase Sapphire Preferred" card
+    And I navigate to the "Cards"
+    When I open the settings menu
+    And I open data transfer
+    And I choose a backup with a quarterly reward patch "<patch_key>" and value "<patch_val>"
+    Then I should see the backup error "<expected_error>"
+    And I should not be able to replace the device data
+    When I close the data transfer modal
+    And I navigate to the "Cards"
+    Then I should see "Chase Sapphire Preferred" on the cards page
+
+    Examples:
+      | patch_key   | patch_val   | expected_error                                                   |
+      | endDate     | not-a-date  | Quarterly reward 1 has an invalid endDate.                       |
+      | endDate     | 2026-09-99  | Quarterly reward 1 has an invalid endDate.                       |
+      | startDate   | 2020-01-01  | Quarterly reward 1 dates are inconsistent with quarter and year. |
+      | multiplier  | -5          | Quarterly reward 1 has an invalid multiplier.                    |
+      | multiplier  | 0           | Quarterly reward 1 has an invalid multiplier.                    |
+      | year        | -2026       | Quarterly reward 1 has an invalid year.                          |

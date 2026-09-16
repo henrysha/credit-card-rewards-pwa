@@ -252,6 +252,33 @@ function validateBackup(value: unknown): DataBackup {
     if (!cardIds.has(item.cardId as number)) throw new Error(`Perk ${index + 1} refers to a missing card.`);
   });
 
+function isValidIsoDateString(str: unknown): str is string {
+  if (typeof str !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
+  const [y, m, d] = str.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+}
+
+function getExpectedQuarterDates(quarter: number, year: number) {
+  let startMonth = 1;
+  let endMonth = 3;
+  let endDay = 31;
+  if (quarter === 1) {
+    startMonth = 1; endMonth = 3; endDay = 31;
+  } else if (quarter === 2) {
+    startMonth = 4; endMonth = 6; endDay = 30;
+  } else if (quarter === 3) {
+    startMonth = 7; endMonth = 9; endDay = 30;
+  } else if (quarter === 4) {
+    startMonth = 10; endMonth = 12; endDay = 31;
+  }
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return {
+    startDate: `${year}-${pad(startMonth)}-01`,
+    endDate: `${year}-${pad(endMonth)}-${pad(endDay)}`,
+  };
+}
+
   quarterlyRewards.forEach((item, index) => {
     if (!isObject(item)) throw new Error(`Quarterly reward ${index + 1} is invalid.`);
     const label = `Quarterly reward ${index + 1}`;
@@ -259,16 +286,33 @@ function validateBackup(value: unknown): DataBackup {
     requireNumber(item, 'cardId', label);
     requireString(item, 'category', label);
     requireNumber(item, 'multiplier', label);
+    if (typeof item.multiplier !== 'number' || !Number.isFinite(item.multiplier) || item.multiplier <= 0) {
+      throw new Error(`${label} has an invalid multiplier.`);
+    }
     validateOptionalString(item, 'limit', label);
     requireNumber(item, 'quarter', label);
     const quarter = item.quarter as number;
-    if (!Number.isInteger(quarter) || quarter < 1 || quarter > 4) throw new Error(`${label} has an invalid quarter.`);
+    if (!Number.isInteger(quarter) || quarter < 1 || quarter > 4) {
+      throw new Error(`${label} has an invalid quarter.`);
+    }
     requireNumber(item, 'year', label);
     const year = item.year as number;
-    if (!Number.isInteger(year)) throw new Error(`${label} has an invalid year.`);
+    if (!Number.isInteger(year) || year <= 0) {
+      throw new Error(`${label} has an invalid year.`);
+    }
     requireEnum(item, 'status', rewardStatuses, label);
     requireString(item, 'startDate', label);
+    if (!isValidIsoDateString(item.startDate)) {
+      throw new Error(`${label} has an invalid startDate.`);
+    }
     requireString(item, 'endDate', label);
+    if (!isValidIsoDateString(item.endDate)) {
+      throw new Error(`${label} has an invalid endDate.`);
+    }
+    const expectedBounds = getExpectedQuarterDates(quarter, year);
+    if (item.startDate !== expectedBounds.startDate || item.endDate !== expectedBounds.endDate || item.startDate > item.endDate) {
+      throw new Error(`${label} dates are inconsistent with quarter and year.`);
+    }
     validateOptionalString(item, 'notes', label);
     if (!cardIds.has(item.cardId as number)) throw new Error(`Quarterly reward ${index + 1} refers to a missing card.`);
   });

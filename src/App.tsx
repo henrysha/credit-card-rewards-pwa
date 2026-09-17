@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { refreshExpiredPerks, syncCardPerks } from './db/helpers';
-import { runNotificationChecks } from './notifications';
+import { setupRewardsLifecycle } from './utils/rewards-lifecycle';
 import Dashboard from './pages/Dashboard';
 import MyCards from './pages/MyCards';
 import CardDetail from './pages/CardDetail';
@@ -65,27 +64,7 @@ function BottomNav() {
 
 function AppContent() {
   useEffect(() => {
-    // Serialize refreshes so rapid resume events cannot overlap database writes.
-    let pending: Promise<void> | undefined;
-    const refresh = () => {
-      if (!pending) {
-        pending = (async () => {
-          await syncCardPerks();
-          await refreshExpiredPerks();
-          await runNotificationChecks();
-        })().catch(error => {
-          console.error('Unable to refresh rewards', error);
-        }).finally(() => { pending = undefined; });
-      }
-      return pending;
-    };
-    void refresh();
-
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') void refresh();
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
+    return setupRewardsLifecycle();
   }, []);
 
   return (

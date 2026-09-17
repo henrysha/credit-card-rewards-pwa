@@ -15,6 +15,7 @@ declare module '@cucumber/cucumber' {
     page: Page;
     testDbId?: string;
     baseUrl: string;
+    postBoundaryTime?: Date;
     pwaInstallAvailable?: boolean;
     downloadedBackup?: string;
     directProductChangeResult?: {

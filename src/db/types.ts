@@ -155,3 +155,17 @@ export interface UserPerk {
   annualValue: number;
   periodValue?: number;
 }
+
+export interface QuarterlyReward {
+  id?: number;
+  cardId: number;           // FK to UserCard.id
+  category: string;         // e.g. "Gas", "Amazon.com"
+  multiplier: number;       // default 5
+  limit?: string;           // e.g. "Up to $1,500/quarter"
+  quarter: number;          // 1, 2, 3, or 4
+  year: number;             // e.g. 2026
+  status: 'active' | 'queued' | 'expired';
+  startDate: string;        // ISO date (YYYY-MM-DD)
+  endDate: string;          // ISO date (YYYY-MM-DD)
+  notes?: string;
+}

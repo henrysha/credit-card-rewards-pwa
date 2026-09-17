@@ -213,6 +213,7 @@ Then('the perk details modal should be closed', async function () {
 
 When('the perk {string} has active set to undefined in DB', async function (name: string) {
   await this.page.evaluate(async (perkName: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = (window as unknown as { db: any }).db;
     const allPerks = await db.perks.toArray();
     const perk = allPerks.find(p => p.perkName === perkName);
@@ -223,8 +224,10 @@ When('the perk {string} has active set to undefined in DB', async function (name
   }, name);
 });
 
+
 Then('the perk {string} active status in DB should be {string}', async function (name: string, expected: string) {
   const active = await this.page.evaluate(async (perkName: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = (window as unknown as { db: any }).db;
     const allPerks = await db.perks.toArray();
     const perk = allPerks.find(p => p.perkName === perkName);

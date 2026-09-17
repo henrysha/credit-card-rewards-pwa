@@ -1,5 +1,5 @@
 import { db } from './database';
-import type { SignupBonus, UserCard, UserPerk } from './types';
+import type { QuarterlyReward, SignupBonus, UserCard, UserPerk } from './types';
 
 export const BACKUP_VERSION = 1;
 
@@ -11,13 +11,15 @@ export interface DataBackup {
     cards: UserCard[];
     signupBonuses: SignupBonus[];
     perks: UserPerk[];
+    quarterlyRewards?: QuarterlyReward[];
   };
 }
 
-type BackupRecordType = keyof DataBackup['data'];
+type BackupRecordType = 'cards' | 'signupBonuses' | 'perks' | 'quarterlyRewards';
 
-const recordTypes: BackupRecordType[] = ['cards', 'signupBonuses', 'perks'];
+const recordTypes: BackupRecordType[] = ['cards', 'signupBonuses', 'perks', 'quarterlyRewards'];
 const cardStatuses = ['active', 'closed', 'product-changed'] as const;
+const rewardStatuses = ['active', 'queued', 'expired'] as const;
 const perkCategories = [
   'travel-credit', 'hotel-credit', 'dining-credit', 'entertainment-credit',
   'shopping-credit', 'rideshare-credit', 'delivery-credit', 'wellness-credit',
@@ -30,17 +32,18 @@ const renewalPeriods = [
 ] as const;
 
 export async function createBackup(): Promise<DataBackup> {
-  const [cards, signupBonuses, perks] = await Promise.all([
+  const [cards, signupBonuses, perks, quarterlyRewards] = await Promise.all([
     db.cards.toArray(),
     db.signupBonuses.toArray(),
     db.perks.toArray(),
+    db.quarterlyRewards.toArray(),
   ]);
 
   return {
     format: 'credit-card-rewards-backup',
     version: BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
-    data: { cards, signupBonuses, perks },
+    data: { cards, signupBonuses, perks, quarterlyRewards },
   };
 }
 
@@ -50,12 +53,15 @@ function escapeCsv(value: string): string {
 
 export function backupToCsv(backup: DataBackup): string {
   const header = ['schemaVersion', 'exportedAt', 'recordType', 'data'].map(escapeCsv).join(',');
-  const rows = recordTypes.flatMap(recordType => backup.data[recordType].map(record => [
-    String(backup.version),
-    backup.exportedAt,
-    recordType,
-    JSON.stringify(record),
-  ].map(escapeCsv).join(',')));
+  const rows = recordTypes.flatMap(recordType => {
+    const records = (backup.data[recordType] ?? []) as unknown[];
+    return records.map(record => [
+      String(backup.version),
+      backup.exportedAt,
+      recordType,
+      JSON.stringify(record),
+    ].map(escapeCsv).join(','));
+  });
 
   return [header, ...rows].join('\r\n');
 }
@@ -176,16 +182,23 @@ function validateBackup(value: unknown): DataBackup {
     throw new Error('The backup metadata is incomplete.');
   }
 
-  for (const type of recordTypes) {
+  const requiredRecordTypes = ['cards', 'signupBonuses', 'perks'] as const;
+  for (const type of requiredRecordTypes) {
     if (!Array.isArray(value.data[type])) throw new Error(`The backup is missing ${type}.`);
+  }
+
+  if (value.data.quarterlyRewards !== undefined && !Array.isArray(value.data.quarterlyRewards)) {
+    throw new Error('The backup is missing quarterlyRewards.');
   }
 
   const cards = value.data.cards as unknown[];
   const bonuses = value.data.signupBonuses as unknown[];
   const perks = value.data.perks as unknown[];
+  const quarterlyRewards = (value.data.quarterlyRewards as unknown[]) ?? [];
   const cardIds = new Set<number>();
   const bonusIds = new Set<number>();
   const perkIds = new Set<number>();
+  const rewardIds = new Set<number>();
 
   cards.forEach((item, index) => {
     if (!isObject(item)) throw new Error(`Card ${index + 1} is invalid.`);
@@ -239,7 +252,80 @@ function validateBackup(value: unknown): DataBackup {
     if (!cardIds.has(item.cardId as number)) throw new Error(`Perk ${index + 1} refers to a missing card.`);
   });
 
-  return value as unknown as DataBackup;
+function isValidIsoDateString(str: unknown): str is string {
+  if (typeof str !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
+  const [y, m, d] = str.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
+}
+
+function getExpectedQuarterDates(quarter: number, year: number) {
+  let startMonth = 1;
+  let endMonth = 3;
+  let endDay = 31;
+  if (quarter === 1) {
+    startMonth = 1; endMonth = 3; endDay = 31;
+  } else if (quarter === 2) {
+    startMonth = 4; endMonth = 6; endDay = 30;
+  } else if (quarter === 3) {
+    startMonth = 7; endMonth = 9; endDay = 30;
+  } else if (quarter === 4) {
+    startMonth = 10; endMonth = 12; endDay = 31;
+  }
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return {
+    startDate: `${year}-${pad(startMonth)}-01`,
+    endDate: `${year}-${pad(endMonth)}-${pad(endDay)}`,
+  };
+}
+
+  quarterlyRewards.forEach((item, index) => {
+    if (!isObject(item)) throw new Error(`Quarterly reward ${index + 1} is invalid.`);
+    const label = `Quarterly reward ${index + 1}`;
+    validateOptionalId(item, label, rewardIds);
+    requireNumber(item, 'cardId', label);
+    requireString(item, 'category', label);
+    requireNumber(item, 'multiplier', label);
+    if (typeof item.multiplier !== 'number' || !Number.isFinite(item.multiplier) || item.multiplier <= 0) {
+      throw new Error(`${label} has an invalid multiplier.`);
+    }
+    validateOptionalString(item, 'limit', label);
+    requireNumber(item, 'quarter', label);
+    const quarter = item.quarter as number;
+    if (!Number.isInteger(quarter) || quarter < 1 || quarter > 4) {
+      throw new Error(`${label} has an invalid quarter.`);
+    }
+    requireNumber(item, 'year', label);
+    const year = item.year as number;
+    if (!Number.isInteger(year) || year <= 0) {
+      throw new Error(`${label} has an invalid year.`);
+    }
+    requireEnum(item, 'status', rewardStatuses, label);
+    requireString(item, 'startDate', label);
+    if (!isValidIsoDateString(item.startDate)) {
+      throw new Error(`${label} has an invalid startDate.`);
+    }
+    requireString(item, 'endDate', label);
+    if (!isValidIsoDateString(item.endDate)) {
+      throw new Error(`${label} has an invalid endDate.`);
+    }
+    const expectedBounds = getExpectedQuarterDates(quarter, year);
+    if (item.startDate !== expectedBounds.startDate || item.endDate !== expectedBounds.endDate || item.startDate > item.endDate) {
+      throw new Error(`${label} dates are inconsistent with quarter and year.`);
+    }
+    validateOptionalString(item, 'notes', label);
+    if (!cardIds.has(item.cardId as number)) throw new Error(`Quarterly reward ${index + 1} refers to a missing card.`);
+  });
+
+  return {
+    ...value,
+    data: {
+      cards,
+      signupBonuses: bonuses,
+      perks,
+      quarterlyRewards,
+    },
+  } as DataBackup;
 }
 
 function backupFromCsv(text: string): DataBackup {
@@ -249,7 +335,7 @@ function backupFromCsv(text: string): DataBackup {
     throw new Error('The CSV backup has an invalid header.');
   }
 
-  const data: DataBackup['data'] = { cards: [], signupBonuses: [], perks: [] };
+  const data: DataBackup['data'] = { cards: [], signupBonuses: [], perks: [], quarterlyRewards: [] };
   let exportedAt = '';
   let version: number | undefined;
 
@@ -261,7 +347,7 @@ function backupFromCsv(text: string): DataBackup {
     if (!exportedAt) exportedAt = row[1];
     if (!recordTypes.includes(row[2] as BackupRecordType)) throw new Error(`CSV row ${index + 2} has an unknown record type.`);
     try {
-      data[row[2] as BackupRecordType].push(JSON.parse(row[3]) as never);
+      ((data[row[2] as BackupRecordType] ??= []) as unknown[]).push(JSON.parse(row[3]));
     } catch {
       throw new Error(`CSV row ${index + 2} contains invalid record data.`);
     }
@@ -287,11 +373,19 @@ export function parseBackup(text: string, fileName = ''): DataBackup {
 
 export async function restoreBackup(backup: DataBackup): Promise<void> {
   const validated = validateBackup(backup);
-  await db.transaction('rw', db.cards, db.signupBonuses, db.perks, async () => {
-    await Promise.all([db.signupBonuses.clear(), db.perks.clear(), db.cards.clear()]);
+  await db.transaction('rw', db.cards, db.signupBonuses, db.perks, db.quarterlyRewards, async () => {
+    await Promise.all([
+      db.signupBonuses.clear(),
+      db.perks.clear(),
+      db.quarterlyRewards.clear(),
+      db.cards.clear(),
+    ]);
     if (validated.data.cards.length) await db.cards.bulkAdd(validated.data.cards);
     if (validated.data.signupBonuses.length) await db.signupBonuses.bulkAdd(validated.data.signupBonuses);
     if (validated.data.perks.length) await db.perks.bulkAdd(validated.data.perks);
+    if (validated.data.quarterlyRewards && validated.data.quarterlyRewards.length) {
+      await db.quarterlyRewards.bulkAdd(validated.data.quarterlyRewards);
+    }
   });
 }
 

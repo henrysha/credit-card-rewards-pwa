@@ -32,6 +32,7 @@ interface VendorMap {
   broad: string;
   vendor: string;
   keywords: string[];
+  noInherit?: boolean;
 }
 
 const VENDOR_RULES: VendorMap[] = [
@@ -39,11 +40,15 @@ const VENDOR_RULES: VendorMap[] = [
   { broad: 'Dining', vendor: 'Uber Eats', keywords: ['uber eats'] },
   { broad: 'Groceries', vendor: 'Whole Foods', keywords: ['whole foods'] },
   { broad: 'Groceries', vendor: 'Amazon Fresh', keywords: ['amazon fresh'] },
+  { broad: 'Groceries', vendor: 'Wholesale Clubs', keywords: ['wholesale', 'costco', "sam's club", "bj's"], noInherit: true },
   { broad: 'Online Shopping', vendor: 'Amazon.com', keywords: ['amazon.com'] },
   { broad: 'Online Shopping', vendor: 'Apple', keywords: ['apple'] },
   { broad: 'Online Shopping', vendor: 'Nike', keywords: ['nike'] },
   { broad: 'Online Shopping', vendor: 'Ace Hardware', keywords: ['ace hardware'] },
+  { broad: 'Online Shopping', vendor: 'Target', keywords: ['target'] },
+  { broad: 'Online Shopping', vendor: 'PayPal', keywords: ['paypal'] },
   { broad: 'Gas', vendor: 'Exxon', keywords: ['exxon'] },
+  { broad: 'Streaming', vendor: 'Live Entertainment', keywords: ['live entertainment'], noInherit: true },
   { broad: 'Transit & Rideshare', vendor: 'Lyft', keywords: ['lyft'] },
   { broad: 'Drugstores', vendor: 'Walgreens', keywords: ['walgreens'] },
 ];
@@ -107,7 +112,7 @@ export function normalizeCategory(category: string): ParsedCategories {
     broad.push('Gas');
   }
 
-  if (cat.includes('streaming') || cat.includes('entertainment') || cat.includes('disney')) {
+  if ((cat.includes('streaming') || cat.includes('entertainment') || cat.includes('disney')) && !cat.includes('live entertainment')) {
     broad.push('Streaming');
   }
 
@@ -143,8 +148,12 @@ export function normalizeCategory(category: string): ParsedCategories {
 
 class CategoryTracker {
   bestCard: BestCardResult | null = null;
+  hasSpecificBonus: boolean = false;
   
-  update(rate: { multiplier: number, limit?: string }, template: CardTemplate) {
+  update(rate: { multiplier: number, limit?: string }, template: CardTemplate, isSpecific: boolean = false) {
+    if (isSpecific) {
+      this.hasSpecificBonus = true;
+    }
     if (!this.bestCard || rate.multiplier > this.bestCard.multiplier) {
         this.bestCard = {
             category: '', // filled in later
@@ -189,15 +198,20 @@ export function getBestCardPerCategory(templates: CardTemplate[], now = new Date
       
       parsed.broad.forEach(b => {
          if (broadTrackers[b]) broadTrackers[b].update(rate, template);
-         // Apply to all vendors in this broad category
+         // Apply to vendors in this broad category that inherit broad rates
          if (vendorTrackers[b]) {
-             Object.values(vendorTrackers[b]).forEach(vt => vt.update(rate, template));
+             Object.entries(vendorTrackers[b]).forEach(([vName, vt]) => {
+                 const rule = VENDOR_RULES.find(r => r.broad === b && r.vendor === vName);
+                 if (!rule?.noInherit) {
+                     vt.update(rate, template);
+                 }
+             });
          }
       });
       
       parsed.vendors.forEach(v => {
          if (vendorTrackers[v.broad] && vendorTrackers[v.broad][v.vendor]) {
-             vendorTrackers[v.broad][v.vendor].update(rate, template);
+             vendorTrackers[v.broad][v.vendor].update(rate, template, true);
          }
       });
 
@@ -206,7 +220,12 @@ export function getBestCardPerCategory(templates: CardTemplate[], now = new Date
          potentialCats.forEach(b => {
              if (broadTrackers[b]) broadTrackers[b].update(rate, template);
              if (vendorTrackers[b]) {
-                 Object.values(vendorTrackers[b]).forEach(vt => vt.update(rate, template));
+                 Object.entries(vendorTrackers[b]).forEach(([vName, vt]) => {
+                     const rule = VENDOR_RULES.find(r => r.broad === b && r.vendor === vName);
+                     if (!rule?.noInherit) {
+                         vt.update(rate, template);
+                     }
+                 });
              }
          });
       }
@@ -238,9 +257,16 @@ export function getBestCardPerCategory(templates: CardTemplate[], now = new Date
       if (vendorTrackers[cat]) {
           Object.entries(vendorTrackers[cat]).forEach(([vendorName, vt]) => {
               const vResult = vt.bestCard;
+              const rule = VENDOR_RULES.find(r => r.broad === cat && r.vendor === vendorName);
               if (vResult && vResult.multiplier > 0) {
-                  // Only show subcategory if it has a larger multiplier than the broad category!
-                  if (vResult.multiplier > result.multiplier) {
+                  // For non-inheriting categories (Wholesale Clubs, Live Entertainment),
+                  // show exception if it has an eligible specific bonus.
+                  // For inheriting vendors, only show if it has a larger multiplier than the broad category!
+                  const shouldShow = rule?.noInherit
+                      ? vt.hasSpecificBonus
+                      : vResult.multiplier > result.multiplier;
+
+                  if (shouldShow) {
                       vResult.category = vendorName;
                       result.subCategories!.push(vResult as BestCardResult);
                   }

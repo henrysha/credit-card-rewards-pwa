@@ -3,7 +3,8 @@ Feature: Actual quarterly rotating categories
     Given the rewards date is "2026-09-14"
     And I have added the "<card>" card
     When I view the card detail for "<card>"
-    Then each quarterly category should have its own 5x earning row
+    Then the rotating rewards section should show the published current quarter categories
+    And each quarterly category should have its own 5x earning row
     And the quarterly earning rates should show "Q3 2026"
     And the quarterly earning rates should show "Activate by 2026-09-14"
     When I navigate to the "Dashboard"
@@ -17,10 +18,11 @@ Feature: Actual quarterly rotating categories
       | Chase Freedom Flex |
 
   Scenario: Missing quarter does not reuse expired categories
-    Given the rewards date is "2026-10-01"
+    Given the rewards date is "2027-01-01"
     And I have added the "Chase Freedom" card
     When I view the card detail for "Chase Freedom"
-    Then the quarterly earning rates should show "Current quarter categories not available."
+    Then the rotating rewards section should have no published categories
+    And the quarterly earning rates should show "Current quarter categories not available."
     When I navigate to the "Dashboard"
     Then I should see "Gas" in the best card section with "Chase Freedom" and "1x" multiplier
 
@@ -37,8 +39,9 @@ Feature: Actual quarterly rotating categories
     And I have added the "Chase Freedom" card
     When I view the card detail for "Chase Freedom"
     Then the quarterly earning rates should show "Q3 2026"
-    When the PWA resumes on "2026-10-01"
-    Then the quarterly earning rates should show "Current quarter categories not available."
+    When the PWA resumes on "2027-01-01"
+    Then the rotating rewards section should have no published categories
+    And the quarterly earning rates should show "Current quarter categories not available."
 
   Scenario: Dashboard recommendations refresh on resume without navigation
     Given the rewards date is "2026-09-30"
@@ -52,9 +55,10 @@ Feature: Actual quarterly rotating categories
     Given the rewards clock starts just before the quarter ends
     And I have added the "Chase Freedom" card
     When I view the card detail for "Chase Freedom"
-    Then the quarterly earning rates should show "Q3 2026"
+    Then the quarterly earning rates should show "Q4 2026"
     When the rewards clock passes midnight
-    Then the quarterly earning rates should show "Current quarter categories not available."
+    Then the rotating rewards section should have no published categories
+    And the quarterly earning rates should show "Current quarter categories not available."
 
   Scenario: Expired perk usage refreshes on resume
     Given the rewards date is "2026-09-30"
@@ -75,3 +79,34 @@ Feature: Actual quarterly rotating categories
     When I navigate to the "Dashboard"
     Then each quarterly recommendation should have readable category, card, and multiplier columns
     And quarterly recommendation terms should appear once outside the rows
+
+  Scenario: Published categories remain visible alongside manually saved categories
+    Given the rewards date is "2026-09-14"
+    And I have added the "Chase Freedom" card
+    When I view the card detail for "Chase Freedom"
+    And I add a current quarter reward for "PayPal" with "7x" multiplier
+    Then the rotating rewards section should show the published current quarter categories
+    And I should see "PayPal" in the rotating rewards section
+
+  Scenario Outline: Published next quarter categories are scheduled without manual entry
+    Given the rewards date is "2026-09-17"
+    And I have added the "<card>" card
+    When I view the card detail for "<card>"
+    Then the published "next" quarter should show Q4 categories with "<dining>" dining multiplier
+    And the quarterly earning rates should show "Q3 2026"
+    When I reload the page
+    Then the published "next" quarter should show Q4 categories with "<dining>" dining multiplier
+    When the PWA resumes on "2026-10-01"
+    Then the published "current" quarter should show Q4 categories with "<dining>" dining multiplier
+    And the quarterly earning rates should show "Q4 2026"
+    When I reload the page
+    Then the published "current" quarter should show Q4 categories with "<dining>" dining multiplier
+    When I navigate to the "Dashboard"
+    Then I should see "Dining" in the best card section with "<card>" and "<dining>" multiplier
+    And I should see "Groceries" in the best card section with "<card>" and "5x" multiplier
+    And I should see "Gas" in the best card section with "<card>" and "1x" multiplier
+
+    Examples:
+      | card               | dining |
+      | Chase Freedom      | 5x     |
+      | Chase Freedom Flex | 7x     |

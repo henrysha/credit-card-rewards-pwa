@@ -31,7 +31,7 @@ When('the PWA resumes on {string}', async function (date: string) {
 });
 
 Given('the rewards clock starts just before the quarter ends', async function () {
-  const time = new Date('2026-09-30T23:59:00');
+  const time = new Date('2026-12-31T23:59:00');
   await this.page.clock.install({ time });
   // Keep timers running while Dexie and React finish rendering the card.
   // Pausing here also freezes their scheduled work before the first assertion.
@@ -80,4 +80,47 @@ Then('quarterly recommendation terms should appear once outside the rows', async
   await expect(terms).toHaveCount(1);
   await expect(terms).toContainText('$1,500 combined/quarter');
   await expect(this.page.locator('.best-card-row').filter({ hasText: 'If activated' })).toHaveCount(0);
+});
+
+Then('the rotating rewards section should show the published current quarter categories', async function () {
+  const section = this.page.getByTestId('quarterly-rewards-section');
+  const published = section.getByTestId('published-quarterly-rewards');
+  await expect(section).toContainText('Current Quarter (Q3 2026)');
+  await expect(published.locator('.earning-rate')).toHaveCount(5);
+  for (const category of ['Gas Stations', 'Public Transit', 'EV Charging', 'Select Live Entertainment', 'United Way']) {
+    const row = published.locator('.earning-rate').filter({ hasText: category });
+    await expect(row.locator('.earning-category')).toHaveText(category);
+    await expect(row.locator('.earning-multiplier')).toHaveText('5x');
+  }
+  await expect(published).toContainText('Activation required with Chase');
+  await expect(published).toContainText('Activate by 2026-09-14');
+  await expect(published.locator('button')).toHaveCount(0);
+  await expect(section).not.toContainText('No categories set');
+});
+
+Then('the rotating rewards section should have no published categories', async function () {
+  const section = this.page.getByTestId('quarterly-rewards-section');
+  await expect(section.getByTestId('published-quarterly-rewards')).toHaveCount(0);
+  await expect(section).toContainText('Published categories not available for Q1 2027');
+});
+
+Then('the published {string} quarter should show Q4 categories with {string} dining multiplier', async function (mode: string, dining: string) {
+  const section = this.page.getByTestId('quarterly-rewards-section');
+  const published = section.getByTestId(mode === 'next' ? 'published-next-quarter-rewards' : 'published-quarterly-rewards');
+  await expect(published.locator('.earning-rate')).toHaveCount(3);
+  for (const [category, multiplier] of [
+    ['Grocery Stores (excluding Walmart and Target)', '5x'],
+    ['Dining', dining],
+    ['American Red Cross', '5x'],
+  ]) {
+    const row = published.locator('.earning-rate').filter({ hasText: category });
+    await expect(row.locator('.earning-category')).toHaveText(category);
+    await expect(row.locator('.earning-multiplier')).toHaveText(multiplier);
+  }
+  await expect(published).toContainText('Activation required with Chase');
+  await expect(published).toContainText('Activate by 2026-12-14');
+  await expect(section.getByTestId('active-reward-item')).toHaveCount(0);
+  await expect(section.getByTestId('queued-reward-item')).toHaveCount(0);
+  if (mode === 'next') await expect(published).toContainText('Automatically scheduled');
+  else await expect(section.getByTestId('published-next-quarter-rewards')).toHaveCount(0);
 });

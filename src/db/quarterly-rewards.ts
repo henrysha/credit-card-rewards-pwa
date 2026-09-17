@@ -7,7 +7,17 @@ export const freedomQuarterlySchedule: QuarterlyRewards[] = [{
   activationDeadline: '2026-09-14',
   categories: ['Gas Stations', 'Public Transit', 'EV Charging', 'Select Live Entertainment', 'United Way'],
   source: 'https://www.chase.com/personal/credit-cards/freedom/freedomfive',
+}, {
+  start: '2026-10-01',
+  end: '2026-12-31',
+  activationDeadline: '2026-12-14',
+  categories: ['Grocery Stores (excluding Walmart and Target)', 'Dining', 'American Red Cross'],
+  source: 'https://media.chase.com/news/chase-freedom-2026-q4-categories',
 }];
+
+export const freedomFlexQuarterlySchedule: QuarterlyRewards[] = freedomQuarterlySchedule.map(quarter =>
+  quarter.start === '2026-10-01' ? { ...quarter, categoryMultipliers: { Dining: 7 } } : quarter
+);
 
 export function currentQuarterRewards(rate: EarningRate, now = new Date()): QuarterlyRewards | undefined {
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -21,8 +31,8 @@ export function resolveEarningRates(rates: EarningRate[], now = new Date()): Ear
     if (!quarter) return [];
     return quarter.categories.map(category => ({
       category,
-      recommendationCategory: category === 'Gas Stations' ? 'Gas' : category,
-      multiplier: rate.multiplier,
+      recommendationCategory: category === 'Gas Stations' ? 'Gas' : category.startsWith('Grocery Stores') ? 'Groceries' : category,
+      multiplier: quarter.categoryMultipliers?.[category] ?? rate.multiplier,
       limit: `If activated by ${quarter.activationDeadline}; $1,500 combined/quarter; through ${quarter.end}`,
     }));
   });

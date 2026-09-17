@@ -1,4 +1,4 @@
-import { freedomQuarterlySchedule } from './quarterly-rewards';
+import { freedomQuarterlySchedule, freedomFlexQuarterlySchedule } from './quarterly-rewards';
 import type { CardTemplate, ChurningRule } from './types';
 
 // ============================================================
@@ -82,7 +82,7 @@ export const cardTemplates: CardTemplate[] = [
     color: '#1a3c6e',
     signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
     earningRates: [
-      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter', quarterlySchedule: freedomQuarterlySchedule },
+      { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter', quarterlySchedule: freedomFlexQuarterlySchedule },
       { category: 'Chase Travel', multiplier: 5 },
       { category: 'Lyft', multiplier: 5, limit: 'Through 9/30/2027' },
       { category: 'Dining', multiplier: 3 },

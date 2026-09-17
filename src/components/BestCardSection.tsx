@@ -123,7 +123,7 @@ export function BestCardSection() {
 
       {quarterlyTerms.length > 0 && (
         <div className="quarterly-terms" data-testid="quarterly-recommendation-terms">
-          {quarterlyTerms.map(terms => <div key={terms}>Quarterly 5x: {terms}</div>)}
+          {quarterlyTerms.map(terms => <div key={terms}>Quarterly bonus: {terms}</div>)}
         </div>
       )}
 

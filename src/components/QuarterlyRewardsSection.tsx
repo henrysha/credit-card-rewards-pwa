@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useCurrentDate } from '../hooks/useCurrentDate';
+import { currentQuarterRewards } from '../db/quarterly-rewards';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import type { UserCard, CardTemplate } from '../db/types';
@@ -8,6 +10,7 @@ import {
   formatDateLabel,
   removeQuarterlyReward,
 } from '../utils/quarterly-rewards';
+import { PublishedQuarterlyRewards } from './PublishedQuarterlyRewards';
 import { QuarterlyRewardModal } from './QuarterlyRewardModal';
 import { useToast } from './ToastContext';
 
@@ -20,8 +23,18 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
   const cardId = card.id!;
   const { showToast } = useToast();
 
-  const currentQ = getCurrentQuarter();
-  const nextQ = getNextQuarter();
+  const now = useCurrentDate();
+  const currentQ = getCurrentQuarter(now);
+  const nextQ = getNextQuarter(now);
+  const nextQuarterDate = new Date(nextQ.year, (nextQ.quarter - 1) * 3, 1);
+  const publishedNextRewards = template.earningRates.flatMap(rate => {
+    const quarter = currentQuarterRewards(rate, nextQuarterDate);
+    return quarter ? [{ rate, quarter }] : [];
+  });
+  const publishedRewards = template.earningRates.flatMap(rate => {
+    const quarter = currentQuarterRewards(rate, now);
+    return quarter ? [{ rate, quarter }] : [];
+  });
 
   const rewards = useLiveQuery(
     () => db.quarterlyRewards.where('cardId').equals(cardId).toArray(),
@@ -32,7 +45,7 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
   const [modalMode, setModalMode] = useState<'current' | 'next'>('next');
 
   const activeRewards = (rewards ?? []).filter(
-    (r) => r.status === 'active' || (r.quarter === currentQ.quarter && r.year === currentQ.year && r.status !== 'expired')
+    (r) => r.quarter === currentQ.quarter && r.year === currentQ.year && r.status !== 'expired'
   );
 
   const queuedRewards = (rewards ?? []).filter(
@@ -52,7 +65,7 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
   return (
     <div className="glass-card mt-md" data-testid="quarterly-rewards-section">
       <div className="section-header flex justify-between items-center mb-sm">
-        <h3 className="section-title">Rotating 5x Categories</h3>
+        <h3 className="section-title">Rotating Quarterly Categories</h3>
         <button
           className="btn btn-primary btn-sm"
           data-testid="queue-next-quarter-btn"
@@ -73,7 +86,7 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
             <span className="text-xs font-bold text-white uppercase tracking-wider">
               Current Quarter ({currentQ.label})
             </span>
-            <span className="badge badge-green">Active</span>
+            <span className="badge badge-green">Current</span>
           </div>
           <button
             className="btn btn-secondary btn-sm text-xs py-[2px] px-sm"
@@ -84,15 +97,20 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
           </button>
         </div>
 
-        {activeRewards.length === 0 ? (
+        {publishedRewards.map(({ rate, quarter }, index) => (
+          <PublishedQuarterlyRewards key={index} rate={rate} quarter={quarter} />
+        ))}
+
+        {activeRewards.length === 0 && publishedRewards.length === 0 ? (
           <div
             className="p-sm rounded text-xs text-muted"
             style={{ background: 'var(--bg-glass)', border: '1px dashed var(--bg-glass-border)' }}
           >
-            No categories set for {currentQ.label}. Tap "+ Add" to specify this quarter's categories.
+            Published categories not available for {currentQ.label}. Tap "+ Add" to specify this quarter's categories.
           </div>
         ) : (
           <div className="flex flex-col gap-xs">
+            {activeRewards.length > 0 && <div className="text-xs text-secondary">Your saved categories</div>}
             {activeRewards.map((reward) => (
               <div
                 key={reward.id}
@@ -129,16 +147,20 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
             <span className="text-xs font-bold text-white uppercase tracking-wider">
               Next Quarter Queue ({nextQ.label})
             </span>
-            <span className="badge badge-gold">Activates {formatDateLabel(nextQ.startDate)}</span>
+            <span className="badge badge-gold">Starts {formatDateLabel(nextQ.startDate)}</span>
           </div>
         </div>
 
-        {queuedRewards.length === 0 ? (
+        {publishedNextRewards.map(({ rate, quarter }, index) => (
+          <PublishedQuarterlyRewards key={index} rate={rate} quarter={quarter} upcoming />
+        ))}
+
+        {queuedRewards.length === 0 && publishedNextRewards.length === 0 ? (
           <div
             className="p-sm rounded text-xs text-muted"
             style={{ background: 'var(--bg-glass)', border: '1px dashed var(--bg-glass-border)' }}
           >
-            No rewards queued for {nextQ.label}. When Chase announces next quarter categories, queue them here!
+            Published categories not available yet for {nextQ.label}. They appear here automatically when the app schedule is updated. You can also queue categories manually.
           </div>
         ) : (
           <div className="flex flex-col gap-xs">

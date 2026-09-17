@@ -43,6 +43,7 @@ export interface QuarterlyRewards {
   end: string;
   activationDeadline: string;
   categories: string[];
+  categoryMultipliers?: Record<string, number>;
   source: string;
 }
 

@@ -22,7 +22,7 @@ export function EarningRatesSection({ earningRates }: EarningRatesSectionProps) 
                 <>
                   {quarter.categories.map(category => (
                     <div key={category} className="earning-rate">
-                      <div className="earning-multiplier">{rate.multiplier}x</div>
+                      <div className="earning-multiplier">{quarter.categoryMultipliers?.[category] ?? rate.multiplier}x</div>
                       <div className="earning-category">{category}</div>
                       <div className="earning-limit">Q{Math.floor((Number(quarter.start.slice(5, 7)) - 1) / 3) + 1} {quarter.start.slice(0, 4)}</div>
                     </div>

@@ -67,7 +67,8 @@ Feature: Quarterly Rewards Queue and Rotation
     Then I should see "Groceries" in the best card section with "Chase Freedom Flex" and "5x" multiplier
 
   Scenario: Merchant, payment-method, and wholesale categories activate without broad inflation
-    Given I have added the "Chase Freedom Flex" card
+    Given the current date is in December
+    And I have added the "Chase Freedom Flex" card
     When I navigate to the card detail page for "Chase Freedom Flex"
     And I queue a next quarter reward for "PayPal" with "5x" multiplier
     And I queue a next quarter reward for "Target" with "5x" multiplier

@@ -49,6 +49,11 @@ export function BestCardSection() {
 
   const quarterlyTerms = [...new Set(bestCards.map(result => result.limit).filter((limit): limit is string => Boolean(limit?.startsWith('If activated'))) )];
 
+  const navigateToOwnedCard = (cardTemplateId: string) => {
+    const card = userCards?.find(userCard => userCard.cardTemplateId === cardTemplateId);
+    if (card?.id !== undefined) navigate(`/card/${card.id}`);
+  };
+
   if (templates.length === 0 || bestCards.length === 0) return null;
 
   return (
@@ -71,7 +76,7 @@ export function BestCardSection() {
                   if (hasSub) {
                     setExpandedCats(prev => ({...prev, [result.category]: !prev[result.category]}));
                   } else if (result.cardTemplateId) {
-                    navigate(`/catalog`);
+                    navigateToOwnedCard(result.cardTemplateId);
                   }
                 }}
                 style={{ cursor: 'pointer' }}
@@ -84,7 +89,7 @@ export function BestCardSection() {
                 <div className="flex flex-col justify-center items-end min-w-[40px] shrink-0" onClick={(e) => {
                    if (hasSub && result.cardTemplateId) {
                       e.stopPropagation();
-                      navigate(`/catalog`);
+                      navigateToOwnedCard(result.cardTemplateId);
                    }
                 }}>
                   <div className="text-lg font-black text-gold leading-none">{result.multiplier}x</div>
@@ -100,7 +105,7 @@ export function BestCardSection() {
                       className="best-card-row p-[4px] px-[8px] mt-[4px] rounded hover:bg-white/5 transition-colors"
                       onClick={(e) => {
                           e.stopPropagation();
-                          if (subResult.cardTemplateId) navigate(`/catalog`);
+                          if (subResult.cardTemplateId) navigateToOwnedCard(subResult.cardTemplateId);
                       }}
                       style={{ cursor: subResult.cardTemplateId ? 'pointer' : 'default' }}
                     >

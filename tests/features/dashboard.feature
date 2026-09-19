@@ -27,3 +27,9 @@ Feature: Dashboard
     When I click to expand the "Online Shopping" category
     Then I should see the "Amazon.com" subcategory
     And I should see "Amazon Prime Visa" as the recommended card for "Amazon.com"
+
+  Scenario: Best card recommendation opens the owned card
+    Given I have added the "Chase Sapphire Reserve" card
+    When I navigate to the "Dashboard"
+    And I open the card recommended for "Travel Portal"
+    Then I should be on the owned "Chase Sapphire Reserve" card detail

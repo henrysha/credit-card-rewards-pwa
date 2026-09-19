@@ -54,3 +54,14 @@ Then('I should see {string} as the recommended card for {string}', async functio
   const row = this.page.locator(`div[data-category="${category}"]`).first();
   await expect(row).toContainText(cardName);
 });
+
+When('I open the card recommended for {string}', async function (this: CustomWorld, category: string) {
+  const row = this.page.locator(`div[data-category="${category}"]`).first();
+  await expect(row).toBeVisible({ timeout: 5000 });
+  await row.click();
+});
+
+Then('I should be on the owned {string} card detail', async function (this: CustomWorld, cardName: string) {
+  await this.page.waitForURL(/\/card\/\d+/, { timeout: 5000 });
+  await expect(this.page.locator('.card-name')).toHaveText(cardName);
+});

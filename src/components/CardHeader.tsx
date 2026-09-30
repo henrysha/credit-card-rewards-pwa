@@ -21,10 +21,12 @@ export function CardHeader({ card, template }: CardHeaderProps) {
   const [editOpenedDate, setEditOpenedDate] = useState(card?.openedDate || '');
   const [updating, setUpdating] = useState(false);
   const validLastFour = editLastFour === '' || /^\d{4}$/.test(editLastFour);
+  const today = new Date().toISOString().split('T')[0];
+  const validOpenedDate = Boolean(editOpenedDate) && editOpenedDate <= today;
   const { showToast } = useToast();
 
   const handleEditDetails = async () => {
-    if (!card?.id || !validLastFour || !editOpenedDate || updating) return;
+    if (!card?.id || !validLastFour || !validOpenedDate || updating) return;
     setUpdating(true);
     try {
       await updateCard(card.id, {
@@ -118,7 +120,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
 
             <div className="form-group">
               <label className="form-label" htmlFor="edit-card-opened-date">Opening Date</label>
-              <input id="edit-card-opened-date" type="date" className="form-input" value={editOpenedDate} onChange={e => setEditOpenedDate(e.target.value)} required />
+              <input id="edit-card-opened-date" type="date" className="form-input" value={editOpenedDate} onChange={e => setEditOpenedDate(e.target.value)} max={today} required />
             </div>
 
             <div className="form-group">
@@ -128,7 +130,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
 
             <div className="flex gap-sm mt-lg">
               <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowEditDetails(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={updating || !validLastFour || !editOpenedDate}>
+              <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={updating || !validLastFour || !validOpenedDate}>
                 {updating ? 'Saving...' : 'Save Changes'}
               </button>
             </div>

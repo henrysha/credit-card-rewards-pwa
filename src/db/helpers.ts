@@ -13,6 +13,12 @@ function addMonths(date: Date, months: number): Date {
   return d;
 }
 
+function bonusDeadline(openedDate: string, months: number): string {
+  const date = new Date(openedDate);
+  date.setUTCMonth(date.getUTCMonth() + months);
+  return date.toISOString().split('T')[0];
+}
+
 function startOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
@@ -146,8 +152,6 @@ export async function addCard(
   const template = getCardTemplate(cardTemplateId);
   if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
 
-  const opened = new Date(openedDate);
-
   const cardId = await db.cards.add({
     cardTemplateId,
     nickname,
@@ -162,7 +166,7 @@ export async function addCard(
   const isAutomaticallyAwarded = template.signupBonus.spend <= 0;
   const deadline = isAutomaticallyAwarded
     ? '9999-12-31'
-    : addMonths(opened, template.signupBonus.timeMonths).toISOString().split('T')[0];
+    : bonusDeadline(openedDate, template.signupBonus.timeMonths);
   await db.signupBonuses.add({
     cardId: cardId as number,
     cardTemplateId,
@@ -210,7 +214,39 @@ export async function updateCard(
   cardId: number,
   updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string; openedDate?: string }
 ): Promise<void> {
-  await db.cards.update(cardId, updates);
+  if (updates.openedDate !== undefined) {
+    const parsed = new Date(updates.openedDate);
+    const today = new Date().toISOString().split('T')[0];
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(updates.openedDate)
+      || !Number.isFinite(parsed.getTime())
+      || parsed.toISOString().split('T')[0] !== updates.openedDate
+      || updates.openedDate > today) {
+      throw new Error('Opening date must be a valid date on or before today.');
+    }
+  }
+
+  await db.transaction('rw', db.cards, db.signupBonuses, async () => {
+    const card = await db.cards.get(cardId);
+    if (!card) return;
+
+    if (updates.openedDate !== undefined && updates.openedDate !== card.openedDate) {
+      const bonuses = await db.signupBonuses.where('cardId').equals(cardId).toArray();
+      for (const bonus of bonuses) {
+        const template = getCardTemplate(bonus.cardTemplateId);
+        if (!template || bonus.completed || bonus.targetSpend <= 0 || !bonus.id) continue;
+        const originalDeadline = bonusDeadline(card.openedDate, template.signupBonus.timeMonths);
+        const legacyDeadline = addMonths(new Date(card.openedDate), template.signupBonus.timeMonths).toISOString().split('T')[0];
+        // Only adjust deadlines that still match the generated default.
+        if (bonus.deadline === originalDeadline || bonus.deadline === legacyDeadline) {
+          await db.signupBonuses.update(bonus.id, {
+            deadline: bonusDeadline(updates.openedDate, template.signupBonus.timeMonths),
+          });
+        }
+      }
+    }
+
+    await db.cards.update(cardId, updates);
+  });
 }
 
 export function getEligibleProductChangeTemplates(currentTemplateId: string): {

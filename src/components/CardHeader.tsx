@@ -18,18 +18,22 @@ export function CardHeader({ card, template }: CardHeaderProps) {
   const [editNickname, setEditNickname] = useState(card?.nickname || '');
   const [editLastFour, setEditLastFour] = useState(card?.lastFourDigits || '');
   const [editFeeDate, setEditFeeDate] = useState(card?.annualFeeDate || '');
+  const [editOpenedDate, setEditOpenedDate] = useState(card?.openedDate || '');
   const [updating, setUpdating] = useState(false);
   const validLastFour = editLastFour === '' || /^\d{4}$/.test(editLastFour);
+  const today = new Date().toISOString().split('T')[0];
+  const validOpenedDate = Boolean(editOpenedDate) && editOpenedDate <= today;
   const { showToast } = useToast();
 
   const handleEditDetails = async () => {
-    if (!card?.id || !validLastFour || updating) return;
+    if (!card?.id || !validLastFour || !validOpenedDate || updating) return;
     setUpdating(true);
     try {
       await updateCard(card.id, {
         nickname: editNickname || undefined,
         lastFourDigits: editLastFour || undefined,
         annualFeeDate: editFeeDate,
+        openedDate: editOpenedDate,
       });
       setShowEditDetails(false);
       showToast('Card updated!');
@@ -46,7 +50,15 @@ export function CardHeader({ card, template }: CardHeaderProps) {
         <div className="card-issuer">{template.issuer}</div>
         <div className="card-name">{card?.nickname || template.name}</div>
         <div className="flex justify-between items-end">
-          <div className="card-fee">${template.annualFee}/yr</div>
+          <div>
+            <div className="card-fee">${template.annualFee}/yr</div>
+            {card && (
+              <div className="mt-sm">
+                <div className="text-xs" style={{ opacity: 0.8 }}>Opening Date</div>
+                <div className="font-bold card-opened-date" style={{ fontSize: '0.9rem' }}>{card.openedDate}</div>
+              </div>
+            )}
+          </div>
           {card && (
             <div className="text-right">
               <div className="text-xs" style={{ opacity: 0.8 }}>Next Annual Fee</div>
@@ -69,6 +81,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
                 setEditNickname(card.nickname || '');
                 setEditLastFour(card.lastFourDigits || '');
                 setEditFeeDate(card.annualFeeDate);
+                setEditOpenedDate(card.openedDate);
                 setShowEditDetails(true);
               }}
               aria-label="Edit card details"
@@ -106,13 +119,18 @@ export function CardHeader({ card, template }: CardHeaderProps) {
             </div>
 
             <div className="form-group">
+              <label className="form-label" htmlFor="edit-card-opened-date">Opening Date</label>
+              <input id="edit-card-opened-date" type="date" className="form-input" value={editOpenedDate} onChange={e => setEditOpenedDate(e.target.value)} max={today} required />
+            </div>
+
+            <div className="form-group">
               <label className="form-label" htmlFor="edit-card-fee-date">Next Annual Fee Date</label>
               <input id="edit-card-fee-date" type="date" className="form-input" value={editFeeDate} onChange={e => setEditFeeDate(e.target.value)} />
             </div>
 
             <div className="flex gap-sm mt-lg">
               <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowEditDetails(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={updating || !validLastFour}>
+              <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={updating || !validLastFour || !validOpenedDate}>
                 {updating ? 'Saving...' : 'Save Changes'}
               </button>
             </div>

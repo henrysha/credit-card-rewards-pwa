@@ -208,7 +208,7 @@ export async function removeCard(cardId: number): Promise<void> {
 
 export async function updateCard(
   cardId: number,
-  updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string }
+  updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string; openedDate?: string }
 ): Promise<void> {
   await db.cards.update(cardId, updates);
 }

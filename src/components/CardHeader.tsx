@@ -1,16 +1,12 @@
 import { useState } from 'react';
 import type { UserCard, CardTemplate } from '../db/types';
-import { updateCard } from '../db/helpers';
+import { updateCard, daysUntilDate as daysUntil } from '../db/helpers';
 import { useToast } from './ToastContext';
 import { getTextColorForBackground } from '../utils/color';
 
 interface CardHeaderProps {
   card?: UserCard;
   template: CardTemplate;
-}
-
-function daysUntil(dateStr: string): number {
-  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
 export function CardHeader({ card, template }: CardHeaderProps) {

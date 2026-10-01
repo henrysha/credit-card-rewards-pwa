@@ -1,6 +1,7 @@
 import { syncCardPerks, refreshExpiredPerks } from '../db/helpers';
 import { rotateQuarterlyRewards, getMsUntilNextDateBoundary } from './quarterly-rewards';
 import { runNotificationChecks } from '../notifications';
+import { refreshAnnualFeeDates } from './annual-fees';
 
 /**
  * Initializes app rewards lifecycle:
@@ -32,6 +33,8 @@ export function setupRewardsLifecycle(): () => void {
         await refreshExpiredPerks();
         if (disposed) break;
         await rotateQuarterlyRewards();
+        if (disposed) break;
+        await refreshAnnualFeeDates();
         if (disposed) break;
         await runNotificationChecks();
       } while (rerunRequested && !disposed);

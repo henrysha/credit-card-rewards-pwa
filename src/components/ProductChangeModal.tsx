@@ -1,3 +1,5 @@
+import { isPerkAvailable } from '../utils/perk-availability';
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useState } from 'react';
 import type { UserCard, CardTemplate } from '../db/types';
 import { getEligibleProductChangeTemplates, productChangeCard } from '../db/helpers';
@@ -16,6 +18,7 @@ export function ProductChangeModal({
   onClose,
   onSuccess,
 }: ProductChangeModalProps) {
+  const now = useCurrentDate();
   const { showToast } = useToast();
   const { upgrades, downgrades, sameTier, allEligible } = getEligibleProductChangeTemplates(currentTemplate.id);
 
@@ -133,6 +136,8 @@ export function ProductChangeModal({
 
                 <div className="catalog-list" style={{ overflowY: 'auto', flex: 1, paddingRight: 4 }}>
                   {displayedTemplates.map(targetTemplate => {
+                    const availablePerks = targetTemplate.perks.filter(p => isPerkAvailable(p, now));
+                    const valuablePerks = availablePerks.filter(p => p.annualValue > 0);
                     const diff = targetTemplate.annualFee - currentTemplate.annualFee;
                     const isUpgrade = diff > 0;
                     const isDowngrade = diff < 0;
@@ -176,7 +181,7 @@ export function ProductChangeModal({
                               )}
                             </div>
                             <div className="text-xs text-muted">
-                              ${targetTemplate.annualFee}/yr • {targetTemplate.perks.length} perks
+                              ${targetTemplate.annualFee}/yr • {availablePerks.length} perks
                             </div>
                           </div>
 
@@ -199,19 +204,18 @@ export function ProductChangeModal({
                           </div>
                         </div>
 
-                        {targetTemplate.perks.filter(p => p.annualValue > 0).length > 0 && (
+                        {valuablePerks.length > 0 && (
                           <div className="mt-xs" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                            {targetTemplate.perks
-                              .filter(p => p.annualValue > 0)
+                            {valuablePerks
                               .slice(0, 3)
                               .map(p => (
                                 <span key={p.id} className="badge badge-gold" style={{ fontSize: '0.62rem', padding: '1px 5px' }}>
                                   {p.name}
                                 </span>
                               ))}
-                            {targetTemplate.perks.filter(p => p.annualValue > 0).length > 3 && (
+                            {valuablePerks.length > 3 && (
                               <span className="badge" style={{ fontSize: '0.62rem', padding: '1px 5px', opacity: 0.7 }}>
-                                +{targetTemplate.perks.filter(p => p.annualValue > 0).length - 3} more
+                                +{valuablePerks.length - 3} more
                               </span>
                             )}
                           </div>

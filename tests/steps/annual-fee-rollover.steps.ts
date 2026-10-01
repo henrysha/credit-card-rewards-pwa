@@ -1,4 +1,4 @@
-import { Given, Then } from '@cucumber/cucumber';
+import { Given, Then, When } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import type { db } from '../../src/db/database';
 import type { UserCard } from '../../src/db/types';
@@ -38,4 +38,12 @@ Then('the next annual fee should display {string}', async function (expected: st
 
 Then('the annual fee should have no urgency indicator', async function () {
   await expect(this.page.locator('.card-tile .text-right .text-gold')).toHaveCount(0);
+});
+
+When('I enter {string} as the next annual fee date', async function (date: string) {
+  await this.page.getByLabel('Next Annual Fee Date', { exact: true }).fill(date);
+});
+
+Then('the annual fee urgency should show {string}', async function (countdown: string) {
+  await expect(this.page.locator('.card-tile .text-right .text-gold')).toContainText(countdown);
 });

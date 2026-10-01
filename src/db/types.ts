@@ -121,6 +121,7 @@ export interface UserCard {
   lastFourDigits?: string;
   openedDate: string;       // ISO date
   annualFeeDate: string;    // ISO date for next annual fee
+  annualFeeAnchorDate?: string; // Original anniversary, retained through leap-day clamping
   status: 'active' | 'closed' | 'product-changed';
   closedDate?: string;
   notes?: string;

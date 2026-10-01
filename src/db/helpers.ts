@@ -245,7 +245,12 @@ export async function updateCard(
       }
     }
 
-    await db.cards.update(cardId, updates);
+    await db.cards.update(cardId, {
+      ...updates,
+      ...(updates.annualFeeDate !== undefined && updates.annualFeeDate !== card.annualFeeDate
+        ? { annualFeeAnchorDate: undefined }
+        : {}),
+    });
   });
 }
 
@@ -335,6 +340,9 @@ export async function productChangeCard(
     lastFourDigits: options?.lastFourDigits ?? oldCard.lastFourDigits,
     openedDate: oldCard.openedDate, // Preserves original account age
     annualFeeDate: options?.annualFeeDate ?? oldCard.annualFeeDate,
+    annualFeeAnchorDate: options?.annualFeeDate !== undefined && options.annualFeeDate !== oldCard.annualFeeDate
+      ? undefined
+      : oldCard.annualFeeAnchorDate,
     status: 'active',
   } as UserCard);
 
@@ -563,10 +571,11 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
 
 /** Days between today and an ISO date string. Negative = past. */
 export function daysUntilDate(dateStr: string): number {
-  const target = new Date(dateStr + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00Z');
   const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  // Compare calendar days; local midnights may be 23 or 25 hours apart at DST.
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target.getTime() - today) / (1000 * 60 * 60 * 24));
 }
 
 /** Get unused perks whose current period ends within `daysThreshold` days. */

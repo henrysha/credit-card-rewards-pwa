@@ -9,8 +9,17 @@ export async function refreshAnnualFeeDates(now: Date = new Date()): Promise<voi
     for (const card of cards) {
       const feeDate = card.annualFeeDate;
       if (!/^\d{4}-\d{2}-\d{2}$/.test(feeDate) || feeDate >= today) continue;
-      const parsed = new Date(`${feeDate}T00:00:00Z`);
+      let parsed = new Date(`${feeDate}T00:00:00Z`);
       if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== feeDate) continue;
+
+      let anchorDate = feeDate;
+      if (card.annualFeeAnchorDate) {
+        const anchor = new Date(`${card.annualFeeAnchorDate}T00:00:00Z`);
+        if (Number.isFinite(anchor.getTime()) && anchor.toISOString().slice(0, 10) === card.annualFeeAnchorDate) {
+          parsed = anchor;
+          anchorDate = card.annualFeeAnchorDate;
+        }
+      }
 
       const month = parsed.getUTCMonth();
       const day = parsed.getUTCDate();
@@ -21,7 +30,7 @@ export async function refreshAnnualFeeDates(now: Date = new Date()): Promise<voi
       };
       let year = now.getFullYear();
       if (occurrence(year) < today) year++;
-      await db.cards.update(card.id!, { annualFeeDate: occurrence(year) });
+      await db.cards.update(card.id!, { annualFeeDate: occurrence(year), annualFeeAnchorDate: anchorDate });
     }
   });
 }

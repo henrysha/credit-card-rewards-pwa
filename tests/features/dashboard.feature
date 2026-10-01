@@ -18,7 +18,7 @@ Feature: Dashboard
     Given I have added the "Chase Sapphire Reserve" card
     When I navigate to the "Dashboard"
     Then I should see "Active Sign-up Bonuses" on the dashboard
-    And I should see "125K points" bonus info
+    And I should see "100K points" bonus info
 
   Scenario: Dashboard shows expanding vendor subcategories
     Given I have added the "Amazon Prime Visa" card

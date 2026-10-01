@@ -3,6 +3,7 @@ import { cardFamilyLabels } from './card-families';
 import type { CardFamilyId } from './card-families';
 import { cardTemplates } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
+import { isPerkAvailable, isUserPerkAvailable } from '../utils/perk-availability';
 import { hasRotatingRewards } from '../utils/quarterly-rewards';
 
 // ── Helpers for computing renewal dates ──
@@ -182,7 +183,7 @@ export async function addCard(
 
   // Create perk instances
   const now = new Date();
-  const perksToAdd: UserPerk[] = template.perks.map((p: PerkTemplate) => {
+  const perksToAdd: UserPerk[] = template.perks.filter(p => isPerkAvailable(p, now)).map((p: PerkTemplate) => {
     const period = computePeriod(p.renewalPeriod, now);
     return {
       cardId: cardId as number,
@@ -348,7 +349,7 @@ export async function productChangeCard(
 
   // 4. Create new perks for the target template
   const now = new Date();
-  const perksToAdd: UserPerk[] = targetTemplate.perks.map((p: PerkTemplate) => {
+  const perksToAdd: UserPerk[] = targetTemplate.perks.filter(p => isPerkAvailable(p, now)).map((p: PerkTemplate) => {
     const period = computePeriod(p.renewalPeriod, now);
     return {
       cardId: newCardId as number,
@@ -432,7 +433,7 @@ export async function updateSignupBonus(
 
 export async function togglePerk(perkId: number): Promise<void> {
   const perk = await db.perks.get(perkId);
-  if (!perk) return;
+  if (!perk || !isUserPerkAvailable(perk)) return;
   await db.perks.update(perkId, {
     used: !perk.used,
     usedDate: !perk.used ? new Date().toISOString().split('T')[0] : undefined,
@@ -441,7 +442,7 @@ export async function togglePerk(perkId: number): Promise<void> {
 
 export async function togglePerkActivation(perkId: number, active: boolean): Promise<void> {
   const perk = await db.perks.get(perkId);
-  if (!perk) return;
+  if (!perk || !isUserPerkAvailable(perk)) return;
   await db.perks.update(perkId, {
     active,
   });
@@ -459,11 +460,11 @@ export async function syncCardPerks(): Promise<void> {
 
     const existingPerks = await db.perks.where('cardId').equals(card.id!).toArray();
     
-    // 1. Delete unused perks that are no longer in the template
+    // 1. Remove unavailable unused perks; retain used records as history.
     for (const p of existingPerks) {
       if (p.used) continue;
       const inTemplate = template.perks.find(pt => pt.id === p.perkTemplateId);
-      if (!inTemplate) {
+      if (!inTemplate || !isPerkAvailable(inTemplate, now)) {
         await db.perks.delete(p.id!);
       }
     }
@@ -472,7 +473,7 @@ export async function syncCardPerks(): Promise<void> {
     for (const p of existingPerks) {
       if (p.used) continue;
       const inTemplate = template.perks.find(pt => pt.id === p.perkTemplateId);
-      if (inTemplate) {
+      if (inTemplate && isPerkAvailable(inTemplate, now)) {
         await db.perks.update(p.id!, {
           perkName: inTemplate.name,
           category: inTemplate.category,
@@ -486,6 +487,7 @@ export async function syncCardPerks(): Promise<void> {
 
     // 3. Add missing perks that are newly added to the template
     for (const pt of template.perks) {
+      if (!isPerkAvailable(pt, now)) continue;
       const existing = existingPerks.find(p => p.perkTemplateId === pt.id);
       if (!existing) {
         const period = computePeriod(pt.renewalPeriod, now);
@@ -512,21 +514,25 @@ export async function syncCardPerks(): Promise<void> {
 export async function refreshExpiredPerks(): Promise<number> {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
-  const expiredPerks = await db.perks
-    .where('currentPeriodEnd')
-    .below(today)
-    .toArray();
+  // Scan all periods: a permanent expiration can precede a renewal date,
+  // including the non-renewing one-time and ongoing sentinels.
+  const expiredPerks = await db.perks.toArray();
 
   let refreshed = 0;
   for (const perk of expiredPerks) {
-    if (perk.renewalPeriod === 'one-time' || perk.renewalPeriod === 'ongoing') continue;
-    
     const card = await db.cards.get(perk.cardId);
     if (!card) continue;
     const template = getCardTemplate(card.cardTemplateId);
     if (!template) continue;
 
     const perkTemplate = template.perks.find(p => p.id === perk.perkTemplateId);
+    if (!isPerkAvailable(perkTemplate, now)) {
+      if (!perk.used) await db.perks.delete(perk.id!);
+      continue; // Used history must never be reset or renewed.
+    }
+    if (perk.currentPeriodEnd >= today) continue;
+    if (perk.renewalPeriod === 'one-time' || perk.renewalPeriod === 'ongoing') continue;
+
     if (!perkTemplate) {
       // Perk was removed from catalog; delete the user perk now that its period ended
       await db.perks.delete(perk.id!);
@@ -582,7 +588,7 @@ export function daysUntilDate(dateStr: string): number {
 export async function getExpiringPerks(daysThreshold: number = 7): Promise<UserPerk[]> {
   const allPerks = await db.perks.toArray();
   return allPerks.filter(p => {
-    if (p.used) return false;
+    if (p.used || !isUserPerkAvailable(p)) return false;
     if (p.active === false) return false;
     if (p.renewalPeriod === 'ongoing' || p.renewalPeriod === 'one-time') return false;
     if (p.annualValue <= 0) return false;

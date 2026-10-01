@@ -1,3 +1,5 @@
+import { isPerkAvailable } from '../utils/perk-availability';
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { cardTemplates } from '../db/seed-data';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
@@ -7,6 +9,7 @@ import { getFamilyIds } from '../db/helpers';
 import type { CardFamilyId } from '../db/card-families';
 
 export default function CardCatalog() {
+  const now = useCurrentDate();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
@@ -76,11 +79,11 @@ export default function CardCatalog() {
               </div>
             </div>
             <div className="mt-sm" style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {card.perks.filter(p => p.annualValue > 0).slice(0, 4).map(p => (
+              {card.perks.filter(p => isPerkAvailable(p, now) && p.annualValue > 0).slice(0, 4).map(p => (
                 <span key={p.id} className="badge badge-gold" style={{ fontSize: '0.6rem' }}>{p.name}</span>
               ))}
-              {card.perks.filter(p => p.annualValue > 0).length > 4 && (
-                <span className="badge badge-blue" style={{ fontSize: '0.6rem' }}>+{card.perks.filter(p => p.annualValue > 0).length - 4} more</span>
+              {card.perks.filter(p => isPerkAvailable(p, now) && p.annualValue > 0).length > 4 && (
+                <span className="badge badge-blue" style={{ fontSize: '0.6rem' }}>+{card.perks.filter(p => isPerkAvailable(p, now) && p.annualValue > 0).length - 4} more</span>
               )}
             </div>
           </div>

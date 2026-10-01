@@ -1,3 +1,5 @@
+import { isPerkAvailable } from '../utils/perk-availability';
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useState } from 'react';
 import type { UserPerk, CardTemplate, PerkTemplate } from '../db/types';
 import { togglePerk, togglePerkActivation } from '../db/helpers';
@@ -12,6 +14,7 @@ interface PerksSectionProps {
 }
 
 export function PerksSection({ perks, template, readOnly = false }: PerksSectionProps) {
+  const now = useCurrentDate();
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
   const { showToast } = useToast();
 
@@ -36,7 +39,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
   };
 
   // If perks (from DB) is missing, create mock perks for preview
-  const displayPerks: UserPerk[] = perks || template.perks.map(pt => ({
+  const trackedOrPreviewPerks: UserPerk[] = perks || template.perks.map(pt => ({
     perkTemplateId: pt.id,
     perkName: pt.name,
     category: pt.category,
@@ -49,6 +52,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
     periodValue: pt.periodValue,
     cardId: 0
   }));
+  const displayPerks = trackedOrPreviewPerks.filter(p => isPerkAvailable(perkTemplateMap.get(p.perkTemplateId), now));
 
   const valuablePerks = displayPerks.filter((p: UserPerk) => p.annualValue > 0);
   const otherPerks = displayPerks.filter((p: UserPerk) => p.annualValue === 0);
@@ -150,7 +154,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
             <h3 className="section-title">Credits & Perks</h3>
             {!readOnly && (
               <span className="badge badge-gold">
-                ${valuablePerks.filter((p: UserPerk) => !p.used).reduce((s: number, p: UserPerk) => s + (p.periodValue ?? p.annualValue), 0)} unclaimed
+                ${valuablePerks.filter((p: UserPerk) => !p.used && p.active !== false).reduce((s: number, p: UserPerk) => s + (p.periodValue ?? p.annualValue), 0)} unclaimed
               </span>
             )}
           </div>

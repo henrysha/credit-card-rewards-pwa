@@ -1,3 +1,5 @@
+import { isUserPerkAvailable } from '../utils/perk-availability';
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { togglePerk, togglePerkActivation, daysUntilDate, getCardTemplate } from '../db/helpers';
@@ -21,6 +23,7 @@ function getUrgencyBadge(perk: UserPerk): { label: string; className: string } |
 }
 
 export default function Perks() {
+  const now = useCurrentDate();
   const [filter, setFilter] = useState<'all' | 'unused' | 'used' | 'inactive'>('unused');
   const [periodFilter, setPeriodFilter] = useState<string>('all');
   const [selectedPerkTemplate, setSelectedPerkTemplate] = useState<PerkTemplate | null>(null);
@@ -38,7 +41,7 @@ export default function Perks() {
     t?.perks.forEach(p => perkTemplateMap.set(p.id, p));
   });
 
-  let filtered = (perks ?? []).filter((p: UserPerk) => p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
+  let filtered = (perks ?? []).filter((p: UserPerk) => isUserPerkAvailable(p, now) && p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
 
   if (filter === 'inactive') {
     filtered = filtered.filter((p: UserPerk) => p.active === false);
@@ -107,7 +110,7 @@ export default function Perks() {
       <div className="tabs">
         <button className={`tab ${periodFilter === 'all' ? 'active' : ''}`} onClick={() => setPeriodFilter('all')}>All Periods</button>
         {periodOrder.map(p => {
-          const count = (perks ?? []).filter((pk: UserPerk) => pk.renewalPeriod === p && pk.annualValue > 0).length;
+          const count = (perks ?? []).filter((pk: UserPerk) => isUserPerkAvailable(pk, now) && pk.renewalPeriod === p && pk.annualValue > 0).length;
           if (count === 0) return null;
           return (
             <button key={p} className={`tab ${periodFilter === p ? 'active' : ''}`} onClick={() => setPeriodFilter(p)}>

@@ -1,3 +1,5 @@
+import { isUserPerkAvailable } from '../utils/perk-availability';
+import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { getCardTemplate } from '../db/helpers';
@@ -18,6 +20,7 @@ function formatCurrency(n: number): string {
 }
 
 export default function Dashboard() {
+  const now = useCurrentDate();
   const navigate = useNavigate();
   const cards = useLiveQuery(() => db.cards.where('status').equals('active').toArray());
   const bonuses = useLiveQuery(() => db.signupBonuses.toArray());
@@ -43,7 +46,7 @@ export default function Dashboard() {
   // Zero-spend welcome benefits are completed on add. The spend guard also
   // protects dashboards containing an older malformed zero-target record.
   const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed && b.targetSpend > 0) ?? [];
-  const unusedPerks = perks?.filter((p: UserPerk) => !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
+  const unusedPerks = perks?.filter((p: UserPerk) => isUserPerkAvailable(p, now) && !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
   const totalPerkValue = unusedPerks.reduce((sum: number, p: UserPerk) => sum + (p.periodValue ?? p.annualValue), 0);
 
   const showNotifPrompt = notifPermission === 'default' && !notifDismissed && activeCards > 0;

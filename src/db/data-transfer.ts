@@ -206,6 +206,7 @@ function validateBackup(value: unknown): DataBackup {
     requireString(item, 'cardTemplateId', `Card ${index + 1}`);
     requireString(item, 'openedDate', `Card ${index + 1}`);
     requireString(item, 'annualFeeDate', `Card ${index + 1}`);
+    validateOptionalString(item, 'annualFeeAnchorDate', `Card ${index + 1}`);
     requireEnum(item, 'status', cardStatuses, `Card ${index + 1}`);
     validateOptionalString(item, 'nickname', `Card ${index + 1}`);
     validateOptionalString(item, 'lastFourDigits', `Card ${index + 1}`);

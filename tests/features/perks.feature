@@ -32,20 +32,20 @@ Feature: Perk Management
   Scenario: Activate an inactive perk
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
-    When I activate the "$5 DoorDash Restaurant Credit" perk
-    Then the "$5 DoorDash Restaurant Credit" perk should not have an Activate button
-    And the "$5 DoorDash Restaurant Credit" perk should not be marked as used
+    Then the "$15 DoorDash Credit" perk should have an Activate button
+    When I activate the "$15 DoorDash Credit" perk
+    Then the "$15 DoorDash Credit" perk should not have an Activate button
+    And the "$15 DoorDash Credit" perk should not be marked as used
 
   Scenario: Deactivate an active perk
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
-    When I activate the "$5 DoorDash Restaurant Credit" perk
-    Then the "$5 DoorDash Restaurant Credit" perk should have a Deactivate button
-    When I deactivate the "$5 DoorDash Restaurant Credit" perk
-    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
-    And the "$5 DoorDash Restaurant Credit" perk should not have a Deactivate button
+    Then the "$15 DoorDash Credit" perk should have an Activate button
+    When I activate the "$15 DoorDash Credit" perk
+    Then the "$15 DoorDash Credit" perk should have a Deactivate button
+    When I deactivate the "$15 DoorDash Credit" perk
+    Then the "$15 DoorDash Credit" perk should have an Activate button
+    And the "$15 DoorDash Credit" perk should not have a Deactivate button
 
   Scenario: Perk resets to unused after renewal period expires
     Given I have added the "Chase Sapphire Reserve" card

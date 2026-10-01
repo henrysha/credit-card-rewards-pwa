@@ -4,16 +4,16 @@ Feature: Perk Activation Persistence
   Scenario: Explicitly activated perk stays active after renewal
     Given I have added the "Chase Sapphire Reserve" card
     When I view the card detail for "Chase Sapphire Reserve"
-    Then the "$5 DoorDash Restaurant Credit" perk should have an Activate button
-    When I activate the "$5 DoorDash Restaurant Credit" perk
-    Then the "$5 DoorDash Restaurant Credit" perk should not have an Activate button
+    Then the "$15 DoorDash Credit" perk should have an Activate button
+    When I activate the "$15 DoorDash Credit" perk
+    Then the "$15 DoorDash Credit" perk should not have an Activate button
     
-    When the renewal period for "$5 DoorDash Restaurant Credit" expires
+    When the renewal period for "$15 DoorDash Credit" expires
     And the app refreshes expired perks
     And I view the card detail for "Chase Sapphire Reserve"
     
-    Then the "$5 DoorDash Restaurant Credit" perk should not have an Activate button
-    And the perk "$5 DoorDash Restaurant Credit" active status in DB should be "true"
+    Then the "$15 DoorDash Credit" perk should not have an Activate button
+    And the perk "$15 DoorDash Credit" active status in DB should be "true"
 
   Scenario: Implicitly active perk (from old version) stays active after renewal
     Given I have added the "Chase Sapphire Reserve" card

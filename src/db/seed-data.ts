@@ -665,7 +665,7 @@ export const cardTemplates: CardTemplate[] = [
     name: 'IHG One Rewards Premier Credit Card',
     issuer: 'Chase',
     familyId: 'IHG',
-    annualFee: 99,
+    annualFee: 150,
     color: '#1d4f91',
     signupBonus: { points: 180000, spend: 3000, timeMonths: 3, unit: 'points',
       additionalBonus: { points: 10000, spend: 0, unit: 'points', description: 'Additional 10,000 points after adding an authorized user within the first 3 months' },
@@ -680,7 +680,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'ihg-premier-free-night', name: 'Anniversary Free Night', description: 'Annual Free Night Reward currently capped at 50,000 points, with points top-up available', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'ihg-premier-fourth-night', name: '4th Night Free', description: 'Redeem 3 nights and get the 4th night free on reward stays', category: 'hotel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'ihg-premier-fb', name: '$100 IHG Food & Beverage Rewards', description: 'Up to $25 in food & beverage rewards each quarter on room bills, up to $100 annually', category: 'dining-credit', annualValue: 100, renewalPeriod: 'quarterly', periodValue: 25 },
-      { id: 'ihg-premier-airline', name: '$100 Airline Statement Credit', description: 'Up to $100 statement credit on a single airline purchase of $250 or more', category: 'travel-credit', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'ihg-premier-airline', name: '$100 Airline Statement Credit', description: 'Up to $100 statement credit on a single airline purchase of $250 or more', category: 'travel-credit', annualValue: 100, renewalPeriod: 'annual', expirationDate: '2027-12-31' },
       { id: 'ihg-premier-elite-nights', name: '15 Elite Night Credits', description: '15 Elite Night Credits annually plus 2 additional Elite Night Credits per $5,000 in purchases', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'ihg-premier-spend-bonus', name: '15,000-Point Spend Bonus', description: '15,000 bonus points after $15,000 in annual purchases', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'ihg-premier-ge', name: '$120 Global Entry/TSA PreCheck/NEXUS', description: 'Statement credit every four years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
@@ -921,8 +921,7 @@ export const cardTemplates: CardTemplate[] = [
     color: '#00c805',
     signupBonus: { points: 0, spend: 0, timeMonths: 0, unit: 'points' },
     earningRates: [
-      { category: 'Travel (Robinhood Travel Portal)', multiplier: 5 },
-      { category: 'All Other Eligible Purchases', multiplier: 3 },
+      { category: 'All Other Eligible Purchases (including Travel Portal)', multiplier: 3 },
     ],
     perks: [
       { id: 'rh-points-redemption', name: 'Flexible Points Redemptions', description: 'Redeem points for statement credit, brokerage cash back, travel, gift cards, and other options in the Robinhood Banking app; a Robinhood investing account is required for cash back.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },

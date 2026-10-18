@@ -23,14 +23,16 @@ Feature: Chase co-branded card families
     Then I should see "United Explorer Card" on the cards page
     And I should see "United Quest Card" on the cards page
 
-  Scenario: Boundless displays and persists the complete four-award offer
+  Scenario: Boundless displays and persists the current three-award offer
     Given I open the app
     When I navigate to the "Catalog"
     And I click on the "Marriott Bonvoy Boundless Card" card in the catalog
     Then I should see "Spend $3,000 to earn 3 Free Night Awards" on the detail page
-    And I should see "Additional 1 Free Night Award after $4,000 total eligible spend within the first 4 months" on the detail page
+    And I should not see "Additional 1 Free Night Award" on the detail page
     When I click "Add This Card"
-    Then I should see "Additional 1 Free Night Award after $4,000 total eligible spend within the first 4 months" on the detail page
+    Then I should see "Spend $3,000 to earn 3 Free Night Awards" on the detail page
+    And I should not see "Additional 1 Free Night Award" on the detail page
+    And the saved welcome bonus should have no additional tier
 
   Scenario: United authorized-user bonus persists after adding the card
     Given I have added the "United Explorer Card" card

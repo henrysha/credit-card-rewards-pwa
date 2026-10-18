@@ -36,7 +36,7 @@ Feature: Card Catalog
     And I should see "Hilton Honors American Express Surpass Card"
     And I should see "Hilton Honors American Express Aspire Card"
     Then the "IHG" family should have 2 catalog cards
-    And I should see "IHG One Rewards Traveler Credit Card"
+    And I should see "IHG One Rewards Credit Card"
     And I should see "IHG One Rewards Premier Credit Card"
 
   Scenario: Family filter tabs use human-friendly labels

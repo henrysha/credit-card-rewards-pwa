@@ -121,3 +121,31 @@ Then('the {string} perk should show {int} dollars per {string}', async function 
 Then('the card annual fee should be {int} dollars', async function (value: number) {
   await expect(this.page.locator('.card-fee')).toHaveText(`$${value}/yr`);
 });
+
+Then('the {string} earning rate limit should mention {string}', async function (category: string, text: string) {
+  const rate = this.page.locator('.earning-rate').filter({ has: this.page.getByText(category, { exact: true }) });
+  await expect(rate.locator('.earning-limit')).toContainText(text);
+});
+
+Then('the catalog detail URL should end with {string}', async function (route: string) {
+  expect(new URL(this.page.url()).pathname).toBe(new URL(route, this.baseUrl).pathname);
+});
+
+Then('the saved welcome bonus should have no additional tier', async function () {
+  await expect(this.page).toHaveURL(/\/card\/\d+(?:\?.*)?$/);
+  const bonuses = await this.page.evaluate(async () => {
+    const { db } = window as unknown as { db: typeof import('../../src/db/database').db };
+    return db.signupBonuses.toArray();
+  });
+  expect(bonuses).toHaveLength(1);
+  expect(bonuses[0].additionalBonus).toBeUndefined();
+});
+
+Then('the catalog card should waive its first-year annual fee', async function () {
+  const waived = await this.page.evaluate(() => {
+    const { cardTemplates } = window as unknown as { cardTemplates: import('../../src/db/types').CardTemplate[] };
+    const templateId = window.location.pathname.split('/').pop();
+    return cardTemplates.find(card => card.id === templateId)?.firstYearFeeWaived;
+  });
+  expect(waived).toBe(true);
+});

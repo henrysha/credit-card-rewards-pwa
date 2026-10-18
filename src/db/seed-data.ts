@@ -718,7 +718,7 @@ export const cardTemplates: CardTemplate[] = [
     signupBonus: { points: 75000, spend: 4000, timeMonths: 3, unit: 'miles' },
     earningRates: [
       { category: 'Hotels/Vacation Rentals/Rental Cars/Activities (Cap One Travel)', multiplier: 5 },
-      { category: 'Capital One Entertainment', multiplier: 5 },
+      { category: 'Capital One Entertainment', multiplier: 5, recommendationCategory: 'Capital One Entertainment' },
       { category: 'All Other', multiplier: 2 },
     ],
     perks: [
@@ -738,7 +738,7 @@ export const cardTemplates: CardTemplate[] = [
     earningRates: [
       { category: 'Hotels & Rental Cars (Cap One Travel)', multiplier: 10 },
       { category: 'Flights & Vacation Rentals (Cap One Travel)', multiplier: 5 },
-      { category: 'Capital One Entertainment', multiplier: 5 },
+      { category: 'Capital One Entertainment', multiplier: 5, recommendationCategory: 'Capital One Entertainment' },
       { category: 'All Other', multiplier: 2 },
     ],
     perks: [

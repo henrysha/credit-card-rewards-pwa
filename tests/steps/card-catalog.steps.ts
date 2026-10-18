@@ -106,3 +106,18 @@ Then('the cards {string} and {string} should share a family identifier', async f
   expect(familyIds[0]).toBeTruthy();
   expect(familyIds[0]).toBe(familyIds[1]);
 });
+
+Then('the {string} perk should show {int} dollars', async function (name: string, value: number) {
+  const perk = this.page.locator('.perk-item').filter({ has: this.page.getByText(name, { exact: true }) });
+  await expect(perk.locator('.perk-value')).toHaveText(`$${value}`);
+});
+
+Then('the {string} perk should show {int} dollars per {string}', async function (name: string, value: number, period: string) {
+  const perk = this.page.locator('.perk-item').filter({ has: this.page.getByText(name, { exact: true }) });
+  await expect(perk.locator('.perk-value')).toHaveText(`$${value}`);
+  await expect(perk.locator('.perk-period')).toHaveText(`/${period}`);
+});
+
+Then('the card annual fee should be {int} dollars', async function (value: number) {
+  await expect(this.page.locator('.card-fee')).toHaveText(`$${value}/yr`);
+});

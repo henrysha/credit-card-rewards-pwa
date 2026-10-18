@@ -84,8 +84,11 @@ Feature: Card Catalog
     Then I should see "Chase Freedom Flex"
     And I should see "Sign-up Bonus"
     And I should see "Earning Rates"
-    And I should see "Cell Phone Protection" perk
-    And I should see "DashPass 3-Month Trial" perk
+    And I should not see "Cell Phone Protection" perk
+    And I should not see "DashPass 3-Month Trial" perk
+    And I should see "DashPass 6-Month Trial" perk
+    And I should see "Points Boost" perk
+    And I should see "Lyft" earning rate with "2x"
 
   Scenario: View updated perks for redesigned Chase Sapphire Preferred
     Given I am on the "Catalog" page

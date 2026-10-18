@@ -10,9 +10,9 @@ Feature: Hotel card family history and eligibility
     And I should see "IHG" issuer section
 
   Scenario: Adding a hotel card records family history
-    Given I have added the "IHG One Rewards Traveler Credit Card" card
+    Given I have added the "IHG One Rewards Credit Card" card
     When I navigate to the "Churning"
     Then I should see "Prior family history"
-    And I should see "IHG One Rewards Traveler Credit Card" on the detail page
-    When I view the card detail for "IHG One Rewards Traveler Credit Card"
+    And I should see "IHG One Rewards Credit Card" on the detail page
+    When I view the card detail for "IHG One Rewards Credit Card"
     And I should see "Sign-up Bonus" on the detail page

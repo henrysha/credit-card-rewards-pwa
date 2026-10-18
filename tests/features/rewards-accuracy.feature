@@ -52,3 +52,27 @@ Feature: Rewards Accuracy
     When I navigate to the "Dashboard"
     Then I should see "Travel Portal" in the best card section with "Robinhood Gold Card" and "3x" multiplier
     And I should see "Everything Else" in the best card section with "Robinhood Gold Card" and "3x" multiplier
+
+  Scenario: IHG Premier refreshed categories reach Best Card recommendations
+    Given I have added the "IHG One Rewards Premier Credit Card" card
+    When I navigate to the "Dashboard"
+    Then I should see "Flights" in the best card section with "IHG One Rewards Premier Credit Card" and "5x" multiplier
+    And I should see "Rental Cars" in the best card section with "IHG One Rewards Premier Credit Card" and "5x" multiplier
+    And I should see "Groceries" in the best card section with "IHG One Rewards Premier Credit Card" and "5x" multiplier
+
+  Scenario: SKYPASS Select travel categories reach Best Card recommendations
+    Given I have added the "SKYPASS Select Visa Signature" card
+    When I navigate to the "Dashboard"
+    Then I should see "Flights" in the best card section with "SKYPASS Select Visa Signature" and "2x" multiplier
+    And I should see "Rental Cars" in the best card section with "SKYPASS Select Visa Signature" and "2x" multiplier
+
+  Scenario Outline: Capital One Entertainment stays scoped to its booking platform
+    Given I have added the "<card>" card
+    When I navigate to the "Dashboard"
+    Then I should see "Streaming" in the best card section with "<card>" and "2x" multiplier
+    And I should see "Capital One Entertainment" in the best card section with "<card>" and "5x" multiplier
+
+    Examples:
+      | card                  |
+      | Capital One Venture   |
+      | Capital One Venture X |

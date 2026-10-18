@@ -69,7 +69,7 @@ Then('the saved select hotel history should still be used on {string}', async fu
     return (await db.perks.toArray()).filter(p => p.perkTemplateId === 'csr-select-hotel');
   });
   expect(history).toHaveLength(1);
-  expect(history[0]).toMatchObject({ used: true, usedDate, currentPeriodEnd: '2026-12-31', annualValue: 250 });
+  expect(history[0]).toMatchObject({ used: true, usedDate, currentPeriodEnd: '9999-12-31', renewalPeriod: 'one-time', annualValue: 250 });
 });
 
 Then('the Reserve preview should include the select hotel credit', async function () {

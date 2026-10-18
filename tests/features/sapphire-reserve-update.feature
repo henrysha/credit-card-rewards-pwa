@@ -14,7 +14,7 @@ Feature: Current Chase Sapphire Reserve benefits
       | csr-grocery-doordash-1  | 120         | 10          | monthly       | 2029-12-31     |
       | csr-grocery-doordash-2  | 120         | 10          | monthly       | 2029-12-31     |
       | csr-dashpass           | 120         |             | annual        | 2029-12-31     |
-      | csr-select-hotel       | 250         |             | annual        | 2026-12-31     |
+      | csr-select-hotel       | 250         |             | one-time      | 2026-12-31     |
 
   Scenario Outline: Existing unused DoorDash perk updates without losing activation or creating duplicates
     Given I have added the "Chase Sapphire Reserve" card

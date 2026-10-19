@@ -393,7 +393,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'ag-resy', name: '$100 Resy Credit', description: '$50 semi-annual credit for dining at U.S. Resy restaurants', category: 'dining-credit', annualValue: 100, renewalPeriod: 'semi-annual', periodValue: 50, requiresEnrollment: true },
       { id: 'ag-dunkin', name: '$84 Dunkin\' Credit', description: '$7/month at U.S. Dunkin\' locations', category: 'dining-credit', annualValue: 84, renewalPeriod: 'monthly', periodValue: 7, requiresEnrollment: true },
       { id: 'ag-hotel-collection', name: '$100 Hotel Collection Credit', description: '$100 credit for 2+ night stay booked through The Hotel Collection', category: 'hotel-credit', annualValue: 100, renewalPeriod: 'annual' },
-      { id: 'ag-uber-one-credit', name: '$96 Uber One Membership Credit', description: 'One-time up to $96 statement credit when paying for an annual Uber One membership; limited-time 60th anniversary offer — enroll and pay by 10/30/2026', category: 'membership', annualValue: 96, renewalPeriod: 'one-time', expirationDate: '2026-10-30', requiresEnrollment: true },
+      { id: 'ag-uber-one-credit', name: '$96 Uber One Membership Credit', description: 'One-time up to $96 statement credit when paying for an annual Uber One membership; limited-time 60th anniversary offer — enroll by 10/30/2026, and the charge must post to your account by 10/30/2026 to earn the credit', category: 'membership', annualValue: 96, renewalPeriod: 'one-time', expirationDate: '2026-10-30', requiresEnrollment: true },
     ],
   },
   {

@@ -149,3 +149,7 @@ Then('the catalog card should waive its first-year annual fee', async function (
   });
   expect(waived).toBe(true);
 });
+
+Then('the card requirements should mention {string}', async function (text: string) {
+  await expect(this.page.locator('.card-requirements')).toContainText(text, { timeout: 5000 });
+});

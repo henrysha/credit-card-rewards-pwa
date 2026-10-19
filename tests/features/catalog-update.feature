@@ -127,3 +127,21 @@ Feature: Verified October 2026 catalog benefits
     And the "5% Korean Air Ticket Discount" perk description should mention "at account opening and each anniversary"
     And the "2 Korean Air Lounge Coupons" perk description should mention "when flying Korean Air"
     And I should not see "$100 Korean Air Ticket Coupon" perk
+
+  Scenario: Amex Gold 60th anniversary Uber One credit
+    Given I am on the "Catalog" page
+    When I click on the card "American Express Gold"
+    Then I should see "$96 Uber One Membership Credit" perk
+    And the "$96 Uber One Membership Credit" perk should show 96 dollars
+    And the "$96 Uber One Membership Credit" perk description should mention "10/30/2026"
+    And the "$96 Uber One Membership Credit" perk description should mention "post"
+
+  Scenario: IHG One Rewards Credit Card launch bonus ends November 18, 2026
+    Given I am on the "Catalog" page
+    When I click on the card "IHG One Rewards Credit Card"
+    Then the card requirements should mention "November 18, 2026"
+
+  Scenario: IHG One Rewards Premier launch bonus ends November 18, 2026
+    Given I am on the "Catalog" page
+    When I click on the card "IHG One Rewards Premier Credit Card"
+    Then the card requirements should mention "November 18, 2026"

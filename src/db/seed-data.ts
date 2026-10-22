@@ -996,7 +996,7 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 99,
     firstYearFeeWaived: true,
     color: '#003b70',
-    signupBonus: { points: 50000, spend: 2500, timeMonths: 3, unit: 'miles' },
+    signupBonus: { points: 80000, spend: 3500, timeMonths: 4, unit: 'miles' },
     earningRates: [
       { category: 'American Airlines', multiplier: 2 },
       { category: 'Restaurants', multiplier: 2 },
@@ -1014,7 +1014,9 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Citi',
     annualFee: 0,
     color: '#003b70',
-    signupBonus: { points: 15000, spend: 500, timeMonths: 3, unit: 'miles' },
+    signupBonus: { points: 15000, spend: 500, timeMonths: 3, unit: 'miles',
+      additionalBonus: { points: 100, spend: 0, unit: 'statement credit dollars', description: 'Additional $100 statement credit after meeting the spend requirement' },
+    },
     earningRates: [
       { category: 'American Airlines', multiplier: 2 },
       { category: 'Grocery Stores', multiplier: 2 },
@@ -1032,7 +1034,7 @@ export const cardTemplates: CardTemplate[] = [
     firstYearFeeWaived: true,
     color: '#003b70',
     isBusinessCard: true,
-    signupBonus: { points: 75000, spend: 5000, timeMonths: 5, unit: 'miles' },
+    signupBonus: { points: 65000, spend: 4000, timeMonths: 4, unit: 'miles' },
     earningRates: [
       { category: 'American Airlines', multiplier: 2 },
       { category: 'Telecommunications', multiplier: 2 },

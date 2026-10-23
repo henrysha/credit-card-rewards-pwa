@@ -468,7 +468,8 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 0,
     color: '#003a70',
     isBusinessCard: true,
-    signupBonus: { points: 250, spend: 3000, timeMonths: 3, unit: 'cash back' },
+    requirements: ['Welcome offers vary; the advertised maximum is not guaranteed. Confirm your offer with American Express.'],
+    signupBonus: { points: 500, spend: 5000, timeMonths: 3, unit: 'cash back (up to; personalized offer)' },
     earningRates: [
       { category: 'All eligible purchases', multiplier: 2, limit: '$50K/yr' },
       { category: 'All Other', multiplier: 1 },

@@ -409,7 +409,8 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [
-      { id: 'ap-hotel', name: '$600 Hotel Credit', description: '$300 semi-annual for FHR or Hotel Collection prepaid bookings through Amex Travel', category: 'hotel-credit', annualValue: 600, renewalPeriod: 'semi-annual', periodValue: 300 },
+      { id: 'ap-hotel', name: '$600 Lodging Credit', description: '$300 semi-annual for prepaid Fine Hotels + Resorts, The Hotel Collection, or Airbnb Luxe bookings through Amex Travel; Hotel Collection and Airbnb Luxe bookings require a 2-night minimum stay, and from 1/1/2027 Fine Hotels + Resorts bookings also require a 2-night minimum stay to earn the credit', category: 'hotel-credit', annualValue: 600, renewalPeriod: 'semi-annual', periodValue: 300 },
+      { id: 'ap-airbnb-experiences', name: '$250 Airbnb Experiences Credit', description: 'Up to $250/year in Airbnb Experiences statement credits, unlocked after a qualifying prepaid Airbnb Luxe booking through Amex Travel; Experiences must be booked by December 31 of the same calendar year', category: 'travel-credit', annualValue: 250, renewalPeriod: 'annual' },
       { id: 'ap-airline', name: '$200 Airline Fee Credit', description: 'Annual credit for incidental fees with one selected airline', category: 'travel-credit', annualValue: 200, renewalPeriod: 'annual' },
       { id: 'ap-uber', name: '$200 Uber Cash', description: '$15/month + $20 December bonus for rides and Uber Eats', category: 'rideshare-credit', annualValue: 200, renewalPeriod: 'monthly', periodValue: 15 },
       { id: 'ap-uber-one', name: '$120 Uber One Credit', description: 'Annual credit for Uber One membership', category: 'membership', annualValue: 120, renewalPeriod: 'annual' },

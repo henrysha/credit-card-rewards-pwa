@@ -1036,7 +1036,7 @@ export const cardTemplates: CardTemplate[] = [
     firstYearFeeWaived: true,
     color: '#003b70',
     isBusinessCard: true,
-    signupBonus: { points: 65000, spend: 4000, timeMonths: 4, unit: 'miles' },
+    signupBonus: { points: 75000, spend: 5000, timeMonths: 5, unit: 'miles' },
     earningRates: [
       { category: 'American Airlines', multiplier: 2 },
       { category: 'Telecommunications', multiplier: 2 },

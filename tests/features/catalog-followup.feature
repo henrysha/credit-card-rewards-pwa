@@ -107,13 +107,14 @@ Feature: Reverified October 18 catalog follow-up
     Given I am on the "Catalog" page
     When I click on the card "Citi® / AAdvantage® Executive World Legend Mastercard®"
     Then the card annual fee should be 695 dollars
-    And I should see "Spend $15,000 to earn 125,000 miles" on the detail page
-    And I should see "in 5 months" on the detail page
+    And I should see "Spend $8,000 to earn 80,000 miles" on the detail page
+    And I should see "in 3 months" on the detail page
     And I should see "Car Rentals & Hotels (AA)" earning rate with "12x"
     And the "Up to $500 AA Vacations Credits" perk should show 250 dollars per "6mo"
     And the "Up to $180 Lyft Credits" perk should show 15 dollars per "mo"
     And the "Up to $180 Lyft Credits" perk description should mention "after 3 eligible Lyft rides"
     And I should see "Omni Hotels Champion Status" perk
+    And I should see "Up to $200 inKind Dining Credits" perk
     And the "Loyalty Point Milestone Bonuses" perk description should mention "per status qualification year"
 
   Scenario Outline: Citi application and welcome eligibility restrictions remain visible

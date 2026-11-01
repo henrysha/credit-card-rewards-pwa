@@ -971,7 +971,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Citi',
     annualFee: 695,
     color: '#003b70',
-    signupBonus: { points: 125000, spend: 15000, timeMonths: 5, unit: 'miles' },
+    signupBonus: { points: 80000, spend: 8000, timeMonths: 3, unit: 'miles' },
     earningRates: [
       { category: 'Car Rentals & Hotels (AA)', multiplier: 12 },
       { category: 'American Airlines', multiplier: 4, limit: '5x after $150K calendar-year spend' },
@@ -988,6 +988,7 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'aa-exec-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 8 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-exec-boarding', name: 'Enhanced Airport Experience', description: 'Priority check-in and boarding', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-exec-ge-tsa', name: 'Global Entry/TSA PreCheck', description: 'Statement credit every 4 years', category: 'global-entry-tsa', annualValue: 30, renewalPeriod: 'every-4-years' },
+      { id: 'aa-exec-inkind', name: 'Up to $200 inKind Dining Credits', description: 'Up to $100 in dining credits through inKind each half-year (January–June and July–December); add the card to the inKind app and pay the check through inKind at participating restaurants; shared across the account; excludes gratuities, fees and service charges', category: 'dining-credit', annualValue: 200, renewalPeriod: 'semi-annual', periodValue: 100 },
     ],
   },
   {
@@ -997,7 +998,7 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 99,
     firstYearFeeWaived: true,
     color: '#003b70',
-    signupBonus: { points: 80000, spend: 3500, timeMonths: 4, unit: 'miles' },
+    signupBonus: { points: 50000, spend: 2500, timeMonths: 3, unit: 'miles' },
     earningRates: [
       { category: 'American Airlines', multiplier: 2 },
       { category: 'Restaurants', multiplier: 2 },

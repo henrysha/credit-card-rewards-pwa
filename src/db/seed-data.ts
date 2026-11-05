@@ -506,10 +506,7 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 150,
     firstYearFeeWaived: true,
     color: '#003a70',
-    signupBonus: {
-      points: 80000, spend: 3000, timeMonths: 6, unit: 'miles',
-      additionalBonus: { points: 250, spend: 0, unit: 'statement credit dollars', description: 'Additional $250 statement credit after meeting the spend requirement; limited-time offer ends 11/4/2026' },
-    },
+    signupBonus: { points: 80000, spend: 2000, timeMonths: 6, unit: 'miles' },
     earningRates: [
       { category: 'Delta Purchases', multiplier: 2 },
       { category: 'Restaurants', multiplier: 2 },
@@ -532,10 +529,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Amex',
     annualFee: 350,
     color: '#003a70',
-    signupBonus: {
-      points: 90000, spend: 4000, timeMonths: 6, unit: 'miles',
-      additionalBonus: { points: 300, spend: 0, unit: 'statement credit dollars', description: 'Additional $300 statement credit after meeting the spend requirement; limited-time offer ends 11/4/2026' },
-    },
+    signupBonus: { points: 90000, spend: 3000, timeMonths: 6, unit: 'miles' },
     earningRates: [
       { category: 'Delta & Hotels (direct)', multiplier: 3 },
       { category: 'Restaurants', multiplier: 2 },
@@ -562,10 +556,7 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Amex',
     annualFee: 650,
     color: '#003a70',
-    signupBonus: {
-      points: 50000, spend: 10000, timeMonths: 6, unit: 'miles',
-      additionalBonus: { points: 2, spend: 0, unit: 'round-trip Delta Comfort Flight Certificates', description: 'Two round-trip Delta Comfort flight certificates (no blackout dates; U.S. 48/Puerto Rico/U.S. Virgin Islands; book 21+ days ahead; up to $80 per person in taxes/fees); limited-time offer ends 11/4/2026' },
-    },
+    signupBonus: { points: 125000, spend: 5000, timeMonths: 6, unit: 'miles' },
     earningRates: [
       { category: 'Delta Purchases', multiplier: 3 },
       { category: 'All Other', multiplier: 1 },

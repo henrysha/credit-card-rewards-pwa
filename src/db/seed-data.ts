@@ -83,7 +83,7 @@ export const cardTemplates: CardTemplate[] = [
     familyId: 'chase-ultimate-rewards-consumer',
     annualFee: 0,
     color: '#1a3c6e',
-    signupBonus: { points: 25000, spend: 500, timeMonths: 3, unit: 'cash back ($250)' },
+    signupBonus: { points: 20000, spend: 500, timeMonths: 3, unit: 'cash back ($200)' },
     earningRates: [
       { category: 'Rotating Quarterly Categories (Activated)', multiplier: 5, limit: 'Up to $1,500/quarter', quarterlySchedule: freedomFlexQuarterlySchedule },
       { category: 'Chase Travel', multiplier: 5 },

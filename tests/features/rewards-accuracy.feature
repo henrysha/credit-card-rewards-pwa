@@ -26,6 +26,16 @@ Feature: Rewards Accuracy
     And I should see "Dining" in the best card section with "American Express Gold" and "4x" multiplier
     And I should see "Travel Portal" in the best card section with "Chase Sapphire Preferred" and "5x" multiplier
     And I should see "Flights" in the best card section with "American Express Gold" and "3x" multiplier
+    And I should see "Rental Cars" in the best card section with "Chase Sapphire Preferred" and "2x" multiplier
+    And I should see "Hotels" in the best card section with "Chase Sapphire Preferred" and "2x" multiplier
+
+  Scenario: Amex Gold flight bonus does not apply to other direct travel
+    Given I have added the "American Express Gold" card
+    When I navigate to the "Dashboard"
+    Then I should see "Flights" in the best card section with "American Express Gold" and "3x" multiplier
+    And I should see "Rental Cars" in the best card section with "American Express Gold" and "1x" multiplier
+    And I should see "Hotels" in the best card section with "American Express Gold" and "1x" multiplier
+    And I should see "Travel Portal" in the best card section with "American Express Gold" and "5x" multiplier
 
   Scenario: Chase Sapphire Reserve portal vs direct
     Given I have added the "Chase Sapphire Reserve" card
@@ -33,6 +43,14 @@ Feature: Rewards Accuracy
     Then I should see "Travel Portal" in the best card section with "Chase Sapphire Reserve" and "8x" multiplier
     And I should see "Flights" in the best card section with "Chase Sapphire Reserve" and "4x" multiplier
     And I should see "Hotels" in the best card section with "Chase Sapphire Reserve" and "4x" multiplier
+    And I should see "Rental Cars" in the best card section with "Chase Sapphire Reserve" and "1x" multiplier
+
+  Scenario: Amex Platinum flight bonus does not apply to other direct travel
+    Given I have added the "American Express Platinum" card
+    When I navigate to the "Dashboard"
+    Then I should see "Flights" in the best card section with "American Express Platinum" and "5x" multiplier
+    And I should see "Rental Cars" in the best card section with "American Express Platinum" and "1x" multiplier
+    And I should see "Hotels" in the best card section with "American Express Platinum" and "1x" multiplier
 
   Scenario: Lyft vendor subcategory under Transit & Rideshare
     Given I have added the "Chase Sapphire Preferred" card
@@ -40,6 +58,13 @@ Feature: Rewards Accuracy
     Then I should see "Transit & Rideshare" on the dashboard
     When I click to expand the "Transit & Rideshare" category
     Then I should see the "Lyft" subcategory
+
+  Scenario: Air travel and hotel bonuses stay scoped to those travel types
+    Given I have added the "Citi Strata Premier" card
+    When I navigate to the "Dashboard"
+    Then I should see "Flights" in the best card section with "Citi Strata Premier" and "3x" multiplier
+    And I should see "Hotels" in the best card section with "Citi Strata Premier" and "3x" multiplier
+    And I should see "Rental Cars" in the best card section with "Citi Strata Premier" and "1x" multiplier
 
   Scenario: Everything Else shows highest catch-all card (issue #48)
     Given I have added the "Capital One Venture" card

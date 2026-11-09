@@ -79,7 +79,8 @@ export function normalizeCategory(category: string): ParsedCategories {
   const isPortal = cat.includes('portal') || cat.includes('chase travel') || cat.includes('amex travel') || cat.includes('cap one travel') || cat.includes('citi travel') || cat.includes('prepaid');
   const isDirect = cat.includes('direct');
 
-  if (cat.includes('flight') || cat.includes('airline')) {
+  const isFlightCategory = cat.includes('flight') || cat.includes('airline') || cat.includes('air travel');
+  if (isFlightCategory) {
     if (isPortal || (!isPortal && !isDirect)) broad.push('Travel Portal');
     if (isDirect || (!isPortal && !isDirect)) broad.push('Flights');
   }
@@ -93,7 +94,10 @@ export function normalizeCategory(category: string): ParsedCategories {
   }
   
   const hasTravelWord = /\btravel\b/.test(cat);
-  if (cat === 'travel' || cat === 'other travel' || hasTravelWord || (isPortal && !broad.includes('Travel Portal')) || (isDirect && !broad.some(r => r === 'Flights' || r === 'Hotels' || r === 'Rental Cars'))) {
+  // A booking channel such as "direct/Amex Travel" does not broaden a
+  // flight-only bonus to hotels and rental cars. Expand only general travel rates.
+  const hasSpecificTravelCategory = isFlightCategory || cat.includes('hotel') || cat.includes('rental car');
+  if (!hasSpecificTravelCategory && (hasTravelWord || isPortal || isDirect)) {
     const pushPortal = isPortal || (!isPortal && !isDirect);
     const pushDirect = isDirect || (!isPortal && !isDirect);
     if (pushPortal && !broad.includes('Travel Portal')) broad.push('Travel Portal');

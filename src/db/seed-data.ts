@@ -356,7 +356,7 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 95,
     color: '#8b1e2d',
     signupBonus: {
-      points: 200000, spend: 3000, timeMonths: 3, unit: 'points',
+      points: 3, spend: 3000, timeMonths: 3, unit: 'Free Night Awards (up to 50,000 points each)',
     },
     earningRates: [
       { category: 'Marriott Bonvoy Hotels', multiplier: 6 },

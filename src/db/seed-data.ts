@@ -890,7 +890,8 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Chase',
     annualFee: 0,
     color: '#1a98ff', // Amazon blue
-    signupBonus: { points: 5000, spend: 0, timeMonths: 0, unit: 'cash back ($50)' },
+    signupBonus: { points: 6000, spend: 0, timeMonths: 0, unit: 'Amazon Gift Card ($60)' },
+    requirements: ['Limited-time offer: $60 Amazon Gift Card instantly loaded into your Amazon account on approval (was $50).'],
     earningRates: [
       { category: 'Amazon.com / Amazon Fresh / Whole Foods / Chase Travel', multiplier: 3 },
       { category: 'Restaurants / Gas Stations / Local Transit', multiplier: 2 },
@@ -904,7 +905,8 @@ export const cardTemplates: CardTemplate[] = [
     issuer: 'Chase',
     annualFee: 0,
     color: '#232f3e', // Amazon dark gray
-    signupBonus: { points: 15000, spend: 0, timeMonths: 0, unit: 'cash back ($150)' },
+    signupBonus: { points: 20000, spend: 0, timeMonths: 0, unit: 'Amazon Gift Card ($200)' },
+    requirements: ['Limited-time offer: $200 Amazon Gift Card instantly loaded into your Amazon account on approval; ends January 7, 2027. No spending requirement.'],
     earningRates: [
       { category: 'Amazon.com / Amazon Fresh / Whole Foods / Chase Travel', multiplier: 5 },
       { category: 'Restaurants / Gas Stations / Local Transit', multiplier: 2 },

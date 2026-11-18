@@ -133,12 +133,12 @@ Feature: Verified October 2026 catalog benefits
     When I click on the card "American Express Gold"
     Then I should not see "$96 Uber One Membership Credit" perk
 
-  Scenario: IHG One Rewards Credit Card launch bonus ends November 18, 2026
+  Scenario: IHG One Rewards Credit Card shows the standard welcome offer
     Given I am on the "Catalog" page
     When I click on the card "IHG One Rewards Credit Card"
-    Then the card requirements should mention "November 18, 2026"
+    Then I should see "Spend $2,000 to earn 80,000 points" on the detail page
 
-  Scenario: IHG One Rewards Premier launch bonus ends November 18, 2026
+  Scenario: IHG One Rewards Premier shows the standard welcome offer
     Given I am on the "Catalog" page
     When I click on the card "IHG One Rewards Premier Credit Card"
-    Then the card requirements should mention "November 18, 2026"
+    Then I should see "Spend $3,000 to earn 140,000 points" on the detail page

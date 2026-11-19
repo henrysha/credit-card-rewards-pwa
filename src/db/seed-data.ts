@@ -652,8 +652,7 @@ export const cardTemplates: CardTemplate[] = [
     familyId: 'IHG',
     annualFee: 0,
     color: '#1d4f91',
-    requirements: ['Limited-time launch offer: the elevated welcome bonus (125,000 points + 10,000-point authorized-user bonus) ends November 18, 2026.'],
-    signupBonus: { points: 125000, spend: 2000, timeMonths: 3, unit: 'points',
+    signupBonus: { points: 80000, spend: 2000, timeMonths: 3, unit: 'points',
       additionalBonus: { points: 10000, spend: 0, unit: 'points', description: 'Additional 10,000 points after adding an authorized user within the first 3 months' },
     },
     earningRates: [
@@ -677,8 +676,7 @@ export const cardTemplates: CardTemplate[] = [
     familyId: 'IHG',
     annualFee: 150,
     color: '#1d4f91',
-    requirements: ['Limited-time launch offer: the elevated welcome bonus (180,000 points + 10,000-point authorized-user bonus) ends November 18, 2026.'],
-    signupBonus: { points: 180000, spend: 3000, timeMonths: 3, unit: 'points',
+    signupBonus: { points: 140000, spend: 3000, timeMonths: 3, unit: 'points',
       additionalBonus: { points: 10000, spend: 0, unit: 'points', description: 'Additional 10,000 points after adding an authorized user within the first 3 months' },
     },
     earningRates: [

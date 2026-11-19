@@ -65,7 +65,7 @@ Feature: Reverified October 18 catalog follow-up
     Given I am on the "Catalog" page
     When I click on the card "IHG One Rewards Credit Card"
     Then the catalog detail URL should end with "catalog/chase-ihg-traveler"
-    And I should see "Spend $2,000 to earn 125,000 points" on the detail page
+    And I should see "Spend $2,000 to earn 80,000 points" on the detail page
     And I should see "Additional 10,000 points after adding an authorized user" on the detail page
     And I should see "Dining, Grocery Stores & Gas Stations" earning rate with "3x"
     And the "Utilities, Internet, Cable, Phone & Select Streaming" earning rate limit should mention "2x from 2027"

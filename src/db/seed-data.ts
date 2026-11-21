@@ -369,6 +369,8 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'mbbl-free-night', name: 'Annual 35,000-Point Free Night Award', description: 'One Free Night Award after each account anniversary, valid for a one-night stay at a participating property requiring up to 35,000 points; certain hotels have resort fees', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'mbbl-gold', name: 'Path to Marriott Gold Elite Status', description: 'Earn Gold Elite status when you spend $35,000 on purchases each calendar year', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
       { id: 'mbbl-airline-credit', name: '$100 Airline Credits (Temporary Offer)', description: 'Through 6/30/2027, earn up to $100 in statement credits after $250 in eligible airline purchases per half: $50 semi-annually; offer terms and eligibility apply', category: 'travel-credit', annualValue: 100, renewalPeriod: 'semi-annual', periodValue: 50, expirationDate: '2027-06-30' },
+      { id: 'mbbl-dashpass', name: 'DashPass 1-Year Membership', description: 'One complimentary year of DashPass; activate by 12/31/2027. Automatically renews at the current monthly rate unless canceled', category: 'membership', annualValue: 120, renewalPeriod: 'one-time', expirationDate: '2027-12-31', requiresEnrollment: true },
+      { id: 'mbbl-doordash', name: '$10 Monthly DoorDash Credit', description: 'Up to $10 off one non-restaurant order monthly through 12/31/2027 while enrolled in DashPass, for first activations on or after 9/1/2026; earlier activations receive $10 quarterly', category: 'delivery-credit', annualValue: 120, renewalPeriod: 'monthly', periodValue: 10, expirationDate: '2027-12-31', requiresEnrollment: true },
     ],
   },
 

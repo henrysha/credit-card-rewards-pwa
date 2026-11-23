@@ -387,6 +387,7 @@ export const cardTemplates: CardTemplate[] = [
       { category: 'U.S. Supermarkets', multiplier: 4, limit: '$25K/yr' },
       { category: 'Flights (direct/Amex Travel)', multiplier: 3 },
       { category: 'Prepaid Hotels (Amex Travel)', multiplier: 5 },
+      { category: 'Prepaid Airbnb Stays (Amex Travel)', multiplier: 2 },
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [
@@ -407,6 +408,7 @@ export const cardTemplates: CardTemplate[] = [
     earningRates: [
       { category: 'Flights (direct/Amex Travel)', multiplier: 5, limit: 'Up to $500K/calendar year' },
       { category: 'Prepaid Hotels (Amex Travel)', multiplier: 5 },
+      { category: 'Prepaid Airbnb Stays (Amex Travel)', multiplier: 5 },
       { category: 'All Other', multiplier: 1 },
     ],
     perks: [

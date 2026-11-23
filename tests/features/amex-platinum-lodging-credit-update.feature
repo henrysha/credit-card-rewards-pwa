@@ -15,3 +15,13 @@ Feature: Current Amex Platinum lodging credit
     When I click on the card "American Express Platinum"
     Then I should see "$250 Airbnb Experiences Credit" perk
     And the "$250 Airbnb Experiences Credit" perk description should mention "Airbnb Luxe booking"
+
+  Scenario: Platinum earns 5x on prepaid Airbnb stays booked through Amex Travel
+    Given I am on the "Catalog" page
+    When I click on the card "American Express Platinum"
+    Then I should see "Prepaid Airbnb Stays (Amex Travel)" earning rate with "5x"
+
+  Scenario: Gold earns 2x on prepaid Airbnb stays booked through Amex Travel
+    Given I am on the "Catalog" page
+    When I click on the card "American Express Gold"
+    Then I should see "Prepaid Airbnb Stays (Amex Travel)" earning rate with "2x"

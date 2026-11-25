@@ -31,3 +31,20 @@ Then(
     expect(additionalBonus?.description).toBe(description);
   },
 );
+
+Then(
+  'the {string} catalog perk {string} should have an annual value of {int} with {string} renewal and require enrollment',
+  async function (cardName: string, perkName: string, annualValue: number, renewalPeriod: string) {
+    const perk = await this.page.evaluate(({ name, perkName: perk }: { name: string; perkName: string }) => {
+      const templates = (window as unknown as { cardTemplates: CardTemplate[] }).cardTemplates;
+      return templates.find(card => card.name === name)?.perks?.find(p => p.name === perk);
+    }, { name: cardName, perkName });
+
+    expect(perk, `Catalog perk ${perkName} for ${cardName}`).toBeDefined();
+    expect(perk).toMatchObject({
+      annualValue,
+      renewalPeriod,
+      requiresEnrollment: true,
+    });
+  },
+);

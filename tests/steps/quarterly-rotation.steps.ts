@@ -98,10 +98,26 @@ Then('the rotating rewards section should show the published current quarter cat
   await expect(section).not.toContainText('No categories set');
 });
 
-Then('the rotating rewards section should have no published categories', async function () {
+Then('the rotating rewards section should show the published Q1 2027 categories', async function () {
+  const section = this.page.getByTestId('quarterly-rewards-section');
+  const published = section.getByTestId('published-quarterly-rewards');
+  await expect(section).toContainText('Current Quarter (Q1 2027)');
+  await expect(published.locator('.earning-rate')).toHaveCount(2);
+  for (const category of ['Grocery Stores (excluding Walmart and Target)', 'Top Streaming Services']) {
+    const row = published.locator('.earning-rate').filter({ hasText: category });
+    await expect(row.locator('.earning-category')).toHaveText(category);
+    await expect(row.locator('.earning-multiplier')).toHaveText('5x');
+  }
+  await expect(published).toContainText('Activation required with Chase');
+  await expect(published).toContainText('Activate by 2027-03-14');
+  await expect(published.locator('button')).toHaveCount(0);
+  await expect(section).not.toContainText('No categories set');
+});
+
+Then('the rotating rewards section should have no published categories for {string}', async function (quarterLabel: string) {
   const section = this.page.getByTestId('quarterly-rewards-section');
   await expect(section.getByTestId('published-quarterly-rewards')).toHaveCount(0);
-  await expect(section).toContainText('Published categories not available for Q1 2027');
+  await expect(section).toContainText(`Published categories not available for ${quarterLabel}`);
 });
 
 Then('the published {string} quarter should show Q4 categories with {string} dining multiplier', async function (mode: string, dining: string) {
@@ -122,5 +138,16 @@ Then('the published {string} quarter should show Q4 categories with {string} din
   await expect(section.getByTestId('active-reward-item')).toHaveCount(0);
   await expect(section.getByTestId('queued-reward-item')).toHaveCount(0);
   if (mode === 'next') await expect(published).toContainText('Automatically scheduled');
-  else await expect(section.getByTestId('published-next-quarter-rewards')).toHaveCount(0);
+  else {
+    // In Q4 2026 the next quarter (Q1 2027) is now published too.
+    const nextPublished = section.getByTestId('published-next-quarter-rewards');
+    await expect(nextPublished.locator('.earning-rate')).toHaveCount(2);
+    for (const category of ['Grocery Stores (excluding Walmart and Target)', 'Top Streaming Services']) {
+      const row = nextPublished.locator('.earning-rate').filter({ hasText: category });
+      await expect(row.locator('.earning-category')).toHaveText(category);
+      await expect(row.locator('.earning-multiplier')).toHaveText('5x');
+    }
+    await expect(nextPublished).toContainText('Automatically scheduled');
+    await expect(nextPublished).toContainText('Activate by 2027-03-14');
+  }
 });

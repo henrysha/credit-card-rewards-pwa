@@ -18,10 +18,10 @@ Feature: Actual quarterly rotating categories
       | Chase Freedom Flex |
 
   Scenario: Missing quarter does not reuse expired categories
-    Given the rewards date is "2027-01-01"
+    Given the rewards date is "2027-04-01"
     And I have added the "Chase Freedom" card
     When I view the card detail for "Chase Freedom"
-    Then the rotating rewards section should have no published categories
+    Then the rotating rewards section should have no published categories for "Q2 2027"
     And the quarterly earning rates should show "Current quarter categories not available."
     When I navigate to the "Dashboard"
     Then I should see "Gas" in the best card section with "Chase Freedom" and "1x" multiplier
@@ -40,8 +40,9 @@ Feature: Actual quarterly rotating categories
     When I view the card detail for "Chase Freedom"
     Then the quarterly earning rates should show "Q3 2026"
     When the PWA resumes on "2027-01-01"
-    Then the rotating rewards section should have no published categories
-    And the quarterly earning rates should show "Current quarter categories not available."
+    Then the rotating rewards section should show the published Q1 2027 categories
+    And the quarterly earning rates should show "Q1 2027"
+    And the quarterly earning rates should show "Activate by 2027-03-14"
 
   Scenario: Dashboard recommendations refresh on resume without navigation
     Given the rewards date is "2026-09-30"
@@ -57,8 +58,9 @@ Feature: Actual quarterly rotating categories
     When I view the card detail for "Chase Freedom"
     Then the quarterly earning rates should show "Q4 2026"
     When the rewards clock passes midnight
-    Then the rotating rewards section should have no published categories
-    And the quarterly earning rates should show "Current quarter categories not available."
+    Then the rotating rewards section should show the published Q1 2027 categories
+    And the quarterly earning rates should show "Q1 2027"
+    And the quarterly earning rates should show "Activate by 2027-03-14"
 
   Scenario: Expired perk usage refreshes on resume
     Given the rewards date is "2026-09-30"

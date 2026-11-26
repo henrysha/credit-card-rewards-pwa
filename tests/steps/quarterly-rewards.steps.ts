@@ -243,6 +243,25 @@ Given(/^the current date is in (?:Q4|December)$/, async function () {
   await this.page.waitForLoadState('networkidle');
 });
 
+Given(/^the current date is in March$/, async function () {
+  await this.page?.close();
+  await this.context?.close();
+  this.context = await this.browser.newContext({
+    timezoneId: 'America/New_York',
+    permissions: ['notifications', 'clipboard-read', 'clipboard-write']
+  });
+  this.page = await this.context.newPage();
+  // Install deterministic clock in mid-March 2027 before navigation, so the next
+  // quarter boundary lands on 2027-04-01, a quarter with no published categories.
+  await this.page.clock.install({ time: new Date('2027-03-15T12:00:00Z') });
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.evaluate((id: string) => {
+    sessionStorage.setItem('test_db', id);
+    sessionStorage.removeItem('mock_date');
+  }, this.testDbId!);
+  await this.page.waitForLoadState('networkidle');
+});
+
 Then('the next quarter queue should be for {string} of next year', async function (quarterPrefix: string) {
   const section = this.page.locator('[data-testid="quarterly-rewards-section"]');
   await expect(section).toBeVisible({ timeout: 5000 });

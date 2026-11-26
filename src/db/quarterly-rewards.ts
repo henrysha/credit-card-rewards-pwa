@@ -13,6 +13,12 @@ export const freedomQuarterlySchedule: QuarterlyRewards[] = [{
   activationDeadline: '2026-12-14',
   categories: ['Grocery Stores (excluding Walmart and Target)', 'Dining', 'American Red Cross'],
   source: 'https://media.chase.com/news/chase-freedom-2026-q4-categories',
+}, {
+  start: '2027-01-01',
+  end: '2027-03-31',
+  activationDeadline: '2027-03-14',
+  categories: ['Grocery Stores (excluding Walmart and Target)', 'Top Streaming Services'],
+  source: 'https://creditcards.chase.com/cash-back-credit-cards/freedom/flex',
 }];
 
 export const freedomFlexQuarterlySchedule: QuarterlyRewards[] = freedomQuarterlySchedule.map(quarter =>

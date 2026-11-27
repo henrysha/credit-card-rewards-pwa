@@ -54,92 +54,92 @@ export default function CardDetail() {
     });
   };
 
-  const detailContent = (
-    <div className="page animate-in" data-testid="card-detail-pane">
-      <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
-      <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
-        {card.nickname || template.name}
-      </h2>
-      <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
-
-      <CardHeader card={card} template={template} />
-
-      {bonus && <SignupBonusSection bonus={bonus} />}
-
-      <EarningRatesSection earningRates={template.earningRates} />
-
-      {hasRotatingRewards(template, quarterlyRewards) && (
-        <QuarterlyRewardsSection card={card} template={template} />
+  return (
+    <div className="duo-master-detail-shell">
+      {isLandscapeDuo && (
+        <WalletMasterSidebar selectedCardId={cardId} onSelectCard={handleSelectFromMaster} />
       )}
+      <div key="card-detail-content" className="page animate-in" data-testid="card-detail-pane">
+        <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
+        <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
+          {card.nickname || template.name}
+        </h2>
+        <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
 
-      {perks && <PerksSection perks={perks} template={template} />}
+        <CardHeader card={card} template={template} />
 
-      {card.status === 'active' ? (
-        <div className="flex gap-sm mt-lg">
-          <button
-            className="btn btn-secondary"
-            style={{ flex: 1 }}
-            onClick={() => setShowProductChange(true)}
-          >
-            Upgrade / Downgrade
-          </button>
-          <button
-            className="btn btn-danger"
-            style={{ flex: 1 }}
-            onClick={() => setShowDelete(true)}
-          >
-            Remove Card
-          </button>
-        </div>
-      ) : (
-        <div className="mt-lg">
-          <div className="p-md glass-card text-center mb-md">
-            <span className="badge badge-red">{card.status}</span>
-            <p className="text-xs text-muted mt-sm">
-              This card was {card.status === 'product-changed' ? 'product changed to another card' : 'closed'}.
-            </p>
+        {bonus && <SignupBonusSection bonus={bonus} />}
+
+        <EarningRatesSection earningRates={template.earningRates} />
+
+        {hasRotatingRewards(template, quarterlyRewards) && (
+          <QuarterlyRewardsSection card={card} template={template} />
+        )}
+
+        {perks && <PerksSection perks={perks} template={template} />}
+
+        {card.status === 'active' ? (
+          <div className="flex gap-sm mt-lg">
+            <button
+              className="btn btn-secondary"
+              style={{ flex: 1 }}
+              onClick={() => setShowProductChange(true)}
+            >
+              Upgrade / Downgrade
+            </button>
+            <button
+              className="btn btn-danger"
+              style={{ flex: 1 }}
+              onClick={() => setShowDelete(true)}
+            >
+              Remove Card
+            </button>
           </div>
-          <button className="btn btn-danger btn-block" onClick={() => setShowDelete(true)}>
-            Remove Record
-          </button>
-        </div>
-      )}
+        ) : (
+          <div className="mt-lg">
+            <div className="p-md glass-card text-center mb-md">
+              <span className="badge badge-red">{card.status}</span>
+              <p className="text-xs text-muted mt-sm">
+                This card was {card.status === 'product-changed' ? 'product changed to another card' : 'closed'}.
+              </p>
+            </div>
+            <button className="btn btn-danger btn-block" onClick={() => setShowDelete(true)}>
+              Remove Record
+            </button>
+          </div>
+        )}
 
-      {showProductChange && (
-        <ProductChangeModal
-          card={card}
-          currentTemplate={template}
-          onClose={() => setShowProductChange(false)}
-          onSuccess={handleProductChangeSuccess}
-        />
-      )}
+        {showProductChange && (
+          <ProductChangeModal
+            card={card}
+            currentTemplate={template}
+            onClose={() => setShowProductChange(false)}
+            onSuccess={handleProductChangeSuccess}
+          />
+        )}
 
-      {showDelete && (
-        <div className="modal-overlay" onClick={() => setShowDelete(false)}>
-          <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
-            <div className="modal-handle" />
-            <h3 className="mb-md">Remove Card?</h3>
-            <p className="text-sm text-muted mb-md">
-              This will remove {template.name} and all its tracking data (bonus progress, perk history).
-            </p>
-            <div className="flex gap-sm">
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowDelete(false)}>Cancel</button>
-              <button className="btn btn-danger" style={{ flex: 1 }} onClick={handleDelete}>Remove</button>
+        {showDelete && (
+          <div className="modal-overlay" onClick={() => setShowDelete(false)}>
+            <div
+              className="modal-content"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="remove-card-modal-title"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="modal-handle" />
+              <h3 id="remove-card-modal-title" className="mb-md">Remove Card?</h3>
+              <p className="text-sm text-muted mb-md">
+                This will remove {template.name} and all its tracking data (bonus progress, perk history).
+              </p>
+              <div className="flex gap-sm">
+                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowDelete(false)}>Cancel</button>
+                <button className="btn btn-danger" style={{ flex: 1 }} onClick={handleDelete}>Remove</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-
-  if (isLandscapeDuo) {
-    return (
-      <div className="duo-master-detail-shell">
-        <WalletMasterSidebar selectedCardId={cardId} onSelectCard={handleSelectFromMaster} />
-        {detailContent}
-      </div>
-    );
-  }
-
-  return detailContent;
 }

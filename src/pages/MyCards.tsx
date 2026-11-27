@@ -145,14 +145,12 @@ export default function MyCards() {
     </div>
   );
 
-  if (isLandscapeDuo) {
-    return (
-      <div className="duo-master-detail-shell">
-        {pageContent}
+  return (
+    <div className="duo-master-detail-shell">
+      {pageContent}
+      {isLandscapeDuo && (
         <WalletOverviewCompanion activeCards={activeCards} closedCards={closedCards} />
-      </div>
-    );
-  }
-
-  return pageContent;
+      )}
+    </div>
+  );
 }

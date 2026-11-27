@@ -23,9 +23,15 @@ export function RequestCardModal({ onClose }: RequestCardModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="request-card-modal-title"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-handle" />
-        <h3 className="mb-md">Request New Card</h3>
+        <h3 id="request-card-modal-title" className="mb-md">Request New Card</h3>
         <p className="text-sm text-muted mb-md">
           Is there a card missing from our catalog? Let us know! Please check if the card has already been requested before creating a new issue.
           <br />
@@ -47,7 +53,7 @@ export function RequestCardModal({ onClose }: RequestCardModalProps) {
             value={cardName}
             onChange={e => setCardName(e.target.value)}
             placeholder="e.g. Marriott Bonvoy Boundless"
-            autoFocus
+            data-autofocus="true"
           />
         </div>
 

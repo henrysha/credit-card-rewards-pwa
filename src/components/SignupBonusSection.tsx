@@ -182,9 +182,15 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
 
       {showEditBonus && bonus && (
         <div className="modal-overlay" onClick={() => setShowEditBonus(false)}>
-          <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+          <div
+            className="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-signup-bonus-title"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="modal-handle" />
-            <h3 className="mb-md">Edit Sign-up Bonus</h3>
+            <h3 id="edit-signup-bonus-title" className="mb-md">Edit Sign-up Bonus</h3>
 
             <div className="form-group">
               <label className="form-label">Bonus Amount</label>

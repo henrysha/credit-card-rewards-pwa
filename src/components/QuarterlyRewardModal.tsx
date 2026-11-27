@@ -90,11 +90,12 @@ export function QuarterlyRewardModal({
         className="modal-content"
         role="dialog"
         aria-modal="true"
+        aria-labelledby="quarterly-reward-modal-title"
         onClick={(e) => e.stopPropagation()}
         data-testid="quarterly-reward-modal"
       >
         <div className="modal-handle" />
-        <h3 className="mb-md">
+        <h3 id="quarterly-reward-modal-title" className="mb-md">
           {selectedQuarterMode === 'next' ? 'Queue Next Quarter Reward' : 'Add Current Quarter Reward'}
         </h3>
 

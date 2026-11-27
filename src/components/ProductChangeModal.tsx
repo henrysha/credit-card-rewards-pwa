@@ -74,6 +74,7 @@ export function ProductChangeModal({
         className="modal-content"
         role="dialog"
         aria-modal="true"
+        aria-labelledby="product-change-modal-title"
         onClick={e => e.stopPropagation()}
         style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
       >
@@ -83,7 +84,7 @@ export function ProductChangeModal({
           <>
             <div className="flex justify-between items-center mb-sm">
               <div>
-                <h3 style={{ fontSize: '1.25rem' }}>Product Change / Upgrade</h3>
+                <h3 id="product-change-modal-title" style={{ fontSize: '1.25rem' }}>Product Change / Upgrade</h3>
                 <div className="text-xs text-muted mt-xs">
                   Switch <span className="font-bold text-white">{currentTemplate.name}</span> to another {currentTemplate.issuer} card
                 </div>
@@ -241,7 +242,7 @@ export function ProductChangeModal({
             </button>
 
             <div className="flex items-center justify-between mb-sm">
-              <h3 style={{ fontSize: '1.2rem' }}>
+              <h3 id="product-change-modal-title" style={{ fontSize: '1.2rem' }}>
                 {feeDifference > 0 ? 'Confirm Card Upgrade' : feeDifference < 0 ? 'Confirm Card Downgrade' : 'Confirm Product Change'}
               </h3>
               {feeDifference > 0 ? (

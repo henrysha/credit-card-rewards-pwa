@@ -99,7 +99,7 @@ export default function PwaInstallGuide() {
         <ol className="install-guide-steps">
           {guide.steps.map((step) => <li key={step}>{step}</li>)}
         </ol>
-        <button className="btn btn-primary btn-block" onClick={dismiss} autoFocus>
+        <button className="btn btn-primary btn-block" onClick={dismiss} data-autofocus="true">
           Got it
         </button>
       </section>

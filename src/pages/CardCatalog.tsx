@@ -106,18 +106,16 @@ export default function CardCatalog() {
     </div>
   );
 
-  if (isLandscapeDuo) {
-    return (
-      <div className="duo-master-detail-shell">
-        {pageContent}
+  return (
+    <div className="duo-master-detail-shell">
+      {pageContent}
+      {isLandscapeDuo && (
         <CatalogPreviewCompanion
           filteredCount={filtered.length}
           issuerFilter={issuerFilter}
           onRequestCard={() => setShowRequestModal(true)}
         />
-      </div>
-    );
-  }
-
-  return pageContent;
+      )}
+    </div>
+  );
 }

@@ -102,9 +102,16 @@ export function CardHeader({ card, template }: CardHeaderProps) {
 
       {showEditDetails && (
         <div className="modal-overlay" onClick={() => setShowEditDetails(false)}>
-          <form className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()} onSubmit={e => { e.preventDefault(); void handleEditDetails(); }}>
+          <form
+            className="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-card-details-title"
+            onClick={e => e.stopPropagation()}
+            onSubmit={e => { e.preventDefault(); void handleEditDetails(); }}
+          >
             <div className="modal-handle" />
-            <h3 className="mb-md">Edit Card Details</h3>
+            <h3 id="edit-card-details-title" className="mb-md">Edit Card Details</h3>
 
             <div className="form-group">
               <label className="form-label" htmlFor="edit-card-nickname">Nickname</label>

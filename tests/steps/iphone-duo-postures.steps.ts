@@ -84,6 +84,46 @@ Then('the signup bonus edit button should meet the 44px minimum touch target', a
   expect(box!.height).toBeGreaterThanOrEqual(44);
 });
 
+When('I open the card details editor via keyboard', async function () {
+  const editBtn = this.page.getByRole('button', { name: 'Edit card details', exact: true });
+  await editBtn.focus();
+  await this.page.keyboard.press('Enter');
+  await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
+});
+
+Then('the dialog should have accessible name {string} and move focus inside the dialog', async function (expectedName: string) {
+  const dialog = this.page.getByRole('dialog', { name: expectedName });
+  await expect(dialog).toBeVisible();
+
+  const isFocusInside = await this.page.evaluate(() => {
+    const modal = document.querySelector('.modal-content');
+    return Boolean(modal && document.activeElement && modal.contains(document.activeElement));
+  });
+  expect(isFocusInside).toBe(true);
+});
+
+Then('pressing Tab and Shift+Tab should stay trapped inside the dialog', async function () {
+  // Tab forward through all focusable controls and verify wrap-around stays inside .modal-content
+  for (let i = 0; i < 8; i++) {
+    await this.page.keyboard.press('Tab');
+    const inside = await this.page.evaluate(() => {
+      const modal = document.querySelector('.modal-content');
+      return Boolean(modal && document.activeElement && modal.contains(document.activeElement));
+    });
+    expect(inside).toBe(true);
+  }
+
+  // Shift+Tab backward and verify wrap-around stays inside .modal-content
+  for (let i = 0; i < 4; i++) {
+    await this.page.keyboard.press('Shift+Tab');
+    const inside = await this.page.evaluate(() => {
+      const modal = document.querySelector('.modal-content');
+      return Boolean(modal && document.activeElement && modal.contains(document.activeElement));
+    });
+    expect(inside).toBe(true);
+  }
+});
+
 Then('the opening date and annual fee date fields should stack vertically', async function () {
   const openedInput = this.page.getByLabel('Opening Date', { exact: true });
   const feeInput = this.page.getByLabel('Next Annual Fee Date', { exact: true });
@@ -144,27 +184,43 @@ Then('the navigation bar should be a 72px left vertical rail', async function ()
   expect(flexDir).toBe('column');
 });
 
-Then('the dashboard should render a 2-pane split with a 24px center fold gap', async function () {
+Then('the dashboard should render a 2-pane split with a 24px fold gap centered on the viewport', async function () {
   const leftPane = this.page.locator('.dashboard-left-pane');
   const rightPane = this.page.locator('.dashboard-right-pane');
   const leftBox = await leftPane.boundingBox();
   const rightBox = await rightPane.boundingBox();
+  const viewportWidth = await this.page.evaluate(() => window.innerWidth);
   expect(leftBox).not.toBeNull();
   expect(rightBox).not.toBeNull();
-  const gap = Math.round(rightBox!.x - (leftBox!.x + leftBox!.width));
-  expect(gap).toBe(24);
+
+  const leftRightEdge = Math.round(leftBox!.x + leftBox!.width);
+  const rightLeftEdge = Math.round(rightBox!.x);
+  const gap = rightLeftEdge - leftRightEdge;
+  const center = viewportWidth / 2;
+
+  expect(gap).toBeGreaterThanOrEqual(24);
+  expect(leftRightEdge).toBeLessThanOrEqual(center);
+  expect(rightLeftEdge).toBeGreaterThanOrEqual(center);
 });
 
-Then('I should see the wallet master list alongside the card detail pane', async function () {
+Then('I should see the wallet master list alongside the card detail pane with the fold gap centered on the viewport', async function () {
   const masterPane = this.page.getByTestId('wallet-master-pane');
   const detailPane = this.page.getByTestId('card-detail-pane');
   await expect(masterPane).toBeVisible();
   await expect(detailPane).toBeVisible();
   const masterBox = await masterPane.boundingBox();
   const detailBox = await detailPane.boundingBox();
+  const viewportWidth = await this.page.evaluate(() => window.innerWidth);
   expect(masterBox).not.toBeNull();
   expect(detailBox).not.toBeNull();
-  expect(Math.round(detailBox!.x - (masterBox!.x + masterBox!.width))).toBe(24);
+
+  const masterRightEdge = Math.round(masterBox!.x + masterBox!.width);
+  const detailLeftEdge = Math.round(detailBox!.x);
+  const center = viewportWidth / 2;
+
+  expect(detailLeftEdge - masterRightEdge).toBeGreaterThanOrEqual(24);
+  expect(masterRightEdge).toBeLessThanOrEqual(center);
+  expect(detailLeftEdge).toBeGreaterThanOrEqual(center);
 });
 
 When('I select {string} from the wallet master list', async function (cardName: string) {
@@ -181,4 +237,25 @@ Then('the card detail pane should display {string} and receive keyboard focus', 
   }));
   expect(activeTag.className).toContain('duo-detail-heading');
   expect(activeTag.text).toContain(cardName);
+});
+
+Then('the modal dialog should be positioned strictly on the right side of the viewport center fold', async function () {
+  const modal = this.page.locator('.modal-content');
+  await expect(modal).toBeVisible();
+  const modalBox = await modal.boundingBox();
+  const viewportWidth = await this.page.evaluate(() => window.innerWidth);
+  expect(modalBox).not.toBeNull();
+  expect(Math.round(modalBox!.x)).toBeGreaterThanOrEqual(viewportWidth / 2);
+});
+
+When('I type {string} into the card nickname input without saving', async function (draft: string) {
+  const input = this.page.getByLabel('Nickname', { exact: true });
+  await input.fill(draft);
+});
+
+Then('the card details editor dialog should remain open with nickname draft {string}', async function (expectedDraft: string) {
+  const dialog = this.page.getByRole('dialog', { name: 'Edit Card Details' });
+  await expect(dialog).toBeVisible();
+  const input = this.page.getByLabel('Nickname', { exact: true });
+  await expect(input).toHaveValue(expectedDraft);
 });

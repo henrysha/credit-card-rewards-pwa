@@ -23,9 +23,15 @@ export function FeatureRequestModal({ onClose }: FeatureRequestModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feature-request-modal-title"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-handle" />
-        <h3 className="mb-md">Submit Feature Request</h3>
+        <h3 id="feature-request-modal-title" className="mb-md">Submit Feature Request</h3>
         <p className="text-sm text-muted mb-md">
           Tell us what features you'd like to see! This will redirect you to GitHub to create an issue.
         </p>
@@ -37,7 +43,7 @@ export function FeatureRequestModal({ onClose }: FeatureRequestModalProps) {
             value={featureTitle}
             onChange={e => setFeatureTitle(e.target.value)}
             placeholder="e.g. Add support for Marriott cards"
-            autoFocus
+            data-autofocus="true"
           />
         </div>
 

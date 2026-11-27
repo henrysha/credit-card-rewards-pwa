@@ -47,63 +47,57 @@ export function CatalogDetail() {
     });
   };
 
-  const detailContent = (
-    <div className="page animate-in" data-testid="catalog-detail-pane">
-      <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
-      <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
-        {template.name}
-      </h2>
-      <button
-        className="btn btn-secondary mb-md"
-        onClick={() => navigate('/catalog')}
-      >
-        ← Back to Catalog
-      </button>
-
-      <CardHeader template={template} />
-
-      <div className="catalog-detail-sticky-cta">
+  return (
+    <div className="duo-master-detail-shell">
+      {isLandscapeDuo && (
+        <CatalogMasterSidebar selectedTemplateId={template.id} onSelectTemplate={handleSelectFromMaster} />
+      )}
+      <div key="catalog-detail-content" className="page animate-in" data-testid="catalog-detail-pane">
+        <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
+        <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
+          {template.name}
+        </h2>
         <button
-          className="btn btn-primary btn-block py-lg text-lg"
-          data-test-date=""
-          onClick={(e) => {
-            const date = (e.currentTarget as HTMLButtonElement).getAttribute('data-test-date');
-            handleAddCard(date || undefined);
-          }}
+          className="btn btn-secondary mb-md"
+          onClick={() => navigate('/catalog')}
         >
-          Add This Card
+          ← Back to Catalog
         </button>
-      </div>
 
-      <SignupBonusSection template={template} />
+        <CardHeader template={template} />
 
-      <EarningRatesSection earningRates={template.earningRates} />
+        <div className="catalog-detail-sticky-cta">
+          <button
+            className="btn btn-primary btn-block py-lg text-lg"
+            data-test-date=""
+            onClick={(e) => {
+              const date = (e.currentTarget as HTMLButtonElement).getAttribute('data-test-date');
+              handleAddCard(date || undefined);
+            }}
+          >
+            Add This Card
+          </button>
+        </div>
 
-      <PerksSection template={template} readOnly={true} />
+        <SignupBonusSection template={template} />
 
-      <div className="mt-xl mb-xl">
-        <button
-          className="btn btn-primary btn-block py-lg text-lg"
-          data-test-date=""
-          onClick={(e) => {
-            const date = (e.currentTarget as HTMLButtonElement).getAttribute('data-test-date');
-            handleAddCard(date || undefined);
-          }}
-        >
-          Add This Card
-        </button>
+        <EarningRatesSection earningRates={template.earningRates} />
+
+        <PerksSection template={template} readOnly={true} />
+
+        <div className="mt-xl mb-xl">
+          <button
+            className="btn btn-primary btn-block py-lg text-lg"
+            data-test-date=""
+            onClick={(e) => {
+              const date = (e.currentTarget as HTMLButtonElement).getAttribute('data-test-date');
+              handleAddCard(date || undefined);
+            }}
+          >
+            Add This Card
+          </button>
+        </div>
       </div>
     </div>
   );
-
-  if (isLandscapeDuo) {
-    return (
-      <div className="duo-master-detail-shell">
-        <CatalogMasterSidebar selectedTemplateId={template.id} onSelectTemplate={handleSelectFromMaster} />
-        {detailContent}
-      </div>
-    );
-  }
-
-  return detailContent;
 }

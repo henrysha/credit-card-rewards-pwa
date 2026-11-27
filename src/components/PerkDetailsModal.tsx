@@ -11,9 +11,15 @@ export function PerkDetailsModal({ template, onClose }: PerkDetailsModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="perk-details-modal-title"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-handle" />
-        <h3 className="mb-md">{template.name}</h3>
+        <h3 id="perk-details-modal-title" className="mb-md">{template.name}</h3>
         <p className="text-sm mb-md">{template.description}</p>
 
         {template.details && (

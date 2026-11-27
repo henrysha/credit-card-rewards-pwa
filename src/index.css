@@ -1191,9 +1191,14 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 
 /* ============================================================
    TIER 3: Unfolded Landscape / Book Mode (min-width: 780px, ~890×626px)
-   Left 72px Navigation Rail + Crease-Aware 2-Pane Split (24px fold gutter)
+   Left 72px Navigation Rail + Crease-Aware 2-Pane Split (24px fold gutter centered at 50vw)
    ============================================================ */
 @media (min-width: 780px) {
+  :root {
+    --duo-page-pad-left: var(--space-lg);
+    --duo-left-pane-width: calc(50vw - var(--nav-rail-width) - var(--safe-left) - var(--duo-page-pad-left) - (var(--fold-gap) / 2));
+  }
+
   .bottom-nav {
     top: 0;
     bottom: 0;
@@ -1234,17 +1239,18 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
   }
 
   .page {
-    max-width: 1120px;
+    max-width: none;
+    margin: 0;
     padding-top: calc(var(--space-md) + var(--safe-top));
     padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
-    padding-left: var(--space-lg);
+    padding-left: var(--duo-page-pad-left);
     padding-right: calc(var(--space-lg) + var(--safe-right));
   }
 
-  /* Crease-aware 2-pane split layouts with 24px (--fold-gap) center gutter */
+  /* Crease-aware 2-pane split layouts with 24px (--fold-gap) center gutter anchored at 50vw */
   .duo-split-page {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: var(--duo-left-pane-width) minmax(0, 1fr);
     gap: var(--fold-gap);
     align-items: start;
   }
@@ -1257,7 +1263,7 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
 
   .dashboard-duo-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: var(--duo-left-pane-width) minmax(0, 1fr);
     gap: var(--fold-gap);
     align-items: start;
   }
@@ -1275,15 +1281,15 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
   /* Master-Detail 2-pane layout for Cards/CardDetail and Catalog/CatalogDetail */
   .duo-master-detail-shell {
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.12fr);
+    grid-template-columns: var(--duo-left-pane-width) minmax(0, 1fr);
     gap: var(--fold-gap);
     align-items: start;
-    max-width: 1120px;
+    max-width: none;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
     padding-top: calc(var(--space-md) + var(--safe-top));
     padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
-    padding-left: var(--space-lg);
+    padding-left: var(--duo-page-pad-left);
     padding-right: calc(var(--space-lg) + var(--safe-right));
   }
   .duo-master-detail-shell > .page {
@@ -1314,7 +1320,7 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
   /* Perks 2-Column Period Board */
   .perks-duo-board {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: var(--duo-left-pane-width) minmax(0, 1fr);
     gap: var(--fold-gap);
     align-items: start;
   }
@@ -1322,21 +1328,23 @@ h1 { font-size: 1.75rem; } h2 { font-size: 1.375rem; } h3 { font-size: 1.125rem;
   /* Churning 2-Pane Split */
   .churning-duo-board {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: var(--duo-left-pane-width) minmax(0, 1fr);
     gap: var(--fold-gap);
     align-items: start;
   }
 
-  /* Single-pane crease-safe modal positioning in Unfolded Landscape */
+  /* Single-pane crease-safe modal positioning in Unfolded Landscape (strictly right of 50vw + fold-gap/2) */
   .modal-overlay {
     align-items: center;
-    justify-content: flex-end;
-    padding: var(--space-lg);
-    padding-right: calc(var(--space-xl) + var(--safe-right));
-    padding-left: calc(var(--nav-rail-width) + var(--safe-left) + var(--space-lg));
+    justify-content: center;
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    padding-left: calc(50vw + (var(--fold-gap) / 2));
+    padding-right: calc(var(--space-lg) + var(--safe-right));
   }
   .modal-content {
-    max-width: 420px;
+    width: 100%;
+    max-width: min(420px, calc(50vw - (var(--fold-gap) / 2) - var(--space-lg) - var(--safe-right)));
     max-height: calc(100dvh - 48px);
     border-radius: var(--radius-xl);
     padding-bottom: var(--space-lg);

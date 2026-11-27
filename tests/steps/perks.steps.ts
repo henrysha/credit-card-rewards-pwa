@@ -34,6 +34,14 @@ When('I deactivate the {string} perk', async function (perkName: string) {
   await this.page.waitForTimeout(300);
 });
 
+When('the saved {string} perk is inactive', async function (perkName: string) {
+  const updated = await this.page.evaluate(async (name: string) => {
+    const { db } = window as unknown as { db: typeof import('../../src/db/database').db };
+    return db.perks.filter(perk => perk.perkName === name).modify({ active: false });
+  }, perkName);
+  expect(updated).toBe(1);
+});
+
 Then('the {string} perk should not have a Deactivate button', async function (perkName: string) {
   const perkItem = this.page.locator('.perk-item').filter({ hasText: perkName });
   await expect(perkItem.getByRole('button', { name: 'Deactivate', exact: true })).toHaveCount(0, { timeout: 5000 });

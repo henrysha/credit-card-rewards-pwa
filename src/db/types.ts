@@ -96,6 +96,7 @@ export interface CardTemplate {
     spend: number;
     unit: string;           // "points", "miles", "cash back"
     additionalBonus?: SignupBonusAdditional;
+    termsUrl?: string;      // Official terms for this specific catalog offer
   } & (
     | { timeMonths: number; timeDays?: never }
     | { timeDays: number; timeMonths?: never }

@@ -166,39 +166,25 @@ async function executeRotation(
 ): Promise<{ activated: number; expired: number }> {
   const today = getLocalDateString(referenceDate);
 
-  const queuedRewards = await db.quarterlyRewards
-    .where('status')
-    .equals('queued')
-    .toArray();
+  return db.transaction('rw', db.cards, db.quarterlyRewards, async () => {
+    const closedCardIds = new Set(await db.cards.where('status').equals('closed').primaryKeys());
+    const rewards = await db.quarterlyRewards.where('status').anyOf('queued', 'active').toArray();
+    let activated = 0;
+    let expired = 0;
 
-  const activeRewards = await db.quarterlyRewards
-    .where('status')
-    .equals('active')
-    .toArray();
-
-  let activated = 0;
-  let expired = 0;
-
-  for (const reward of queuedRewards) {
-    if (reward.startDate <= today) {
-      if (reward.endDate >= today) {
-        await db.quarterlyRewards.update(reward.id!, { status: 'active' });
-        activated++;
-      } else {
+    for (const reward of rewards) {
+      if (closedCardIds.has(reward.cardId)) continue;
+      if (reward.status === 'queued' && reward.startDate > today) continue;
+      if (reward.endDate < today) {
         await db.quarterlyRewards.update(reward.id!, { status: 'expired' });
         expired++;
+      } else if (reward.status === 'queued') {
+        await db.quarterlyRewards.update(reward.id!, { status: 'active' });
+        activated++;
       }
     }
-  }
-
-  for (const reward of activeRewards) {
-    if (reward.endDate < today) {
-      await db.quarterlyRewards.update(reward.id!, { status: 'expired' });
-      expired++;
-    }
-  }
-
-  return { activated, expired };
+    return { activated, expired };
+  });
 }
 
 export async function rotateQuarterlyRewards(

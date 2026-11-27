@@ -1,6 +1,7 @@
-import { Given, Then, When } from '@cucumber/cucumber';
+import { Given, Then, When, type DataTable } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { verifyQuarterlyRewards } from '../support/quarterly-rewards-checks';
+import type { db } from '../../src/db/database';
 
 Given('the rewards date is {string}', async function (date: string) {
   await this.page.clock.setFixedTime(new Date(`${date}T12:00:00`));
@@ -28,6 +29,15 @@ When('the PWA resumes on {string}', async function (date: string) {
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
     document.dispatchEvent(new Event('visibilitychange'));
   });
+});
+
+Then('the saved quarterly reward statuses should be', async function (table: DataTable) {
+  const expected = Object.fromEntries(table.hashes().map(({ category, status }) => [category, status]));
+  await expect.poll(async () => this.page.evaluate(async () => {
+    const database = (window as unknown as { db: typeof db }).db;
+    const rewards = await database.quarterlyRewards.toArray();
+    return Object.fromEntries(rewards.map(({ category, status }) => [category, status]));
+  })).toEqual(expected);
 });
 
 Given('the rewards clock starts just before the quarter ends', async function () {

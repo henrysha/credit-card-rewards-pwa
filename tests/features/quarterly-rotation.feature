@@ -52,6 +52,25 @@ Feature: Actual quarterly rotating categories
     When the PWA resumes on "2026-10-01"
     Then I should see "Gas" in the best card section with "Chase Freedom" and "1x" multiplier
 
+  Scenario: Quarter rollover preserves reward history on closed cards
+    Given the rewards date is "2026-09-30"
+    And I have added the "Chase Freedom" card
+    When I add a current quarter reward for "PayPal" with "7x" multiplier
+    And I queue a next quarter reward for "Target" with "6x" multiplier
+    And I open the Mark Closed dialog
+    And I confirm marking the card closed
+    Then I should see "Closed on 2026-09-30" on the detail page
+    Given I have added the "Chase Freedom Flex" card
+    When I add a current quarter reward for "Gas" with "7x" multiplier
+    And I queue a next quarter reward for "Dining" with "6x" multiplier
+    And the PWA resumes on "2026-10-01"
+    Then the saved quarterly reward statuses should be
+      | category | status  |
+      | PayPal   | active  |
+      | Target   | queued  |
+      | Gas      | expired |
+      | Dining   | active  |
+
   Scenario: Category details refresh at midnight while the app stays open
     Given the rewards clock starts just before the quarter ends
     And I have added the "Chase Freedom" card

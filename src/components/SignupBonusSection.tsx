@@ -7,13 +7,14 @@ import { useModalEscape } from '../hooks/useModalEscape';
 interface SignupBonusSectionProps {
   bonus?: SignupBonus;
   template?: CardTemplate;
+  readOnly?: boolean;
 }
 
 function daysUntil(dateStr: string): number {
   return Math.ceil((new Date(dateStr).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
-export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps) {
+export function SignupBonusSection({ bonus, template, readOnly = false }: SignupBonusSectionProps) {
   const [editingSpend, setEditingSpend] = useState(false);
   const [editingBonusId, setEditingBonusId] = useState<number | undefined>(undefined);
   const [spendValue, setSpendValue] = useState('');
@@ -26,7 +27,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
   const [editDeadline, setEditDeadline] = useState('');
 
   const { showToast } = useToast();
-  const dialogRef = useModalEscape<HTMLDivElement>(() => setShowEditBonus(false), showEditBonus);
+  const dialogRef = useModalEscape<HTMLDivElement>(() => setShowEditBonus(false), showEditBonus && !readOnly);
 
   const isEditingCurrentBonusSpend = editingSpend && bonus?.id !== undefined && bonus.id === editingBonusId;
 
@@ -113,7 +114,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
       <div className="glass-card mt-md">
         <div className="section-header">
           <h3 className="section-title">Sign-up Bonus</h3>
-          {signupBonusData.isExisting && (
+          {signupBonusData.isExisting && !readOnly && (
             <div className="flex items-center gap-xs">
               <span className={`countdown ${daysUntil(signupBonusData.deadline) <= 30 ? 'urgent' : ''}`}>
                 {daysUntil(signupBonusData.deadline) > 0 ? `${daysUntil(signupBonusData.deadline)}d left` : 'Expired'}
@@ -162,7 +163,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
             </div>
             <div className="flex justify-between items-center mt-sm">
               <span className="text-sm">${signupBonusData.currentSpend.toLocaleString()} / ${signupBonusData.spend.toLocaleString()}</span>
-              {isEditingCurrentBonusSpend ? (
+              {!readOnly && (isEditingCurrentBonusSpend ? (
                 <div className="flex gap-sm items-center">
                   <input
                     type="number"
@@ -187,13 +188,13 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
                 >
                   Update Spend
                 </button>
-              )}
+              ))}
             </div>
           </>
         )}
       </div>
 
-      {showEditBonus && bonus && bonus.id === editingBonusId && (
+      {showEditBonus && !readOnly && bonus && bonus.id === editingBonusId && (
         <div className="modal-overlay" onClick={() => setShowEditBonus(false)}>
           <div
             ref={dialogRef}

@@ -30,6 +30,7 @@ Feature: Churning Tracker
     And I should see "Citi" issuer section
     And I should see "Bilt" issuer section
     And I should see "U.S. Bank" issuer section
+    And I should see "Bank of America" issuer section
     And I should see "SKYPASS Family Bonus Eligibility" rule
 
   Scenario: SKYPASS family history affects welcome-bonus eligibility

@@ -34,6 +34,7 @@ export default function Perks() {
 
   const cardNameMap = new Map<number, string>();
   const perkTemplateMap = new Map<string, PerkTemplate>();
+  const closedCardIds = new Set(cards?.filter(card => card.status === 'closed').map(card => card.id));
 
   cards?.forEach(c => {
     const t = getCardTemplate(c.cardTemplateId);
@@ -41,7 +42,8 @@ export default function Perks() {
     t?.perks.forEach(p => perkTemplateMap.set(p.id, p));
   });
 
-  let filtered = (perks ?? []).filter((p: UserPerk) => isUserPerkAvailable(p, now) && p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
+  const trackedPerks = cards ? (perks ?? []).filter(p => !closedCardIds.has(p.cardId)) : [];
+  let filtered = trackedPerks.filter((p: UserPerk) => isUserPerkAvailable(p, now) && p.annualValue > 0 && p.renewalPeriod !== 'ongoing');
 
   if (filter === 'inactive') {
     filtered = filtered.filter((p: UserPerk) => p.active === false);
@@ -92,7 +94,7 @@ export default function Perks() {
   };
 
   const availablePeriods = periodOrder.filter(p => {
-    const count = (perks ?? []).filter((pk: UserPerk) => isUserPerkAvailable(pk, now) && pk.renewalPeriod === p && pk.annualValue > 0).length;
+    const count = trackedPerks.filter((pk: UserPerk) => isUserPerkAvailable(pk, now) && pk.renewalPeriod === p && pk.annualValue > 0).length;
     return count > 0;
   });
 

@@ -4,6 +4,7 @@ import { updateCard, daysUntilDate as daysUntil } from '../db/helpers';
 import { useToast } from './ToastContext';
 import { getTextColorForBackground } from '../utils/color';
 import { useModalEscape } from '../hooks/useModalEscape';
+import { getLocalDateString } from '../utils/quarterly-rewards';
 
 interface CardHeaderProps {
   card?: UserCard;
@@ -18,7 +19,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
   const [editOpenedDate, setEditOpenedDate] = useState(card?.openedDate || '');
   const [updating, setUpdating] = useState(false);
   const validLastFour = editLastFour === '' || /^\d{4}$/.test(editLastFour);
-  const today = new Date().toISOString().split('T')[0];
+  const today = getLocalDateString();
   const validOpenedDate = Boolean(editOpenedDate) && editOpenedDate <= today;
   const { showToast } = useToast();
 

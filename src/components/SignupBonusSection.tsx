@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SignupBonus, CardTemplate } from '../db/types';
 import { updateBonusSpend, updateSignupBonus } from '../db/helpers';
 import { useToast } from './ToastContext';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 interface SignupBonusSectionProps {
   bonus?: SignupBonus;
@@ -24,6 +25,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
   const [editDeadline, setEditDeadline] = useState('');
 
   const { showToast } = useToast();
+  useModalEscape(() => setShowEditBonus(false), showEditBonus);
 
   const handleSpendUpdate = async () => {
     if (bonus?.id) {
@@ -94,7 +96,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
     points: template.signupBonus.points,
     spend: template.signupBonus.spend,
     unit: template.signupBonus.unit,
-    deadline: '', // No deadline for template preview
+    deadline: '',
     currentSpend: 0,
     isExisting: false
   } : null;
@@ -107,13 +109,13 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
         <div className="section-header">
           <h3 className="section-title">Sign-up Bonus</h3>
           {signupBonusData.isExisting && (
-            <div className="flex items-center gap-sm">
+            <div className="flex items-center gap-xs">
               <span className={`countdown ${daysUntil(signupBonusData.deadline) <= 30 ? 'urgent' : ''}`}>
                 {daysUntil(signupBonusData.deadline) > 0 ? `${daysUntil(signupBonusData.deadline)}d left` : 'Expired'}
               </span>
-              <button 
+              <button
+                type="button"
                 className="edit-icon-btn"
-                style={{ background: 'none', border: 'none', color: 'inherit', padding: 0, opacity: 0.7, cursor: 'pointer' }}
                 onClick={() => {
                   if (bonus) {
                     setEditBonusPoints(String(bonus.bonusPoints));
@@ -125,7 +127,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
                 }}
                 aria-label="Edit sign-up bonus"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                 </svg>
               </button>
@@ -180,10 +182,10 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
 
       {showEditBonus && bonus && (
         <div className="modal-overlay" onClick={() => setShowEditBonus(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
             <div className="modal-handle" />
             <h3 className="mb-md">Edit Sign-up Bonus</h3>
-            
+
             <div className="form-group">
               <label className="form-label">Bonus Amount</label>
               <input type="number" className="form-input" value={editBonusPoints} onChange={e => setEditBonusPoints(e.target.value)} placeholder="e.g. 50000" />

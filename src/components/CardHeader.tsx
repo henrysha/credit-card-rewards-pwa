@@ -3,6 +3,7 @@ import type { UserCard, CardTemplate } from '../db/types';
 import { updateCard, daysUntilDate as daysUntil } from '../db/helpers';
 import { useToast } from './ToastContext';
 import { getTextColorForBackground } from '../utils/color';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 interface CardHeaderProps {
   card?: UserCard;
@@ -20,6 +21,8 @@ export function CardHeader({ card, template }: CardHeaderProps) {
   const today = new Date().toISOString().split('T')[0];
   const validOpenedDate = Boolean(editOpenedDate) && editOpenedDate <= today;
   const { showToast } = useToast();
+
+  useModalEscape(() => setShowEditDetails(false), showEditDetails);
 
   const handleEditDetails = async () => {
     if (!card?.id || !validLastFour || !validOpenedDate || updating) return;
@@ -68,7 +71,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
           )}
         </div>
         {card && (
-          <div className="flex justify-between items-center gap-sm mt-md">
+          <div className="card-header-footer">
             <div className="card-last-four">{card.lastFourDigits ? `•••• ${card.lastFourDigits}` : 'No card number saved'}</div>
             <button
               className="btn btn-secondary"
@@ -99,10 +102,10 @@ export function CardHeader({ card, template }: CardHeaderProps) {
 
       {showEditDetails && (
         <div className="modal-overlay" onClick={() => setShowEditDetails(false)}>
-          <form className="modal-content" onClick={e => e.stopPropagation()} onSubmit={e => { e.preventDefault(); void handleEditDetails(); }}>
+          <form className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()} onSubmit={e => { e.preventDefault(); void handleEditDetails(); }}>
             <div className="modal-handle" />
             <h3 className="mb-md">Edit Card Details</h3>
-            
+
             <div className="form-group">
               <label className="form-label" htmlFor="edit-card-nickname">Nickname</label>
               <input id="edit-card-nickname" className="form-input" value={editNickname} onChange={e => setEditNickname(e.target.value)} placeholder="e.g. My primary travel card" />
@@ -114,14 +117,16 @@ export function CardHeader({ card, template }: CardHeaderProps) {
               <p id="edit-card-number-help" className="text-sm text-muted mt-sm">Enter exactly 4 digits, or leave blank to remove the saved number.</p>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="edit-card-opened-date">Opening Date</label>
-              <input id="edit-card-opened-date" type="date" className="form-input" value={editOpenedDate} onChange={e => setEditOpenedDate(e.target.value)} max={today} required />
-            </div>
+            <div className="form-row-responsive">
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-card-opened-date">Opening Date</label>
+                <input id="edit-card-opened-date" type="date" className="form-input" value={editOpenedDate} onChange={e => setEditOpenedDate(e.target.value)} max={today} required />
+              </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="edit-card-fee-date">Next Annual Fee Date</label>
-              <input id="edit-card-fee-date" type="date" className="form-input" value={editFeeDate} onChange={e => setEditFeeDate(e.target.value)} />
+              <div className="form-group">
+                <label className="form-label" htmlFor="edit-card-fee-date">Next Annual Fee Date</label>
+                <input id="edit-card-fee-date" type="date" className="form-input" value={editFeeDate} onChange={e => setEditFeeDate(e.target.value)} />
+              </div>
             </div>
 
             <div className="flex gap-sm mt-lg">

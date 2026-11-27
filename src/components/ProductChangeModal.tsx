@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { UserCard, CardTemplate } from '../db/types';
 import { getEligibleProductChangeTemplates, productChangeCard } from '../db/helpers';
 import { useToast } from './ToastContext';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 interface ProductChangeModalProps {
   card: UserCard;
@@ -18,14 +19,14 @@ export function ProductChangeModal({
   onClose,
   onSuccess,
 }: ProductChangeModalProps) {
+  useModalEscape(onClose);
   const now = useCurrentDate();
   const { showToast } = useToast();
   const { upgrades, downgrades, sameTier, allEligible } = getEligibleProductChangeTemplates(currentTemplate.id);
 
   const [selectedTab, setSelectedTab] = useState<'all' | 'upgrades' | 'downgrades' | 'sameTier'>('all');
   const [selectedTemplate, setSelectedTemplate] = useState<CardTemplate | null>(null);
-  
-  // Customization fields for the target card
+
   const [nickname, setNickname] = useState(card.nickname || '');
   const [lastFour, setLastFour] = useState(card.lastFourDigits || '');
   const [annualFeeDate, setAnnualFeeDate] = useState(card.annualFeeDate || '');
@@ -71,6 +72,8 @@ export function ProductChangeModal({
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content"
+        role="dialog"
+        aria-modal="true"
         onClick={e => e.stopPropagation()}
         style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
       >
@@ -134,7 +137,7 @@ export function ProductChangeModal({
                   )}
                 </div>
 
-                <div className="catalog-list" style={{ overflowY: 'auto', flex: 1, paddingRight: 4 }}>
+                <div className="catalog-list" style={{ overflowY: 'auto', flex: 1, paddingRight: 4, display: 'flex', flexDirection: 'column' }}>
                   {displayedTemplates.map(targetTemplate => {
                     const availablePerks = targetTemplate.perks.filter(p => isPerkAvailable(p, now));
                     const valuablePerks = availablePerks.filter(p => p.annualValue > 0);
@@ -228,7 +231,6 @@ export function ProductChangeModal({
             )}
           </>
         ) : (
-          /* Confirmation & Review Screen */
           <div style={{ overflowY: 'auto', flex: 1, paddingRight: 4 }}>
             <button
               className="btn btn-secondary btn-sm mb-md"
@@ -251,7 +253,6 @@ export function ProductChangeModal({
               )}
             </div>
 
-            {/* Visual Card Comparison */}
             <div className="glass-card mb-md" style={{ padding: '16px' }}>
               <div className="flex items-center justify-between gap-sm mb-md">
                 <div style={{ flex: 1, textAlign: 'center', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
@@ -269,7 +270,6 @@ export function ProductChangeModal({
                 </div>
               </div>
 
-              {/* Annual Fee Impact Callout */}
               <div
                 className="p-sm text-xs rounded mb-sm"
                 style={{
@@ -279,11 +279,11 @@ export function ProductChangeModal({
               >
                 {feeDifference > 0 ? (
                   <span>
-                    📈 <strong>Annual fee will increase by ${feeDifference}/yr</strong> (${currentTemplate.annualFee} $\rightarrow$ ${selectedTemplate.annualFee}).
+                    📈 <strong>Annual fee will increase by ${feeDifference}/yr</strong> (${currentTemplate.annualFee} → ${selectedTemplate.annualFee}).
                   </span>
                 ) : feeDifference < 0 ? (
                   <span>
-                    📉 <strong>Annual fee will decrease by ${Math.abs(feeDifference)}/yr</strong> (${currentTemplate.annualFee} $\rightarrow$ ${selectedTemplate.annualFee}).
+                    📉 <strong>Annual fee will decrease by ${Math.abs(feeDifference)}/yr</strong> (${currentTemplate.annualFee} → ${selectedTemplate.annualFee}).
                   </span>
                 ) : (
                   <span>
@@ -292,7 +292,6 @@ export function ProductChangeModal({
                 )}
               </div>
 
-              {/* Account Continuity Info */}
               <ul className="text-xs text-muted" style={{ paddingLeft: '16px', margin: '8px 0', lineHeight: 1.6 }}>
                 <li>Account age (opened on <strong>{card.openedDate}</strong>) is preserved.</li>
                 <li>Previous card moves to <em>Closed / Product Changed</em> history.</li>
@@ -301,7 +300,6 @@ export function ProductChangeModal({
               </ul>
             </div>
 
-            {/* Customization Form */}
             <div className="glass-card mb-md" style={{ padding: '14px' }}>
               <div className="font-bold text-xs text-muted mb-sm uppercase" style={{ letterSpacing: '0.5px' }}>
                 Card Customization
@@ -318,8 +316,8 @@ export function ProductChangeModal({
                 />
               </div>
 
-              <div className="flex gap-sm">
-                <div className="form-group" style={{ flex: 1 }}>
+              <div className="form-row-responsive">
+                <div className="form-group">
                   <label className="form-label" style={{ fontSize: '0.75rem' }}>Last 4 Digits</label>
                   <input
                     className="form-input"
@@ -331,7 +329,7 @@ export function ProductChangeModal({
                   />
                 </div>
 
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className="form-group">
                   <label className="form-label" style={{ fontSize: '0.75rem' }}>Annual Fee Date</label>
                   <input
                     type="date"

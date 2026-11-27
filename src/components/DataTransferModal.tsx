@@ -7,8 +7,10 @@ import {
   type DataBackup,
 } from '../db/data-transfer';
 import { useToast } from './ToastContext';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 export function DataTransferModal({ onClose }: { onClose: () => void }) {
+  useModalEscape(onClose);
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const fileReadIdRef = useRef(0);

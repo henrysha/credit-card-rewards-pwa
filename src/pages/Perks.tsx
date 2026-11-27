@@ -8,7 +8,6 @@ import { PerkPeriod } from '../components/PerkPeriod';
 import { InfoIcon } from '../components/InfoIcon';
 import { useToast } from '../components/ToastContext';
 import { useState } from 'react';
-
 import type { UserPerk, PerkTemplate } from '../db/types';
 
 function getUrgencyBadge(perk: UserPerk): { label: string; className: string } | null {
@@ -35,7 +34,7 @@ export default function Perks() {
 
   const cardNameMap = new Map<number, string>();
   const perkTemplateMap = new Map<string, PerkTemplate>();
-  
+
   cards?.forEach(c => {
     const t = getCardTemplate(c.cardTemplateId);
     cardNameMap.set(c.id!, c.nickname || t?.name || 'Unknown');
@@ -56,7 +55,6 @@ export default function Perks() {
     filtered = filtered.filter((p: UserPerk) => p.renewalPeriod === periodFilter);
   }
 
-  // Group by renewal period
   const grouped = new Map<string, UserPerk[]>();
   const periodOrder = ['monthly', 'quarterly', 'semi-annual', 'annual', 'every-4-years', 'one-time'];
   periodOrder.forEach(p => grouped.set(p, []));
@@ -93,6 +91,115 @@ export default function Perks() {
     }
   };
 
+  const availablePeriods = periodOrder.filter(p => {
+    const count = (perks ?? []).filter((pk: UserPerk) => isUserPerkAvailable(pk, now) && pk.renewalPeriod === p && pk.annualValue > 0).length;
+    return count > 0;
+  });
+
+  const renderPeriodGroup = (period: string) => {
+    const items = grouped.get(period) ?? [];
+    if (items.length === 0 || (periodFilter !== 'all' && periodFilter !== period)) return null;
+    return (
+      <div key={period} className="mb-md">
+        <div className="section-header">
+          <span className="section-title">{periodLabels[period]}</span>
+          <span className="text-xs text-muted">{items.length} perks</span>
+        </div>
+        <div className="perks-period-grid">
+          {items.map((perk: UserPerk) => {
+            const urgency = getUrgencyBadge(perk);
+            const pt = perkTemplateMap.get(perk.perkTemplateId);
+            const hasExtraInfo = !!(pt && (pt.details || pt.usageLink));
+
+            return (
+              <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
+                {perk.active === false ? (
+                  <div className="perk-main-action" style={{ cursor: 'default' }}>
+                    <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
+                      <div className="perk-name">{perk.perkName}</div>
+                      <div className="perk-subrow">
+                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                        {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                      </div>
+                    </div>
+                    <div className="perk-amount">
+                      {perk.periodValue ? (
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+                          <div className="perk-value">${perk.periodValue}</div>
+                          <PerkPeriod period={perk.renewalPeriod} />
+                        </div>
+                      ) : (
+                        <div className="perk-value">${perk.annualValue}</div>
+                      )}
+                      <button
+                        className="btn btn-primary"
+                        style={{ padding: '4px 10px', fontSize: '12px', marginTop: '4px', minHeight: '36px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePerkActivation(perk.id!, true);
+                        }}
+                      >
+                        Activate
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="perk-main-action" onClick={() => handleToggle(perk)}>
+                    <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
+                      {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                    <div className="perk-info" style={{ flex: 1 }}>
+                      <div className="perk-name">{perk.perkName}</div>
+                      <div className="perk-subrow">
+                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
+                        {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
+                      </div>
+                      {pt?.requiresEnrollment && (
+                        <div className="text-xs mt-xs">
+                          <button
+                            type="button"
+                            className="link-btn"
+                            onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
+                          >
+                            Deactivate
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="perk-amount">
+                      {perk.periodValue ? (
+                        <>
+                          <div className="perk-value">${perk.periodValue}</div>
+                          <PerkPeriod period={perk.renewalPeriod} />
+                        </>
+                      ) : (
+                        <div className="perk-value">${perk.annualValue}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {hasExtraInfo && (
+                  <button
+                    className="info-btn"
+                    onClick={(e) => handleInfoClick(e, pt)}
+                    aria-label="Perk Info"
+                  >
+                    <InfoIcon width={20} height={20} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const frequentPeriods = ['monthly', 'quarterly'];
+  const longTermPeriods = ['semi-annual', 'annual', 'every-4-years', 'one-time'];
+  const hasFrequentItems = frequentPeriods.some(p => (grouped.get(p)?.length ?? 0) > 0 && (periodFilter === 'all' || periodFilter === p));
+  const hasLongTermItems = longTermPeriods.some(p => (grouped.get(p)?.length ?? 0) > 0 && (periodFilter === 'all' || periodFilter === p));
+
   return (
     <div className="page animate-in">
       <div className="page-header">
@@ -100,123 +207,51 @@ export default function Perks() {
         <span className="badge badge-gold">${totalValue} unclaimed</span>
       </div>
 
-      <div className="tabs">
-        {(['unused', 'all', 'used', 'inactive'] as const).map(f => (
-          <button key={f} className={`tab ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-            {f === 'unused' ? 'Unused' : f === 'all' ? 'All' : f === 'used' ? 'Used' : 'Inactive'}
+      <div className="perks-filter-toolbar">
+        <div className="tabs">
+          {(['unused', 'all', 'used', 'inactive'] as const).map(f => (
+            <button key={f} className={`tab ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
+              {f === 'unused' ? 'Unused' : f === 'all' ? 'All' : f === 'used' ? 'Used' : 'Inactive'}
+            </button>
+          ))}
+        </div>
+
+        <select
+          className="form-input form-select perks-compact-period-select"
+          aria-label="Filter by renewal period"
+          value={periodFilter}
+          onChange={e => setPeriodFilter(e.target.value)}
+        >
+          <option value="all">All Periods</option>
+          {availablePeriods.map(p => (
+            <option key={p} value={p}>{periodLabels[p]}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="tabs perks-period-tabs">
+        <button className={`tab ${periodFilter === 'all' ? 'active' : ''}`} onClick={() => setPeriodFilter('all')}>All Periods</button>
+        {availablePeriods.map(p => (
+          <button key={p} className={`tab ${periodFilter === p ? 'active' : ''}`} onClick={() => setPeriodFilter(p)}>
+            {periodLabels[p]}
           </button>
         ))}
       </div>
 
-      <div className="tabs">
-        <button className={`tab ${periodFilter === 'all' ? 'active' : ''}`} onClick={() => setPeriodFilter('all')}>All Periods</button>
-        {periodOrder.map(p => {
-          const count = (perks ?? []).filter((pk: UserPerk) => isUserPerkAvailable(pk, now) && pk.renewalPeriod === p && pk.annualValue > 0).length;
-          if (count === 0) return null;
-          return (
-            <button key={p} className={`tab ${periodFilter === p ? 'active' : ''}`} onClick={() => setPeriodFilter(p)}>
-              {periodLabels[p]}
-            </button>
-          );
-        })}
-      </div>
-
-      {periodOrder.map(period => {
-        const items = grouped.get(period) ?? [];
-        if (items.length === 0 || (periodFilter !== 'all' && periodFilter !== period)) return null;
-        return (
-          <div key={period}>
-            <div className="section-header">
-              <span className="section-title">{periodLabels[period]}</span>
-              <span className="text-xs text-muted">{items.length} perks</span>
-            </div>
-            {items.map((perk: UserPerk) => {
-              const urgency = getUrgencyBadge(perk);
-              const pt = perkTemplateMap.get(perk.perkTemplateId);
-              const hasExtraInfo = !!(pt && (pt.details || pt.usageLink));
-
-              return (
-                <div key={perk.id} className={`perk-item ${perk.used ? 'used' : ''}`}>
-                  {perk.active === false ? (
-                    <div className="perk-main-action" style={{ cursor: 'default' }}>
-                      <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
-                        <div className="perk-name flex items-center gap-sm">
-                          {perk.perkName}
-                          {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
-                        </div>
-                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
-                      </div>
-                      <div className="perk-amount">
-                        {perk.periodValue ? (
-                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-                            <div className="perk-value">${perk.periodValue}</div>
-                            <PerkPeriod period={perk.renewalPeriod} />
-                          </div>
-                        ) : (
-                          <div className="perk-value">${perk.annualValue}</div>
-                        )}
-                        <button 
-                          className="btn btn-primary" 
-                          style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            togglePerkActivation(perk.id!, true);
-                          }}
-                        >
-                          Activate
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="perk-main-action" onClick={() => handleToggle(perk)}>
-                      <div className={`perk-checkbox ${perk.used ? 'checked' : ''}`}>
-                        {perk.used && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
-                      </div>
-                      <div className="perk-info" style={{ flex: 1 }}>
-                        <div className="perk-name flex items-center gap-sm">
-                          {perk.perkName}
-                          {urgency && <span className={`badge ${urgency.className}`}>{urgency.label}</span>}
-                        </div>
-                        <div className="perk-desc">{cardNameMap.get(perk.cardId) || ''}</div>
-                        {pt?.requiresEnrollment && (
-                          <div className="text-xs mt-sm">
-                            <button 
-                              className="link-btn" 
-                              onClick={(e) => { e.stopPropagation(); togglePerkActivation(perk.id!, false); }}
-                              style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
-                            >
-                              Deactivate
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                      <div className="perk-amount">
-                        {perk.periodValue ? (
-                          <>
-                            <div className="perk-value">${perk.periodValue}</div>
-                            <PerkPeriod period={perk.renewalPeriod} />
-                          </>
-                        ) : (
-                          <div className="perk-value">${perk.annualValue}</div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {hasExtraInfo && (
-                    <button 
-                      className="info-btn" 
-                      onClick={(e) => handleInfoClick(e, pt)}
-                      aria-label="Perk Info"
-                    >
-                      <InfoIcon width={20} height={20} />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+      {hasFrequentItems && hasLongTermItems ? (
+        <div className="perks-duo-board">
+          <div className="perks-board-col">
+            {frequentPeriods.map(renderPeriodGroup)}
           </div>
-        );
-      })}
+          <div className="perks-board-col">
+            {longTermPeriods.map(renderPeriodGroup)}
+          </div>
+        </div>
+      ) : (
+        <div>
+          {periodOrder.map(renderPeriodGroup)}
+        </div>
+      )}
 
       {filtered.length === 0 && (
         <div className="empty-state">
@@ -236,4 +271,3 @@ export default function Perks() {
     </div>
   );
 }
-

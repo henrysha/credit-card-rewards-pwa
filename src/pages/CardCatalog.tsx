@@ -8,10 +8,13 @@ import { CardFamilyFilter } from '../components/CardFamilyFilter';
 import { getFamilyIds, getFamilyLabel } from '../db/helpers';
 import type { CardFamilyId } from '../db/card-families';
 import type { CardIssuer } from '../db/types';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { CatalogPreviewCompanion } from '../components/CatalogMasterPane';
 
 export default function CardCatalog() {
   const now = useCurrentDate();
   const navigate = useNavigate();
+  const isLandscapeDuo = useMediaQuery('(min-width: 780px)');
   const [search, setSearch] = useState('');
   const [issuerFilter, setIssuerFilter] = useState('all');
   const [familyFilter, setFamilyFilter] = useState<'all' | CardFamilyId>('all');
@@ -32,8 +35,7 @@ export default function CardCatalog() {
     filtered = filtered.filter(c => c.name.toLowerCase().includes(q) || c.issuer.toLowerCase().includes(q));
   }
 
-
-  return (
+  const pageContent = (
     <div className="page animate-in">
       <div className="page-header">
         <h1>Card Catalog</h1>
@@ -103,4 +105,19 @@ export default function CardCatalog() {
       )}
     </div>
   );
+
+  if (isLandscapeDuo) {
+    return (
+      <div className="duo-master-detail-shell">
+        {pageContent}
+        <CatalogPreviewCompanion
+          filteredCount={filtered.length}
+          issuerFilter={issuerFilter}
+          onRequestCard={() => setShowRequestModal(true)}
+        />
+      </div>
+    );
+  }
+
+  return pageContent;
 }

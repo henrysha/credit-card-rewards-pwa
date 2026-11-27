@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 type SupportedPlatform = 'android' | 'ios';
 const DISMISSED_STORAGE_KEY = 'pwa_install_guide_dismissed';
@@ -67,6 +68,8 @@ export default function PwaInstallGuide() {
     localStorage.setItem(DISMISSED_STORAGE_KEY, 'true');
     setPlatform(null);
   };
+
+  useModalEscape(dismiss, Boolean(platform));
 
   if (!platform) return null;
 

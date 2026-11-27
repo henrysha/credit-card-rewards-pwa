@@ -67,9 +67,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
         {perk.active === false ? (
           <div className="perk-main-action" style={{ cursor: 'default' }}>
             <div className="perk-info" style={{ flex: 1, paddingLeft: '8px' }}>
-              <div className="perk-name flex items-center gap-sm">
-                {perk.perkName}
-              </div>
+              <div className="perk-name">{perk.perkName}</div>
               <div className="perk-desc">{pt?.description || ''}</div>
             </div>
             <div className="perk-amount">
@@ -82,9 +80,9 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
                 <div className="perk-value">${perk.annualValue}</div>
               )}
               {!readOnly && (
-                <button 
-                  className="btn btn-primary" 
-                  style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px' }}
+                <button
+                  className="btn btn-primary"
+                  style={{ padding: '4px 10px', fontSize: '12px', marginTop: '4px', minHeight: '36px' }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (perk.id) togglePerkActivation(perk.id, true);
@@ -103,19 +101,17 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               </div>
             )}
             <div className="perk-info" style={{ flex: 1, paddingLeft: readOnly ? '8px' : '0' }}>
-              <div className="perk-name flex items-center gap-sm">
-                {perk.perkName}
-              </div>
+              <div className="perk-name">{perk.perkName}</div>
               <div className="perk-desc">{pt?.description || ''}</div>
               {pt?.requiresEnrollment && !readOnly && (
-                <div className="text-xs mt-sm">
-                  <button 
-                    className="link-btn" 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      if (perk.id) togglePerkActivation(perk.id, false); 
+                <div className="text-xs mt-xs">
+                  <button
+                    type="button"
+                    className="link-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (perk.id) togglePerkActivation(perk.id, false);
                     }}
-                    style={{ color: 'var(--text-muted)', background: 'none', border: 'none', padding: 0 }}
                   >
                     Deactivate
                   </button>
@@ -135,8 +131,8 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
           </div>
         )}
         {hasExtraInfo && (
-          <button 
-            className="info-btn" 
+          <button
+            className="info-btn"
             onClick={(e) => handleInfoClick(e, pt)}
             aria-label="Perk Info"
           >

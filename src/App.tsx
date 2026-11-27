@@ -14,7 +14,10 @@ import { ToastProvider } from './components/ToastContext';
 
 function BottomNav() {
   const location = useLocation();
-  const isActive = (path: string) => location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
+  const isActive = (path: string) =>
+    location.pathname === path ||
+    (path === '/cards' && location.pathname.startsWith('/card')) ||
+    (path !== '/' && location.pathname.startsWith(path));
 
   return (
     <nav className="bottom-nav">

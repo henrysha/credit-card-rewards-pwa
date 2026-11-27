@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { getCardTemplate, removeCard } from '../db/helpers';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CardHeader } from '../components/CardHeader';
 import { SignupBonusSection } from '../components/SignupBonusSection';
 import { EarningRatesSection } from '../components/EarningRatesSection';
@@ -10,11 +10,17 @@ import { PerksSection } from '../components/PerksSection';
 import { ProductChangeModal } from '../components/ProductChangeModal';
 import { QuarterlyRewardsSection } from '../components/QuarterlyRewardsSection';
 import { hasRotatingRewards } from '../utils/quarterly-rewards';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useModalEscape } from '../hooks/useModalEscape';
+import { WalletMasterSidebar } from '../components/WalletMasterPane';
 
 export default function CardDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const cardId = Number(id);
+  const isLandscapeDuo = useMediaQuery('(min-width: 780px)');
+  const detailHeadingRef = useRef<HTMLHeadingElement>(null);
+  const [liveAnnouncement, setLiveAnnouncement] = useState('');
 
   const card = useLiveQuery(() => db.cards.get(cardId), [cardId]);
   const bonus = useLiveQuery(() => db.signupBonuses.where('cardId').equals(cardId).first(), [cardId]);
@@ -23,6 +29,8 @@ export default function CardDetail() {
 
   const [showDelete, setShowDelete] = useState(false);
   const [showProductChange, setShowProductChange] = useState(false);
+
+  useModalEscape(() => setShowDelete(false), showDelete);
 
   if (!card) return <div className="page"><p className="text-muted">Loading...</p></div>;
 
@@ -39,8 +47,19 @@ export default function CardDetail() {
     navigate(`/card/${newCardId}`);
   };
 
-  return (
-    <div className="page animate-in">
+  const handleSelectFromMaster = (cardName: string) => {
+    setLiveAnnouncement(`Selected ${cardName}`);
+    requestAnimationFrame(() => {
+      detailHeadingRef.current?.focus();
+    });
+  };
+
+  const detailContent = (
+    <div className="page animate-in" data-testid="card-detail-pane">
+      <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
+      <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
+        {card.nickname || template.name}
+      </h2>
       <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
 
       <CardHeader card={card} template={template} />
@@ -97,7 +116,7 @@ export default function CardDetail() {
 
       {showDelete && (
         <div className="modal-overlay" onClick={() => setShowDelete(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
             <div className="modal-handle" />
             <h3 className="mb-md">Remove Card?</h3>
             <p className="text-sm text-muted mb-md">
@@ -112,4 +131,15 @@ export default function CardDetail() {
       )}
     </div>
   );
+
+  if (isLandscapeDuo) {
+    return (
+      <div className="duo-master-detail-shell">
+        <WalletMasterSidebar selectedCardId={cardId} onSelectCard={handleSelectFromMaster} />
+        {detailContent}
+      </div>
+    );
+  }
+
+  return detailContent;
 }

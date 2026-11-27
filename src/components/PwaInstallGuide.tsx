@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 type SupportedPlatform = 'android' | 'ios';
 const DISMISSED_STORAGE_KEY = 'pwa_install_guide_dismissed';
@@ -68,6 +69,8 @@ export default function PwaInstallGuide() {
     setPlatform(null);
   };
 
+  const dialogRef = useModalEscape<HTMLElement>(dismiss, Boolean(platform));
+
   if (!platform) return null;
 
   const guide = instructions[platform];
@@ -75,6 +78,7 @@ export default function PwaInstallGuide() {
   return (
     <div className="modal-overlay install-guide-overlay" onClick={dismiss}>
       <section
+        ref={dialogRef}
         className="modal-content install-guide"
         role="dialog"
         aria-modal="true"
@@ -96,7 +100,7 @@ export default function PwaInstallGuide() {
         <ol className="install-guide-steps">
           {guide.steps.map((step) => <li key={step}>{step}</li>)}
         </ol>
-        <button className="btn btn-primary btn-block" onClick={dismiss} autoFocus>
+        <button className="btn btn-primary btn-block" onClick={dismiss} data-autofocus="true">
           Got it
         </button>
       </section>

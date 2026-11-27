@@ -6,6 +6,7 @@ import {
   addQuarterlyReward,
 } from '../utils/quarterly-rewards';
 import { useToast } from './ToastContext';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 interface QuarterlyRewardModalProps {
   cardId: number;
@@ -32,6 +33,7 @@ export function QuarterlyRewardModal({
   onClose,
   onSuccess,
 }: QuarterlyRewardModalProps) {
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose);
   const { showToast } = useToast();
   const currentQ = getCurrentQuarter();
   const nextQ = getNextQuarter();
@@ -85,12 +87,16 @@ export function QuarterlyRewardModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quarterly-reward-modal-title"
         onClick={(e) => e.stopPropagation()}
         data-testid="quarterly-reward-modal"
       >
         <div className="modal-handle" />
-        <h3 className="mb-md">
+        <h3 id="quarterly-reward-modal-title" className="mb-md">
           {selectedQuarterMode === 'next' ? 'Queue Next Quarter Reward' : 'Add Current Quarter Reward'}
         </h3>
 
@@ -129,13 +135,12 @@ export function QuarterlyRewardModal({
               onChange={(e) => setCategory(e.target.value)}
               required
             />
-            <div className="flex flex-wrap gap-xs mt-xs">
+            <div className="quarterly-popular-chips">
               {POPULAR_CATEGORIES.map((cat) => (
                 <button
                   type="button"
                   key={cat}
-                  className="btn btn-secondary btn-sm text-[11px] py-[2px] px-[8px]"
-                  style={{ borderRadius: '12px' }}
+                  className="btn btn-secondary btn-sm quarterly-chip-btn"
                   onClick={() => setCategory(cat)}
                 >
                   {cat}

@@ -13,10 +13,10 @@ export default defineConfig({
         name: 'Credit Card Rewards Tracker',
         short_name: 'CC Rewards',
         description: 'Track credit card rewards, sign-up bonuses, and perks — fully offline',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#0a0e1a',
+        background_color: '#0a0e1a',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'any',
         start_url: '/credit-card-rewards-pwa/',
         icons: [
           {

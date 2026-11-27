@@ -64,7 +64,7 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
 
   return (
     <div className="glass-card mt-md" data-testid="quarterly-rewards-section">
-      <div className="section-header flex justify-between items-center mb-sm">
+      <div className="section-header mb-sm">
         <h3 className="section-title">Rotating Quarterly Categories</h3>
         <button
           className="btn btn-primary btn-sm"
@@ -81,15 +81,15 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
 
       {/* Current Quarter Section */}
       <div className="mb-md">
-        <div className="flex justify-between items-center mb-xs">
-          <div className="flex items-center gap-xs">
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="quarterly-sub-header">
+          <div className="quarterly-sub-title">
+            <span className="quarterly-label">
               Current Quarter ({currentQ.label})
             </span>
             <span className="badge badge-green">Current</span>
           </div>
           <button
-            className="btn btn-secondary btn-sm text-xs py-[2px] px-sm"
+            className="btn btn-secondary btn-sm text-xs"
             data-testid="add-current-quarter-btn"
             onClick={() => openModal('current')}
           >
@@ -102,20 +102,16 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
         ))}
 
         {activeRewards.length === 0 && publishedRewards.length === 0 ? (
-          <div
-            className="p-sm rounded text-xs text-muted"
-            style={{ background: 'var(--bg-glass)', border: '1px dashed var(--bg-glass-border)' }}
-          >
+          <div className="quarterly-empty-box">
             Published categories not available for {currentQ.label}. Tap "+ Add" to specify this quarter's categories.
           </div>
         ) : (
-          <div className="flex flex-col gap-xs">
+          <div className="quarterly-saved-list">
             {activeRewards.length > 0 && <div className="text-xs text-secondary">Your saved categories</div>}
             {activeRewards.map((reward) => (
               <div
                 key={reward.id}
-                className="earning-rate flex items-center justify-between p-sm rounded"
-                style={{ background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}
+                className="earning-rate quarterly-saved-item"
                 data-testid="active-reward-item"
                 data-category={reward.category}
               >
@@ -123,14 +119,15 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
                   <div className="earning-multiplier text-gold font-bold">{reward.multiplier}x</div>
                   <div>
                     <div className="font-semibold text-white text-sm">{reward.category}</div>
-                    {reward.limit && <div className="text-[11px] text-muted">{reward.limit}</div>}
+                    {reward.limit && <div className="text-xs text-muted">{reward.limit}</div>}
                   </div>
                 </div>
                 <button
-                  className="btn btn-danger btn-sm text-xs py-0 px-xs"
+                  className="btn btn-danger btn-sm text-xs quarterly-delete-btn"
                   data-testid={`delete-reward-${reward.id}`}
                   onClick={() => handleDelete(reward.id!, reward.category)}
                   title="Remove category"
+                  aria-label={`Remove ${reward.category}`}
                 >
                   ✕
                 </button>
@@ -142,9 +139,9 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
 
       {/* Next Quarter Queue Section */}
       <div>
-        <div className="flex justify-between items-center mb-xs">
-          <div className="flex items-center gap-xs">
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+        <div className="quarterly-sub-header">
+          <div className="quarterly-sub-title">
+            <span className="quarterly-label">
               Next Quarter Queue ({nextQ.label})
             </span>
             <span className="badge badge-gold">Starts {formatDateLabel(nextQ.startDate)}</span>
@@ -156,19 +153,15 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
         ))}
 
         {queuedRewards.length === 0 && publishedNextRewards.length === 0 ? (
-          <div
-            className="p-sm rounded text-xs text-muted"
-            style={{ background: 'var(--bg-glass)', border: '1px dashed var(--bg-glass-border)' }}
-          >
+          <div className="quarterly-empty-box">
             Published categories not available yet for {nextQ.label}. They appear here automatically when the app schedule is updated. You can also queue categories manually.
           </div>
         ) : (
-          <div className="flex flex-col gap-xs">
+          <div className="quarterly-saved-list">
             {queuedRewards.map((reward) => (
               <div
                 key={reward.id}
-                className="earning-rate flex items-center justify-between p-sm rounded"
-                style={{ background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}
+                className="earning-rate quarterly-saved-item"
                 data-testid="queued-reward-item"
                 data-category={reward.category}
               >
@@ -177,16 +170,17 @@ export function QuarterlyRewardsSection({ card, template }: QuarterlyRewardsSect
                   <div>
                     <div className="flex items-center gap-xs">
                       <span className="font-semibold text-white text-sm">{reward.category}</span>
-                      <span className="badge badge-gold text-[10px] py-0 px-[6px]">Queued</span>
+                      <span className="badge badge-gold">Queued</span>
                     </div>
-                    {reward.limit && <div className="text-[11px] text-muted">{reward.limit}</div>}
+                    {reward.limit && <div className="text-xs text-muted">{reward.limit}</div>}
                   </div>
                 </div>
                 <button
-                  className="btn btn-danger btn-sm text-xs py-0 px-xs"
+                  className="btn btn-danger btn-sm text-xs quarterly-delete-btn"
                   data-testid={`delete-queued-reward-${reward.id}`}
                   onClick={() => handleDelete(reward.id!, reward.category)}
                   title="Remove from queue"
+                  aria-label={`Remove ${reward.category} from queue`}
                 >
                   ✕
                 </button>

@@ -7,10 +7,13 @@ import type { UserCard } from '../db/types';
 import { getTextColorForBackground } from '../utils/color';
 import { SettingsMenu } from '../components/SettingsMenu';
 import { useToast } from '../components/ToastContext';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { WalletOverviewCompanion } from '../components/WalletMasterPane';
 
 export default function MyCards() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const isLandscapeDuo = useMediaQuery('(min-width: 780px)');
   const cards = useLiveQuery(() => db.cards.toArray());
   const [isCompact, setIsCompact] = useState(() => localStorage.getItem('compact_mode') === 'true');
 
@@ -37,7 +40,7 @@ export default function MyCards() {
       if (!template) return '';
       let info = `${template.issuer}: ${card.nickname || template.name}`;
       if (card.lastFourDigits) info += ` (•••• ${card.lastFourDigits})`;
-      
+
       const cardActiveRewards = (activeRewards ?? []).filter(r => r.cardId === card.id);
       const allRates = [
         ...template.earningRates,
@@ -51,7 +54,7 @@ export default function MyCards() {
       const rates = allRates
         .map(r => `  - ${r.multiplier}x on ${r.category}${r.limit ? ` (up to ${r.limit})` : ''}`)
         .join('\n');
-      
+
       return `${info}\n${rates}`;
     }).filter(Boolean).join('\n\n');
 
@@ -63,11 +66,11 @@ export default function MyCards() {
     });
   };
 
-  return (
+  const pageContent = (
     <div className="page animate-in">
       <div className="page-header">
         <h1>My Cards</h1>
-        <div className="flex gap-sm items-center">
+        <div className="flex gap-xs items-center">
           <button className="btn btn-secondary btn-icon" onClick={copyToClipboard} title="Copy card list to clipboard">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -86,46 +89,67 @@ export default function MyCards() {
         </div>
       )}
 
-      {activeCards.map((card: UserCard) => {
-        const template = getCardTemplate(card.cardTemplateId);
-        if (!template) return null;
-        return (
-          <div
-            key={card.id}
-            className={`card-tile ${isCompact ? 'compact' : ''}`}
-            style={{ background: template.color, color: getTextColorForBackground(template.color), marginBottom: isCompact ? 8 : 16 }}
-            onClick={() => navigate(`/card/${card.id}`)}
-          >
-            <div className="card-issuer">{template.issuer}</div>
-            <div className="card-name">{card.nickname || template.name}</div>
-            <div className="card-fee">${template.annualFee}/yr</div>
-            {card.lastFourDigits && <div className="card-last-four">•••• {card.lastFourDigits}</div>}
-          </div>
-        );
-      })}
-
-      {closedCards.length > 0 && (
-        <>
-          <div className="section-header mt-lg">
-            <span className="section-title">Closed / Product Changed</span>
-          </div>
-          {closedCards.map((card: UserCard) => {
+      {activeCards.length > 0 && (
+        <div className={`cards-grid ${isCompact ? 'compact-list' : ''}`}>
+          {activeCards.map((card: UserCard) => {
             const template = getCardTemplate(card.cardTemplateId);
             if (!template) return null;
             return (
               <div
                 key={card.id}
                 className={`card-tile ${isCompact ? 'compact' : ''}`}
-                style={{ background: template.color, color: getTextColorForBackground(template.color), opacity: 0.5, marginBottom: isCompact ? 8 : 12 }}
+                style={{ background: template.color, color: getTextColorForBackground(template.color) }}
                 onClick={() => navigate(`/card/${card.id}`)}
               >
-                <div className="card-issuer">{template.issuer}</div>
-                <div className="card-name">{card.nickname || template.name}</div>
-                <span className="badge badge-red" style={{ position: isCompact ? 'static' : 'absolute', top: 12, right: 12 }}>{card.status}</span>
+                <div>
+                  <div className="card-issuer">{template.issuer}</div>
+                  <div className="card-name">{card.nickname || template.name}</div>
+                </div>
+                <div>
+                  <div className="card-fee">${template.annualFee}/yr</div>
+                  {card.lastFourDigits && <div className="card-last-four">•••• {card.lastFourDigits}</div>}
+                </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {closedCards.length > 0 && (
+        <>
+          <div className="section-header mt-lg">
+            <span className="section-title">Closed / Product Changed</span>
+          </div>
+          <div className={`cards-grid ${isCompact ? 'compact-list' : ''}`}>
+            {closedCards.map((card: UserCard) => {
+              const template = getCardTemplate(card.cardTemplateId);
+              if (!template) return null;
+              return (
+                <div
+                  key={card.id}
+                  className={`card-tile ${isCompact ? 'compact' : ''}`}
+                  style={{ background: template.color, color: getTextColorForBackground(template.color), opacity: 0.5 }}
+                  onClick={() => navigate(`/card/${card.id}`)}
+                >
+                  <div>
+                    <div className="card-issuer">{template.issuer}</div>
+                    <div className="card-name">{card.nickname || template.name}</div>
+                  </div>
+                  <span className="badge badge-red" style={{ position: isCompact ? 'static' : 'absolute', top: 12, right: 12 }}>{card.status}</span>
+                </div>
+              );
+            })}
+          </div>
         </>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="duo-master-detail-shell">
+      {pageContent}
+      {isLandscapeDuo && (
+        <WalletOverviewCompanion activeCards={activeCards} closedCards={closedCards} />
       )}
     </div>
   );

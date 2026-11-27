@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, type RefObject } from 'react';
+import { useModalEscape } from '../hooks/useModalEscape';
 
 interface RequestCardModalProps {
   onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 }
 
-export function RequestCardModal({ onClose }: RequestCardModalProps) {
+export function RequestCardModal({ onClose, returnFocusRef }: RequestCardModalProps) {
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose, true, returnFocusRef);
   const [cardName, setCardName] = useState('');
   const [issuer, setIssuer] = useState('');
 
@@ -21,15 +24,22 @@ export function RequestCardModal({ onClose }: RequestCardModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="request-card-modal-title"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-handle" />
-        <h3 className="mb-md">Request New Card</h3>
+        <h3 id="request-card-modal-title" className="mb-md">Request New Card</h3>
         <p className="text-sm text-muted mb-md">
           Is there a card missing from our catalog? Let us know! Please check if the card has already been requested before creating a new issue.
           <br />
-          <a 
-            href="https://github.com/henrysha/credit-card-rewards-pwa/issues/4" 
-            target="_blank" 
+          <a
+            href="https://github.com/henrysha/credit-card-rewards-pwa/issues/4"
+            target="_blank"
             rel="noopener noreferrer"
             className="text-gold"
             style={{ textDecoration: 'underline', fontSize: '0.75rem', marginTop: '4px', display: 'inline-block' }}
@@ -37,33 +47,33 @@ export function RequestCardModal({ onClose }: RequestCardModalProps) {
             View existing requests on Issue #4
           </a>
         </p>
-        
+
         <div className="form-group">
           <label className="form-label">Card Name</label>
-          <input 
-            className="form-input" 
-            value={cardName} 
-            onChange={e => setCardName(e.target.value)} 
-            placeholder="e.g. Marriott Bonvoy Boundless" 
-            autoFocus
+          <input
+            className="form-input"
+            value={cardName}
+            onChange={e => setCardName(e.target.value)}
+            placeholder="e.g. Marriott Bonvoy Boundless"
+            data-autofocus="true"
           />
         </div>
 
         <div className="form-group">
           <label className="form-label">Issuer</label>
-          <input 
-            className="form-input" 
-            value={issuer} 
-            onChange={e => setIssuer(e.target.value)} 
-            placeholder="e.g. Chase" 
+          <input
+            className="form-input"
+            value={issuer}
+            onChange={e => setIssuer(e.target.value)}
+            placeholder="e.g. Chase"
           />
         </div>
 
         <div className="flex gap-sm mt-lg">
           <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
-          <button 
-            className="btn btn-primary" 
-            style={{ flex: 1 }} 
+          <button
+            className="btn btn-primary"
+            style={{ flex: 1 }}
             onClick={handleSubmit}
             disabled={!cardName.trim() || !issuer.trim()}
           >

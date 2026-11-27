@@ -9,6 +9,7 @@ import { requestNotificationPermission } from '../notifications';
 import type { SignupBonus, UserPerk } from '../db/types';
 import { BestCardSection } from '../components/BestCardSection';
 import { SettingsMenu } from '../components/SettingsMenu';
+import { DashboardQuickNav } from '../components/DashboardQuickNav';
 
 function daysUntil(dateStr: string): number {
   const diff = new Date(dateStr).getTime() - new Date().getTime();
@@ -82,90 +83,102 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="stats-grid">
-        <div className="stat-card" onClick={() => navigate('/cards')} style={{ cursor: 'pointer' }}>
-          <div className="stat-value">{activeCards}</div>
-          <div className="stat-label">Active Cards</div>
+      <DashboardQuickNav
+        hasBonuses={activeBonuses.length > 0}
+        hasPerks={unusedPerks.length > 0}
+        hasBestCards={activeCards > 0}
+      />
+
+      <div className="dashboard-duo-grid">
+        <div className="dashboard-left-pane">
+          <div className="stats-grid">
+            <div className="stat-card" onClick={() => navigate('/cards')} style={{ cursor: 'pointer' }}>
+              <div className="stat-value">{activeCards}</div>
+              <div className="stat-label">Active Cards</div>
+            </div>
+            <div className="stat-card" onClick={() => navigate('/perks')} style={{ cursor: 'pointer' }}>
+              <div className="stat-value">${totalPerkValue}</div>
+              <div className="stat-label">Unused Perks Value</div>
+            </div>
+          </div>
+
+          {activeBonuses.length > 0 && (
+            <section id="dashboard-bonuses">
+              <div className="section-header mt-lg">
+                <span className="section-title">Active Sign-up Bonuses</span>
+              </div>
+              {activeBonuses.map((bonus: SignupBonus) => {
+                const template = getCardTemplate(bonus.cardTemplateId);
+                const pct = Math.min(100, (bonus.currentSpend / bonus.targetSpend) * 100);
+                const days = daysUntil(bonus.deadline);
+                return (
+                  <div key={bonus.id} className="glass-card" onClick={() => navigate(`/card/${bonus.cardId}`)} style={{ cursor: 'pointer' }}>
+                    <div className="flex justify-between items-center mb-md">
+                      <div>
+                        <div className="font-bold">{template?.name}</div>
+                        <div className="text-sm text-muted">
+                          {formatCurrency(bonus.bonusPoints)} {bonus.bonusUnit}
+                        </div>
+                        {bonus.additionalBonus && (
+                          <div className="text-sm text-muted mt-sm">Plus: {bonus.additionalBonus.description}</div>
+                        )}
+                      </div>
+                      <span className={`countdown ${days <= 30 ? 'urgent' : ''}`}>
+                        {days > 0 ? `${days}d left` : 'Expired'}
+                      </span>
+                    </div>
+                    <div className="progress-bar">
+                      <div className={`progress-bar-fill ${pct >= 100 ? 'complete' : ''}`} style={{ width: `${pct}%` }} />
+                    </div>
+                    <div className="flex justify-between mt-sm text-xs text-muted">
+                      <span>${bonus.currentSpend.toLocaleString()} / ${bonus.targetSpend.toLocaleString()}</span>
+                      <span>{Math.floor(pct)}%</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+          )}
+
+          {unusedPerks.length > 0 && (
+            <section id="dashboard-perks">
+              <div className="section-header mt-lg">
+                <span className="section-title">Unused Perks This Period</span>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate('/perks')}>View All</button>
+              </div>
+              {unusedPerks.slice(0, 5).map((perk: UserPerk) => (
+                <div key={perk.id} className="perk-item">
+                  <div className="perk-main-action" onClick={() => navigate(`/card/${perk.cardId}`)}>
+                    <div className="perk-info">
+                      <div className="perk-name">{perk.perkName}</div>
+                      <div className="perk-desc">{perk.renewalPeriod}</div>
+                    </div>
+                    {perk.periodValue ? (
+                      <div className="perk-amount">
+                        <div className="perk-value">${perk.periodValue}</div>
+                        <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : 'period'}</div>
+                      </div>
+                    ) : perk.annualValue > 0 ? (
+                      <div className="perk-amount">
+                        <div className="perk-value">${perk.annualValue}</div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+              {unusedPerks.length > 5 && (
+                <div className="text-sm text-muted mt-sm" style={{ textAlign: 'center' }}>
+                  +{unusedPerks.length - 5} more unused perks
+                </div>
+              )}
+            </section>
+          )}
         </div>
-        <div className="stat-card" onClick={() => navigate('/perks')} style={{ cursor: 'pointer' }}>
-          <div className="stat-value">${totalPerkValue}</div>
-          <div className="stat-label">Unused Perks Value</div>
+
+        <div className="dashboard-right-pane">
+          <BestCardSection />
         </div>
       </div>
-
-      {activeBonuses.length > 0 && (
-        <>
-          <div className="section-header mt-lg">
-            <span className="section-title">Active Sign-up Bonuses</span>
-          </div>
-          {activeBonuses.map((bonus: SignupBonus) => {
-            const template = getCardTemplate(bonus.cardTemplateId);
-            const pct = Math.min(100, (bonus.currentSpend / bonus.targetSpend) * 100);
-            const days = daysUntil(bonus.deadline);
-            return (
-              <div key={bonus.id} className="glass-card" onClick={() => navigate(`/card/${bonus.cardId}`)} style={{ cursor: 'pointer' }}>
-                <div className="flex justify-between items-center mb-md">
-                  <div>
-                    <div className="font-bold">{template?.name}</div>
-                    <div className="text-sm text-muted">
-                      {formatCurrency(bonus.bonusPoints)} {bonus.bonusUnit}
-                    </div>
-                    {bonus.additionalBonus && (
-                      <div className="text-sm text-muted mt-sm">Plus: {bonus.additionalBonus.description}</div>
-                    )}
-                  </div>
-                  <span className={`countdown ${days <= 30 ? 'urgent' : ''}`}>
-                    {days > 0 ? `${days}d left` : 'Expired'}
-                  </span>
-                </div>
-                <div className="progress-bar">
-                  <div className={`progress-bar-fill ${pct >= 100 ? 'complete' : ''}`} style={{ width: `${pct}%` }} />
-                </div>
-                <div className="flex justify-between mt-sm text-xs text-muted">
-                  <span>${bonus.currentSpend.toLocaleString()} / ${bonus.targetSpend.toLocaleString()}</span>
-                  <span>{Math.floor(pct)}%</span>
-                </div>
-              </div>
-            );
-          })}
-        </>
-      )}
-
-      {unusedPerks.length > 0 && (
-        <>
-          <div className="section-header mt-lg">
-            <span className="section-title">Unused Perks This Period</span>
-            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/perks')}>View All</button>
-          </div>
-          {unusedPerks.slice(0, 5).map((perk: UserPerk) => (
-            <div key={perk.id} className="perk-item">
-              <div className="perk-main-action" onClick={() => navigate(`/card/${perk.cardId}`)}>
-                <div className="perk-info">
-                  <div className="perk-name">{perk.perkName}</div>
-                  <div className="perk-desc">{perk.renewalPeriod}</div>
-                </div>
-                {perk.periodValue ? (
-                  <div className="perk-amount">
-                    <div className="perk-value">${perk.periodValue}</div>
-                    <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : 'period'}</div>
-                  </div>
-                ) : perk.annualValue > 0 ? (
-                  <div className="perk-amount">
-                    <div className="perk-value">${perk.annualValue}</div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ))}
-          {unusedPerks.length > 5 && (
-            <div className="text-sm text-muted mt-sm" style={{ textAlign: 'center' }}>
-              +{unusedPerks.length - 5} more unused perks
-            </div>
-          )}
-        </>
-      )}
-
-      <BestCardSection />
 
       {activeCards === 0 && (
         <div className="empty-state">

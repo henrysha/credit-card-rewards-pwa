@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 import {
   createBackup,
   downloadBackup,
@@ -7,8 +7,15 @@ import {
   type DataBackup,
 } from '../db/data-transfer';
 import { useToast } from './ToastContext';
+import { useModalEscape } from '../hooks/useModalEscape';
 
-export function DataTransferModal({ onClose }: { onClose: () => void }) {
+interface DataTransferModalProps {
+  onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
+}
+
+export function DataTransferModal({ onClose, returnFocusRef }: DataTransferModalProps) {
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose, true, returnFocusRef);
   const { showToast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const fileReadIdRef = useRef(0);
@@ -59,7 +66,14 @@ export function DataTransferModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content data-transfer-modal" role="dialog" aria-modal="true" aria-labelledby="data-transfer-title" onClick={event => event.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className="modal-content data-transfer-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="data-transfer-title"
+        onClick={event => event.stopPropagation()}
+      >
         <div className="modal-handle" />
         <div className="flex justify-between items-center mb-md">
           <h2 id="data-transfer-title">Export or import data</h2>

@@ -27,7 +27,7 @@ A modern, offline-first Progressive Web App (PWA) designed to help you maximize 
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js 26 LTS (run `nvm install` and `nvm use` to select the version in `.nvmrc`)
 - npm
 
 ### Installation

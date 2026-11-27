@@ -23,7 +23,7 @@ function formatCurrency(n: number): string {
 export default function Dashboard() {
   const now = useCurrentDate();
   const navigate = useNavigate();
-  const cards = useLiveQuery(() => db.cards.where('status').equals('active').toArray());
+  const cards = useLiveQuery(() => db.cards.toArray());
   const bonuses = useLiveQuery(() => db.signupBonuses.toArray());
   const perks = useLiveQuery(() => db.perks.toArray());
 
@@ -43,11 +43,12 @@ export default function Dashboard() {
     }
   }, []);
 
-  const activeCards = cards?.length ?? 0;
+  const activeCards = cards?.filter(card => card.status === 'active').length ?? 0;
+  const closedCardIds = new Set(cards?.filter(card => card.status === 'closed').map(card => card.id));
   // Zero-spend welcome benefits are completed on add. The spend guard also
   // protects dashboards containing an older malformed zero-target record.
-  const activeBonuses = bonuses?.filter((b: SignupBonus) => !b.completed && b.targetSpend > 0) ?? [];
-  const unusedPerks = perks?.filter((p: UserPerk) => isUserPerkAvailable(p, now) && !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [];
+  const activeBonuses = cards ? bonuses?.filter(b => !closedCardIds.has(b.cardId) && !b.completed && b.targetSpend > 0) ?? [] : [];
+  const unusedPerks = cards ? perks?.filter(p => !closedCardIds.has(p.cardId) && isUserPerkAvailable(p, now) && !p.used && p.active !== false && p.annualValue > 0 && p.renewalPeriod !== 'ongoing' && p.renewalPeriod !== 'one-time') ?? [] : [];
   const totalPerkValue = unusedPerks.reduce((sum: number, p: UserPerk) => sum + (p.periodValue ?? p.annualValue), 0);
 
   const showNotifPrompt = notifPermission === 'default' && !notifDismissed && activeCards > 0;

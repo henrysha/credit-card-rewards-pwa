@@ -1224,7 +1224,10 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 195,
     color: '#27444f',
     isBusinessCard: true,
-    signupBonus: { points: 90000, spend: 6000, timeDays: 90, unit: 'points' },
+    signupBonus: {
+      points: 90000, spend: 6000, timeDays: 90, unit: 'points',
+      termsUrl: 'https://www.bankofamerica.com/smallbusiness/credit-cards/terms-and-conditions/?campaignid=4082063&productoffercode=K8&locale=en_US',
+    },
     earningRates: [
       { category: 'Alaska & Hawaiian Flights via Atmos for Business', multiplier: 10, recommendationCategory: 'Alaska & Hawaiian Flights via Atmos for Business' },
       { category: 'Other Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },
@@ -1265,6 +1268,36 @@ export const churningRules: ChurningRule[] = [
   { id: 'citi-48', issuer: 'Citi', ruleName: '48-Month Rule', description: 'Most Citi welcome bonuses have a 48-month restriction. Strata Premier is an exception: current or previous Citi Strata Premier or Citi Premier account holders are ineligible for its new-account bonus.', cooldownMonths: 48 },
   { id: 'bilt-card-2-lifetime', issuer: 'Bilt', ruleName: 'Bilt Card 2.0 Welcome Bonus Eligibility', description: 'Bilt Card 2.0 welcome offers are available only if you do not currently hold, have not previously held, and have not received a welcome bonus on any Bilt Card 2.0 product. This is a shared family history rule across Blue, Obsidian, and Palladium.', affectedCards: ['bilt-blue', 'bilt-obsidian', 'bilt-palladium'] },
   { id: 'usbank-skypass-family', issuer: 'U.S. Bank', ruleName: 'SKYPASS Family Bonus Eligibility', description: 'The SKYPASS Visa products share one family: check prior SKYPASS cards and issuer terms before applying for another welcome bonus. Product changes preserve account history and do not earn a new bonus.', affectedCards: ['usbank-skypass-skyblue', 'usbank-skypass-signature', 'usbank-skypass-select'] },
+  {
+    id: 'boa-atmos-ascent-history',
+    issuer: 'Bank of America',
+    ruleName: 'Atmos Ascent Previous Cardholder Rule',
+    description: 'Bank of America may decline an Ascent application if you hold the Ascent now or held it in the preceding 24 months. The lookback runs from when you stopped holding the card.',
+    affectedCards: ['boa-atmos-ascent'],
+    cooldownMonths: 24,
+    historyCheck: 'same-card-held',
+  },
+  {
+    id: 'boa-atmos-summit-offer',
+    issuer: 'Bank of America',
+    ruleName: 'Atmos Summit Welcome Offer',
+    description: 'The public offer is a one-time promotion for opening a new Summit account in response to the offer. Check the terms of the offer you apply for.',
+    affectedCards: ['boa-atmos-summit'],
+  },
+  {
+    id: 'boa-atmos-business-offer',
+    issuer: 'Bank of America',
+    ruleName: 'Atmos Business Application and Welcome Offer',
+    description: 'Bank of America may decline an application if the same business entity currently has or had another Bank of America business card in the preceding 24 months. The welcome offer applies to qualifying new company-level accounts. Review the terms using your business entity’s card history.',
+    affectedCards: ['boa-atmos-business'],
+  },
+  {
+    id: 'boa-reported-2-3-4',
+    issuer: 'Bank of America',
+    ruleName: 'Reported 2/3/4 Approval Limits',
+    description: 'Cardholders report limits of 2 new Bank of America cards in 2 months, 3 in 12 months, and 4 in 24 months. The tracker shows this reported approval practice for reference.',
+    sourceUrl: 'https://onemileatatime.com/guides/atmos-rewards-summit-card-application-approval/',
+  },
 ];
 
 // Expose to window for BDD testing

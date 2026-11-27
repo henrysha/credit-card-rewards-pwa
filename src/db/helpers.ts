@@ -1,10 +1,10 @@
 import { db } from './database';
 import { cardFamilyLabels } from './card-families';
 import type { CardFamilyId } from './card-families';
-import { cardTemplates } from './seed-data';
+import { cardTemplates, churningRules } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
 import { isPerkAvailable, isUserPerkAvailable } from '../utils/perk-availability';
-import { hasRotatingRewards } from '../utils/quarterly-rewards';
+import { getLocalDateString, hasRotatingRewards, parseDate } from '../utils/quarterly-rewards';
 
 // ── Helpers for computing renewal dates ──
 
@@ -110,10 +110,55 @@ export function getCardTemplate(templateId: string): CardTemplate | undefined {
   return cardTemplates.find(c => c.id === templateId);
 }
 
+function isCalendarDate(date: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) && getLocalDateString(parseDate(date)) === date;
+}
+
+export function checkPreviousCardholderHistory(
+  cardTemplateId: string,
+  cooldownMonths: number,
+  cards: UserCard[],
+  today: string,
+) {
+  const history: UserCard[] = [];
+  let currentlyHeld = false;
+  let missingClosureDate = false;
+  let reviewOn: string | undefined;
+
+  for (const card of cards) {
+    if (card.cardTemplateId !== cardTemplateId || card.openedDate > today) continue;
+    if (card.status === 'active') {
+      currentlyHeld = true;
+    } else if (!card.closedDate || !isCalendarDate(card.closedDate)
+      || card.closedDate < card.openedDate || card.closedDate > today) {
+      missingClosureDate = true;
+    } else {
+      const end = parseDate(card.closedDate);
+      const anniversaryMonth = new Date(end.getFullYear(), end.getMonth() + cooldownMonths, 1);
+      const lastDay = endOfMonth(anniversaryMonth).getDate();
+      anniversaryMonth.setDate(Math.min(lastDay, end.getDate()));
+      const anniversary = getLocalDateString(anniversaryMonth);
+      if (anniversary <= today) continue;
+      if (!reviewOn || anniversary > reviewOn) reviewOn = anniversary;
+    }
+    history.push(card);
+  }
+
+  return { history, currentlyHeld, missingClosureDate, reviewOn };
+}
+
 export async function getSignupBonusEligibility(cardTemplateId: string): Promise<{ eligible: boolean; history: UserCard[] }> {
   const template = getCardTemplate(cardTemplateId);
   if (!template) throw new Error(`Unknown card template: ${cardTemplateId}`);
   const allCards = await db.cards.toArray();
+  if (template.issuer === 'Bank of America') {
+    // The loyalty family alone does not establish a shared offer restriction.
+    const rule = churningRules.find(r => r.historyCheck === 'same-card-held' && r.affectedCards?.includes(template.id));
+    const history = rule?.cooldownMonths === undefined
+      ? []
+      : checkPreviousCardholderHistory(template.id, rule.cooldownMonths, allCards, getLocalDateString()).history;
+    return { eligible: history.length === 0, history };
+  }
   const history = allCards.filter(card => {
     const prior = getCardTemplate(card.cardTemplateId);
     return Boolean(prior?.familyId && template.familyId && prior.familyId === template.familyId);
@@ -215,6 +260,19 @@ export async function removeCard(cardId: number): Promise<void> {
   await db.cards.delete(cardId);
 }
 
+export async function closeCard(cardId: number, closedDate: string): Promise<void> {
+  if (!isCalendarDate(closedDate) || closedDate > getLocalDateString()) {
+    throw new Error('Closure date must be a valid date on or before today.');
+  }
+
+  await db.transaction('rw', db.cards, async () => {
+    const card = await db.cards.get(cardId);
+    if (card?.status !== 'active') throw new Error('Only active cards can be marked closed.');
+    if (closedDate < card.openedDate) throw new Error('Closure date must be on or after the opening date.');
+    await db.cards.update(cardId, { status: 'closed', closedDate });
+  });
+}
+
 export async function updateCard(
   cardId: number,
   updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string; openedDate?: string }
@@ -233,6 +291,10 @@ export async function updateCard(
   await db.transaction('rw', db.cards, db.signupBonuses, async () => {
     const card = await db.cards.get(cardId);
     if (!card) return;
+
+    if (updates.openedDate && card.closedDate && updates.openedDate > card.closedDate) {
+      throw new Error('Opening date must be on or before the closure date.');
+    }
 
     if (updates.openedDate !== undefined && updates.openedDate !== card.openedDate) {
       const bonuses = await db.signupBonuses.where('cardId').equals(cardId).toArray();
@@ -333,10 +395,11 @@ export async function productChangeCard(
   const today = new Date().toISOString().split('T')[0];
 
   // 1. Update old card status to 'product-changed'
-  await db.cards.update(cardId, {
+  const updated = await db.cards.where('id').equals(cardId).and(card => card.status === 'active').modify({
     status: 'product-changed',
     closedDate: today,
   });
+  if (!updated) throw new Error('Only active cards can be product changed.');
 
   // 2. Remove old card's un-used perks so they do not linger in active perks tracker
   await db.perks.where('cardId').equals(cardId).and(p => !p.used).delete();
@@ -528,7 +591,7 @@ export async function refreshExpiredPerks(): Promise<number> {
   let refreshed = 0;
   for (const perk of expiredPerks) {
     const card = await db.cards.get(perk.cardId);
-    if (!card) continue;
+    if (!card || card.status === 'closed') continue;
     const template = getCardTemplate(card.cardTemplateId);
     if (!template) continue;
 
@@ -570,11 +633,10 @@ export async function getCardsOpenedInLast24Months(): Promise<number> {
   const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
   const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
   
-  // A product change creates an active replacement while retaining the old
-  // record for history. Count active records only so one account is not
-  // double-counted in Chase 5/24 after a product change.
+  // Count the account opening even if the card is now closed. A product
+  // change retains the opening date on the replacement, so skip the old record.
   return userCards.filter(c => {
-    if (c.status !== 'active') return false;
+    if (c.status === 'product-changed') return false;
     const template = getCardTemplate(c.cardTemplateId);
     return template ? !template.isBusinessCard : true; // Default to counting if template not found (shouldn't happen)
   }).length;
@@ -593,9 +655,13 @@ export function daysUntilDate(dateStr: string): number {
 
 /** Get unused perks whose current period ends within `daysThreshold` days. */
 export async function getExpiringPerks(daysThreshold: number = 7): Promise<UserPerk[]> {
-  const allPerks = await db.perks.toArray();
+  const [allPerks, closedCards] = await Promise.all([
+    db.perks.toArray(),
+    db.cards.where('status').equals('closed').primaryKeys(),
+  ]);
+  const closedCardIds = new Set(closedCards);
   return allPerks.filter(p => {
-    if (p.used || !isUserPerkAvailable(p)) return false;
+    if (closedCardIds.has(p.cardId) || p.used || !isUserPerkAvailable(p)) return false;
     if (p.active === false) return false;
     if (p.renewalPeriod === 'ongoing' || p.renewalPeriod === 'one-time') return false;
     if (p.annualValue <= 0) return false;
@@ -623,7 +689,7 @@ export async function getPermanentlyExpiringPerks(daysThreshold: number = 30): P
   for (const perk of allPerks) {
     // Find the template to check expirationDate
     const card = await db.cards.get(perk.cardId);
-    if (!card) continue;
+    if (!card || card.status === 'closed') continue;
     const cardTemplate = getCardTemplate(card.cardTemplateId);
     if (!cardTemplate) continue;
     const perkTemplate = cardTemplate.perks.find(pt => pt.id === perk.perkTemplateId);

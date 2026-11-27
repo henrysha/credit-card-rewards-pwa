@@ -4,6 +4,7 @@ import { db } from '../db/database';
 import { getCardTemplate, removeCard } from '../db/helpers';
 import { useEffect, useRef, useState } from 'react';
 import { CardHeader } from '../components/CardHeader';
+import CloseCardModal from '../components/CloseCardModal';
 import { SignupBonusSection } from '../components/SignupBonusSection';
 import { EarningRatesSection } from '../components/EarningRatesSection';
 import { PerksSection } from '../components/PerksSection';
@@ -34,6 +35,7 @@ export default function CardDetail() {
   const quarterlyRewards = queriedQuarterlyRewards?.every(r => r.cardId === cardId) ? queriedQuarterlyRewards : undefined;
 
   const [deleteTargetCardId, setDeleteTargetCardId] = useState<number | null>(null);
+  const [closeTargetCardId, setCloseTargetCardId] = useState<number | null>(null);
   const [productChangeTargetCardId, setProductChangeTargetCardId] = useState<number | null>(null);
 
   const showDelete = deleteTargetCardId === cardId;
@@ -103,24 +105,27 @@ export default function CardDetail() {
 
         <CardHeader key={`header-${cardId}`} card={card} template={template} />
 
-        {bonus && <SignupBonusSection key={`bonus-${cardId}`} bonus={bonus} />}
+        {bonus && <SignupBonusSection key={`bonus-${cardId}`} bonus={bonus} readOnly={card.status === 'closed'} />}
 
         <EarningRatesSection earningRates={template.earningRates} />
 
-        {hasRotatingRewards(template, quarterlyRewards) && (
+        {card.status !== 'closed' && hasRotatingRewards(template, quarterlyRewards) && (
           <QuarterlyRewardsSection key={`quarterly-${cardId}`} card={card} template={template} />
         )}
 
-        {perks && <PerksSection key={`perks-${cardId}`} perks={perks} template={template} />}
+        {perks && <PerksSection key={`perks-${cardId}`} perks={perks} template={template} readOnly={card.status === 'closed'} />}
 
         {card.status === 'active' ? (
-          <div className="flex gap-sm mt-lg">
+          <div className="flex flex-wrap gap-sm mt-lg">
             <button
               className="btn btn-secondary"
               style={{ flex: 1 }}
               onClick={() => setProductChangeTargetCardId(cardId)}
             >
               Upgrade / Downgrade
+            </button>
+            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setCloseTargetCardId(cardId)}>
+              Mark Closed
             </button>
             <button
               className="btn btn-danger"
@@ -135,13 +140,24 @@ export default function CardDetail() {
             <div className="p-md glass-card text-center mb-md">
               <span className="badge badge-red">{card.status}</span>
               <p className="text-xs text-muted mt-sm">
-                This card was {card.status === 'product-changed' ? 'product changed to another card' : 'closed'}.
+                {card.status === 'product-changed'
+                  ? 'This card was product changed to another card.'
+                  : card.closedDate ? `Closed on ${card.closedDate}` : 'This card was closed.'}
               </p>
             </div>
             <button className="btn btn-danger btn-block" onClick={() => setDeleteTargetCardId(cardId)}>
               Remove Record
             </button>
           </div>
+        )}
+
+        {card.status === 'active' && closeTargetCardId === cardId && (
+          <CloseCardModal
+            cardId={cardId}
+            cardName={card.nickname || template.name}
+            openedDate={card.openedDate}
+            onClose={() => setCloseTargetCardId(null)}
+          />
         )}
 
         {showProductChange && (

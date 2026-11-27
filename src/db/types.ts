@@ -113,6 +113,8 @@ export interface ChurningRule {
   description: string;
   cooldownMonths?: number;
   affectedCards?: string[]; // card template IDs
+  historyCheck?: 'same-card-held';
+  sourceUrl?: string;
 }
 
 // ---- User Data (stored in IndexedDB) ----

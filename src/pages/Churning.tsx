@@ -5,6 +5,7 @@ import { churningRules } from '../db/seed-data';
 import { useState, useEffect } from 'react';
 import type { UserCard, ChurningRule } from '../db/types';
 import HotelFamilyEligibility from '../components/HotelFamilyEligibility';
+import BankOfAmericaEligibility from '../components/BankOfAmericaEligibility';
 
 function monthsSince(dateStr: string): number {
   const d = new Date(dateStr);
@@ -130,6 +131,7 @@ export default function Churning() {
           </div>
           <div className="churning-issuer-grid">
             {rightIssuers.map(renderIssuerCard)}
+            <BankOfAmericaEligibility cards={cards} />
           </div>
         </div>
       </div>

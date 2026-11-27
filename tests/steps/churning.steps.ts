@@ -15,6 +15,10 @@ Then('the SKYPASS bonus should be marked ineligible', async function () {
   expect((this as unknown as { bonusEligibility: { eligible: boolean } }).bonusEligibility.eligible).toBe(false);
 });
 
+Then('the tracked offer eligibility should be {string}', function (status: string) {
+  expect((this as unknown as { bonusEligibility: { eligible: boolean } }).bonusEligibility.eligible).toBe(status === 'clear');
+});
+
 Then('the SKYPASS family history should include {string}', async function (cardName: string) {
   const result = (this as unknown as { bonusEligibility: { history: Array<{ cardTemplateId: string }> } }).bonusEligibility;
   const names = await this.page.evaluate((history: Array<{ cardTemplateId: string }>) => {

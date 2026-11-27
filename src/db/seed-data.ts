@@ -1138,8 +1138,8 @@ export const cardTemplates: CardTemplate[] = [
   },
   // ─── BANK OF AMERICA / ALASKA ATMOS REWARDS ─────────────────
   // Consumer offers use the Bank of America online product pages, checked 2026-11-27.
-  // The elevated November offers stepped down on ~2026-11-26 (Ascent 70,000/$2,500 and
-  // Summit 80,000/$4,000); the campaign-disclosure links were removed as stale.
+  // Ascent still shows 70,000 points/$2,500 and links to campaign 4081060.
+  // Summit records 70,000 points/$3,000; its old campaign link was removed.
   // Other campaigns can vary.
   // https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/
   // https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/
@@ -1160,8 +1160,9 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 95,
     color: '#005c71',
     signupBonus: {
-      points: 50000, spend: 1500, timeDays: 90, unit: 'points',
-      additionalBonus: { points: 1, spend: 1500, unit: 'Companion Fare', description: '$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement' },
+      points: 70000, spend: 2500, timeDays: 90, unit: 'points',
+      additionalBonus: { points: 1, spend: 2500, unit: 'Companion Fare', description: '$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement' },
+      termsUrl: 'https://www.bankofamerica.com/credit-cards/terms-and-conditions/?campaignid=4081060&productoffercode=RS&locale=en_US',
     },
     earningRates: [
       { category: 'Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },

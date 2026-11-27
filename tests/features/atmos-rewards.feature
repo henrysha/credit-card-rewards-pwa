@@ -21,9 +21,15 @@ Feature: Bank of America Atmos Rewards cards
 
     Examples:
       | card                                  | fee | offer                                         | category                                         | rate | perk                                       |
-      | Atmos Rewards Ascent Visa Signature   | 95  | Spend $1,500 to earn 50,000 points in 90 days | Gas & EV Charging                                | 2x   | Annual $99 Companion Fare                  |
+      | Atmos Rewards Ascent Visa Signature   | 95  | Spend $2,500 to earn 70,000 points in 90 days | Gas & EV Charging                                | 2x   | Annual $99 Companion Fare                  |
       | Atmos Rewards Summit Visa Infinite    | 395 | Spend $3,000 to earn 70,000 points in 90 days | Eligible Foreign Purchases                       | 3x   | Annual 25,000-Point Global Companion Award |
       | Atmos Rewards Visa Signature Business | 195 | Spend $6,000 to earn 90,000 points in 90 days | Alaska & Hawaiian Flights via Atmos for Business | 10x  | 50% Flight Discounts & Bonus Status Points |
+
+  Scenario: Ascent welcome bonus links to the current issuer campaign
+    Given I am on the "Catalog" page
+    When I click on the card "Atmos Rewards Ascent Visa Signature"
+    Then I should see "$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement" on the detail page
+    And the catalog offer terms should link to "https://www.bankofamerica.com/credit-cards/terms-and-conditions/?campaignid=4081060&productoffercode=RS&locale=en_US"
 
   Scenario: Save the Summit welcome award and track the 90-day deadline
     Given I have added the "Atmos Rewards Summit Visa Infinite" card

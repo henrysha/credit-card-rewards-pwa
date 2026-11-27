@@ -52,7 +52,7 @@ export function CatalogDetail() {
       {isLandscapeDuo && (
         <CatalogMasterSidebar selectedTemplateId={template.id} onSelectTemplate={handleSelectFromMaster} />
       )}
-      <div key="catalog-detail-content" className="page animate-in" data-testid="catalog-detail-pane">
+      <div key={`catalog-detail-${template.id}`} className="page animate-in" data-testid="catalog-detail-pane">
         <div className="sr-only" aria-live="polite">{liveAnnouncement}</div>
         <h2 ref={detailHeadingRef} tabIndex={-1} className="sr-only duo-detail-heading">
           {template.name}

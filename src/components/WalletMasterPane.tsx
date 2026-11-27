@@ -9,7 +9,7 @@ const SCROLL_KEY = 'wallet_master_scroll_top';
 
 interface WalletMasterSidebarProps {
   selectedCardId: number;
-  onSelectCard?: (cardName: string) => void;
+  onSelectCard?: (cardName: string, cardId?: number) => void;
 }
 
 export function WalletMasterSidebar({ selectedCardId, onSelectCard }: WalletMasterSidebarProps) {
@@ -32,7 +32,7 @@ export function WalletMasterSidebar({ selectedCardId, onSelectCard }: WalletMast
       sessionStorage.setItem(SCROLL_KEY, String(paneRef.current.scrollTop));
     }
     navigate(`/card/${card.id}`);
-    onSelectCard?.(displayName);
+    onSelectCard?.(displayName, card.id);
   };
 
   return (

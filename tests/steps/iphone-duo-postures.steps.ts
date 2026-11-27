@@ -95,15 +95,13 @@ Then('the dialog should have accessible name {string} and move focus inside the 
   const dialog = this.page.getByRole('dialog', { name: expectedName });
   await expect(dialog).toBeVisible();
 
-  const isFocusInside = await this.page.evaluate(() => {
-    const modal = document.querySelector('.modal-content');
-    return Boolean(modal && document.activeElement && modal.contains(document.activeElement));
+  const isFocusInside = await dialog.evaluate((el: HTMLElement) => {
+    return Boolean(document.activeElement && el.contains(document.activeElement));
   });
   expect(isFocusInside).toBe(true);
 });
 
 Then('pressing Tab and Shift+Tab should stay trapped inside the dialog', async function () {
-  // Tab forward through all focusable controls and verify wrap-around stays inside .modal-content
   for (let i = 0; i < 8; i++) {
     await this.page.keyboard.press('Tab');
     const inside = await this.page.evaluate(() => {
@@ -113,7 +111,6 @@ Then('pressing Tab and Shift+Tab should stay trapped inside the dialog', async f
     expect(inside).toBe(true);
   }
 
-  // Shift+Tab backward and verify wrap-around stays inside .modal-content
   for (let i = 0; i < 4; i++) {
     await this.page.keyboard.press('Shift+Tab');
     const inside = await this.page.evaluate(() => {
@@ -258,4 +255,43 @@ Then('the card details editor dialog should remain open with nickname draft {str
   await expect(dialog).toBeVisible();
   const input = this.page.getByLabel('Nickname', { exact: true });
   await expect(input).toHaveValue(expectedDraft);
+});
+
+When('I open the inline bonus spend editor and type {string} without saving', async function (draftAmount: string) {
+  const updateBtn = this.page.getByRole('button', { name: 'Update Spend', exact: true });
+  await updateBtn.click();
+  const spendInput = this.page.getByPlaceholder('Amount');
+  await expect(spendInput).toBeVisible();
+  await spendInput.fill(draftAmount);
+});
+
+Then('the inline bonus spend editor should be closed', async function () {
+  await expect(this.page.getByPlaceholder('Amount')).toHaveCount(0);
+  await expect(this.page.getByRole('button', { name: 'Update Spend', exact: true })).toBeVisible();
+});
+
+When('the PWA install prompt fires on top of the active dialog', async function () {
+  await this.page.evaluate(() => {
+    window.dispatchEvent(new Event('beforeinstallprompt', { cancelable: true }));
+  });
+});
+
+Then('focus should remain inside the {string} dialog', async function (dialogName: string) {
+  const dialog = this.page.getByRole('dialog', { name: dialogName });
+  await expect(dialog).toBeVisible();
+  const isInside = await dialog.evaluate((el: HTMLElement) => {
+    return Boolean(document.activeElement && el.contains(document.activeElement));
+  });
+  expect(isInside).toBe(true);
+});
+
+When('I open the {string} dialog from the Settings menu via keyboard', async function (itemName: string) {
+  const settingsBtn = this.page.locator('button[aria-label="Settings"]').first();
+  await settingsBtn.focus();
+  await this.page.keyboard.press('Enter');
+  const menuItem = this.page.locator('.dropdown-item').filter({ hasText: itemName }).first();
+  await expect(menuItem).toBeVisible();
+  await menuItem.focus();
+  await this.page.keyboard.press('Enter');
+  await this.page.waitForSelector('.modal-overlay', { state: 'visible' });
 });

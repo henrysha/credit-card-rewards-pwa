@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, type RefObject } from 'react';
 import { useModalEscape } from '../hooks/useModalEscape';
 
 interface FeatureRequestModalProps {
   onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 }
 
-export function FeatureRequestModal({ onClose }: FeatureRequestModalProps) {
-  useModalEscape(onClose);
+export function FeatureRequestModal({ onClose, returnFocusRef }: FeatureRequestModalProps) {
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose, true, returnFocusRef);
   const [featureTitle, setFeatureTitle] = useState('');
   const [featureDesc, setFeatureDesc] = useState('');
 
@@ -24,6 +25,7 @@ export function FeatureRequestModal({ onClose }: FeatureRequestModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         role="dialog"
         aria-modal="true"

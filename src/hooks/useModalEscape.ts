@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -9,7 +9,20 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
 
+interface DialogStackEntry {
+  id: symbol;
+  getDialogEl: () => HTMLElement | null;
+  onClose: () => void;
+}
+
+const activeDialogStack: DialogStackEntry[] = [];
 let lastOutsideFocusedElement: HTMLElement | null = null;
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null
+  );
+}
 
 if (typeof window !== 'undefined') {
   window.addEventListener(
@@ -22,58 +35,18 @@ if (typeof window !== 'undefined') {
     },
     true
   );
-}
 
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true' && el.offsetParent !== null
-  );
-}
+  window.addEventListener(
+    'keydown',
+    (event: KeyboardEvent) => {
+      if (activeDialogStack.length === 0) return;
+      const topEntry = activeDialogStack[activeDialogStack.length - 1];
+      const dialogEl = topEntry.getDialogEl();
 
-/**
- * Manages modal dialog accessibility:
- * - Captures trigger element before initial focus shifts
- * - Moves initial focus inside the dialog when opened
- * - Traps Tab / Shift+Tab focus cycle inside the dialog
- * - Dismisses on Escape and restores focus to the trigger element
- */
-export function useModalEscape(onClose: () => void, isOpen = true) {
-  const onCloseRef = useRef(onClose);
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const overlays = document.querySelectorAll<HTMLElement>('.modal-overlay');
-    const activeOverlay = overlays[overlays.length - 1] ?? null;
-    const dialogEl = activeOverlay?.querySelector<HTMLElement>('.modal-content') ?? null;
-
-    const currentActive = document.activeElement;
-    const triggerElement =
-      currentActive instanceof HTMLElement && (!activeOverlay || !activeOverlay.contains(currentActive))
-        ? currentActive
-        : lastOutsideFocusedElement;
-
-    if (dialogEl) {
-      if (!dialogEl.hasAttribute('tabindex')) {
-        dialogEl.setAttribute('tabindex', '-1');
-      }
-      if (!dialogEl.contains(document.activeElement)) {
-        const preferred = dialogEl.querySelector<HTMLElement>('[data-autofocus="true"]');
-        const focusables = getFocusableElements(dialogEl);
-        const initialTarget = preferred ?? focusables[0] ?? dialogEl;
-        initialTarget.focus();
-      }
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();
-        onCloseRef.current();
+        topEntry.onClose();
         return;
       }
 
@@ -101,14 +74,86 @@ export function useModalEscape(onClose: () => void, isOpen = true) {
           }
         }
       }
+    },
+    true
+  );
+}
+
+/**
+ * Stack-aware modal dialog accessibility hook:
+ * - Binds to the specific dialog element via the returned ref
+ * - Only the topmost open dialog handles Escape and Tab/Shift+Tab trapping
+ * - Restores focus to returnFocusRef (if provided) or the previously focused element (including an underlying dialog control)
+ */
+export function useModalEscape<T extends HTMLElement = HTMLElement>(
+  onClose: () => void,
+  isOpen = true,
+  returnFocusRef?: RefObject<HTMLElement | null>
+) {
+  const dialogRef = useRef<T | null>(null);
+  const onCloseRef = useRef(onClose);
+  const returnFocusRefHolder = useRef(returnFocusRef);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    returnFocusRefHolder.current = returnFocusRef;
+  }, [onClose, returnFocusRef]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const entryId = Symbol('dialog');
+    const getDialogEl = (): HTMLElement | null => {
+      if (dialogRef.current) return dialogRef.current;
+      const overlays = document.querySelectorAll<HTMLElement>('.modal-overlay');
+      const lastOverlay = overlays[overlays.length - 1];
+      return lastOverlay?.querySelector<HTMLElement>('.modal-content') ?? null;
     };
 
-    window.addEventListener('keydown', handleKeyDown, true);
+    const dialogEl = getDialogEl();
+    const currentActive = document.activeElement;
+    const triggerElement =
+      currentActive instanceof HTMLElement &&
+      currentActive !== document.body &&
+      (!dialogEl || !dialogEl.contains(currentActive))
+        ? currentActive
+        : lastOutsideFocusedElement;
+
+    activeDialogStack.push({
+      id: entryId,
+      getDialogEl,
+      onClose: () => onCloseRef.current(),
+    });
+
+    if (dialogEl) {
+      if (!dialogEl.hasAttribute('tabindex')) {
+        dialogEl.setAttribute('tabindex', '-1');
+      }
+      if (!dialogEl.contains(document.activeElement)) {
+        const preferred = dialogEl.querySelector<HTMLElement>('[data-autofocus="true"]');
+        const focusables = getFocusableElements(dialogEl);
+        const initialTarget = preferred ?? focusables[0] ?? dialogEl;
+        initialTarget.focus();
+      }
+    }
+
     return () => {
-      window.removeEventListener('keydown', handleKeyDown, true);
+      const idx = activeDialogStack.findIndex((entry) => entry.id === entryId);
+      if (idx !== -1) {
+        activeDialogStack.splice(idx, 1);
+      }
+
+      const explicitTarget = returnFocusRefHolder.current?.current;
+      if (explicitTarget && typeof explicitTarget.focus === 'function' && document.contains(explicitTarget)) {
+        explicitTarget.focus();
+        return;
+      }
+
       if (triggerElement && typeof triggerElement.focus === 'function' && document.contains(triggerElement)) {
         triggerElement.focus();
       }
     };
   }, [isOpen]);
+
+  return dialogRef;
 }

@@ -15,6 +15,7 @@ function daysUntil(dateStr: string): number {
 
 export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps) {
   const [editingSpend, setEditingSpend] = useState(false);
+  const [editingBonusId, setEditingBonusId] = useState<number | undefined>(undefined);
   const [spendValue, setSpendValue] = useState('');
   const [updating, setUpdating] = useState(false);
 
@@ -25,18 +26,21 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
   const [editDeadline, setEditDeadline] = useState('');
 
   const { showToast } = useToast();
-  useModalEscape(() => setShowEditBonus(false), showEditBonus);
+  const dialogRef = useModalEscape<HTMLDivElement>(() => setShowEditBonus(false), showEditBonus);
+
+  const isEditingCurrentBonusSpend = editingSpend && bonus?.id !== undefined && bonus.id === editingBonusId;
 
   const handleSpendUpdate = async () => {
-    if (bonus?.id) {
+    if (bonus?.id && bonus.id === editingBonusId) {
       await updateBonusSpend(bonus.id, parseFloat(spendValue) || 0);
       setEditingSpend(false);
+      setEditingBonusId(undefined);
       showToast('Spend updated!');
     }
   };
 
   const handleEditBonus = async () => {
-    if (!bonus?.id) return;
+    if (!bonus?.id || bonus.id !== editingBonusId) return;
     setUpdating(true);
     try {
       await updateSignupBonus(bonus.id, {
@@ -46,6 +50,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
         deadline: editDeadline,
       });
       setShowEditBonus(false);
+      setEditingBonusId(undefined);
       showToast('Sign-up bonus updated!');
     } finally {
       setUpdating(false);
@@ -118,6 +123,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
                 className="edit-icon-btn"
                 onClick={() => {
                   if (bonus) {
+                    setEditingBonusId(bonus.id);
                     setEditBonusPoints(String(bonus.bonusPoints));
                     setEditTargetSpend(String(bonus.targetSpend));
                     setEditBonusUnit(bonus.bonusUnit);
@@ -156,7 +162,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
             </div>
             <div className="flex justify-between items-center mt-sm">
               <span className="text-sm">${signupBonusData.currentSpend.toLocaleString()} / ${signupBonusData.spend.toLocaleString()}</span>
-              {editingSpend ? (
+              {isEditingCurrentBonusSpend ? (
                 <div className="flex gap-sm items-center">
                   <input
                     type="number"
@@ -171,7 +177,14 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
                   <button className="btn btn-primary btn-sm" onClick={handleSpendUpdate}>Save</button>
                 </div>
               ) : (
-                <button className="btn btn-secondary btn-sm" onClick={() => { setSpendValue(String(signupBonusData.currentSpend)); setEditingSpend(true); }}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    setEditingBonusId(bonus?.id);
+                    setSpendValue(String(signupBonusData.currentSpend));
+                    setEditingSpend(true);
+                  }}
+                >
                   Update Spend
                 </button>
               )}
@@ -180,9 +193,10 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
         )}
       </div>
 
-      {showEditBonus && bonus && (
+      {showEditBonus && bonus && bonus.id === editingBonusId && (
         <div className="modal-overlay" onClick={() => setShowEditBonus(false)}>
           <div
+            ref={dialogRef}
             className="modal-content"
             role="dialog"
             aria-modal="true"

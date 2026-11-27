@@ -33,7 +33,7 @@ export function QuarterlyRewardModal({
   onClose,
   onSuccess,
 }: QuarterlyRewardModalProps) {
-  useModalEscape(onClose);
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose);
   const { showToast } = useToast();
   const currentQ = getCurrentQuarter();
   const nextQ = getNextQuarter();
@@ -87,6 +87,7 @@ export function QuarterlyRewardModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         role="dialog"
         aria-modal="true"

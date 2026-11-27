@@ -7,11 +7,12 @@ interface PerkDetailsModalProps {
 }
 
 export function PerkDetailsModal({ template, onClose }: PerkDetailsModalProps) {
-  useModalEscape(onClose);
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         role="dialog"
         aria-modal="true"

@@ -11,6 +11,7 @@ export function SettingsMenu() {
   const [showDataTransfer, setShowDataTransfer] = useState(false);
   const [isCompact, setIsCompact] = useState(() => localStorage.getItem('compact_mode') === 'true');
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     localStorage.setItem('compact_mode', isCompact.toString());
@@ -29,8 +30,9 @@ export function SettingsMenu() {
 
   return (
     <div className="dropdown" ref={menuRef}>
-      <button 
-        className="btn btn-icon" 
+      <button
+        ref={triggerBtnRef}
+        className="btn btn-icon"
         style={{ background: 'none', border: 'none', color: 'var(--text-secondary)' }}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Settings"
@@ -49,9 +51,9 @@ export function SettingsMenu() {
               </svg>
               Compact Mode
             </div>
-            <input 
-              type="checkbox" 
-              checked={isCompact} 
+            <input
+              type="checkbox"
+              checked={isCompact}
               onChange={(e) => setIsCompact(e.target.checked)}
               style={{ width: '16px', height: '16px', cursor: 'pointer' }}
             />
@@ -70,8 +72,8 @@ export function SettingsMenu() {
             Export / Import Data
           </button>
           <div style={{ height: '1px', background: 'var(--bg-glass-border)', margin: '4px 0' }} />
-          <button 
-            className="dropdown-item" 
+          <button
+            className="dropdown-item"
             onClick={() => {
               setShowCardModal(true);
               setIsOpen(false);
@@ -82,8 +84,8 @@ export function SettingsMenu() {
             </svg>
             Request New Card
           </button>
-          <button 
-            className="dropdown-item" 
+          <button
+            className="dropdown-item"
             onClick={() => {
               setShowFeatureModal(true);
               setIsOpen(false);
@@ -99,15 +101,15 @@ export function SettingsMenu() {
       )}
 
       {showCardModal && (
-        <RequestCardModal onClose={() => setShowCardModal(false)} />
+        <RequestCardModal onClose={() => setShowCardModal(false)} returnFocusRef={triggerBtnRef} />
       )}
 
       {showFeatureModal && (
-        <FeatureRequestModal onClose={() => setShowFeatureModal(false)} />
+        <FeatureRequestModal onClose={() => setShowFeatureModal(false)} returnFocusRef={triggerBtnRef} />
       )}
 
       {showDataTransfer && (
-        <DataTransferModal onClose={() => setShowDataTransfer(false)} />
+        <DataTransferModal onClose={() => setShowDataTransfer(false)} returnFocusRef={triggerBtnRef} />
       )}
     </div>
   );

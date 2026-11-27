@@ -64,3 +64,33 @@ Feature: iPhone Duo 4-Posture Responsive Design
     Then the card details editor dialog should remain open with nickname draft "My Folded Draft Nickname"
     When the viewport is set to iPhone Duo "unfolded-portrait"
     Then the card details editor dialog should remain open with nickname draft "My Folded Draft Nickname"
+
+  Scenario: Switching cards in the unfolded landscape wallet resets card-specific spend editors without leaking drafts
+    Given I have added the "Chase Sapphire Reserve" card
+    And I have added the "American Express Gold" card
+    And the viewport is set to iPhone Duo "unfolded-landscape"
+    When I view the card detail for "Chase Sapphire Reserve"
+    And I open the inline bonus spend editor and type "4250" without saving
+    And I select "American Express Gold" from the wallet master list
+    Then the inline bonus spend editor should be closed
+    And I should see "$0 / $8,000" spend progress
+
+  Scenario: Pressing Escape with stacked dialogs closes only the topmost dialog and preserves the underlying draft
+    Given I am browsing on Android
+    And I have added the "Chase Sapphire Reserve" card
+    When I view the card detail for "Chase Sapphire Reserve"
+    And I open the card details editor
+    And I type "Stacked Draft Nickname" into the card nickname input without saving
+    And the PWA install prompt fires on top of the active dialog
+    Then I should see the PWA installation guide
+    When I press Escape to close the modal
+    Then I should not see the PWA installation guide
+    And the card details editor dialog should remain open with nickname draft "Stacked Draft Nickname"
+    And focus should remain inside the "Edit Card Details" dialog
+
+  Scenario: Closing a dialog opened from the Settings menu restores focus to the Settings trigger button
+    Given I open the app
+    When I open the "Request Feature" dialog from the Settings menu via keyboard
+    Then the dialog should have accessible name "Submit Feature Request" and move focus inside the dialog
+    When I press Escape to close the modal
+    Then the modal should close and restore focus to "Settings"

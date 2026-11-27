@@ -19,7 +19,7 @@ export function ProductChangeModal({
   onClose,
   onSuccess,
 }: ProductChangeModalProps) {
-  useModalEscape(onClose);
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose);
   const now = useCurrentDate();
   const { showToast } = useToast();
   const { upgrades, downgrades, sameTier, allEligible } = getEligibleProductChangeTemplates(currentTemplate.id);
@@ -71,6 +71,7 @@ export function ProductChangeModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         role="dialog"
         aria-modal="true"

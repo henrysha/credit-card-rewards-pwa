@@ -22,7 +22,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
   const validOpenedDate = Boolean(editOpenedDate) && editOpenedDate <= today;
   const { showToast } = useToast();
 
-  useModalEscape(() => setShowEditDetails(false), showEditDetails);
+  const dialogRef = useModalEscape<HTMLFormElement>(() => setShowEditDetails(false), showEditDetails);
 
   const handleEditDetails = async () => {
     if (!card?.id || !validLastFour || !validOpenedDate || updating) return;
@@ -103,6 +103,7 @@ export function CardHeader({ card, template }: CardHeaderProps) {
       {showEditDetails && (
         <div className="modal-overlay" onClick={() => setShowEditDetails(false)}>
           <form
+            ref={dialogRef}
             className="modal-content"
             role="dialog"
             aria-modal="true"

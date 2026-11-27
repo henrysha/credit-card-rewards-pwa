@@ -69,7 +69,7 @@ export default function PwaInstallGuide() {
     setPlatform(null);
   };
 
-  useModalEscape(dismiss, Boolean(platform));
+  const dialogRef = useModalEscape<HTMLElement>(dismiss, Boolean(platform));
 
   if (!platform) return null;
 
@@ -78,6 +78,7 @@ export default function PwaInstallGuide() {
   return (
     <div className="modal-overlay install-guide-overlay" onClick={dismiss}>
       <section
+        ref={dialogRef}
         className="modal-content install-guide"
         role="dialog"
         aria-modal="true"

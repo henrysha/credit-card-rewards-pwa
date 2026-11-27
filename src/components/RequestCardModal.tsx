@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, type RefObject } from 'react';
 import { useModalEscape } from '../hooks/useModalEscape';
 
 interface RequestCardModalProps {
   onClose: () => void;
+  returnFocusRef?: RefObject<HTMLElement | null>;
 }
 
-export function RequestCardModal({ onClose }: RequestCardModalProps) {
-  useModalEscape(onClose);
+export function RequestCardModal({ onClose, returnFocusRef }: RequestCardModalProps) {
+  const dialogRef = useModalEscape<HTMLDivElement>(onClose, true, returnFocusRef);
   const [cardName, setCardName] = useState('');
   const [issuer, setIssuer] = useState('');
 
@@ -24,6 +25,7 @@ export function RequestCardModal({ onClose }: RequestCardModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="modal-content"
         role="dialog"
         aria-modal="true"

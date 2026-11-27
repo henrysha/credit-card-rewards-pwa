@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
-import { getCardTemplate, removeCard } from '../db/helpers';
+import { getCardTemplate, getRecordedClosureDate, removeCard } from '../db/helpers';
 import { useEffect, useRef, useState } from 'react';
 import { CardHeader } from '../components/CardHeader';
 import CloseCardModal from '../components/CloseCardModal';
@@ -35,7 +35,7 @@ export default function CardDetail() {
   const quarterlyRewards = queriedQuarterlyRewards?.every(r => r.cardId === cardId) ? queriedQuarterlyRewards : undefined;
 
   const [deleteTargetCardId, setDeleteTargetCardId] = useState<number | null>(null);
-  const [closeTargetCardId, setCloseTargetCardId] = useState<number | null>(null);
+  const [closureTarget, setClosureTarget] = useState<{ cardId: number; status: 'active' | 'closed' } | null>(null);
   const [productChangeTargetCardId, setProductChangeTargetCardId] = useState<number | null>(null);
 
   const showDelete = deleteTargetCardId === cardId;
@@ -81,6 +81,7 @@ export default function CardDetail() {
     );
   }
 
+  const closedDate = getRecordedClosureDate(card);
   const handleDelete = async () => {
     await removeCard(cardId);
     navigate('/cards');
@@ -124,7 +125,7 @@ export default function CardDetail() {
             >
               Upgrade / Downgrade
             </button>
-            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setCloseTargetCardId(cardId)}>
+            <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setClosureTarget({ cardId, status: 'active' })}>
               Mark Closed
             </button>
             <button
@@ -142,21 +143,32 @@ export default function CardDetail() {
               <p className="text-xs text-muted mt-sm">
                 {card.status === 'product-changed'
                   ? 'This card was product changed to another card.'
-                  : card.closedDate ? `Closed on ${card.closedDate}` : 'This card was closed.'}
+                  : closedDate
+                    ? `Closed on ${closedDate}`
+                    : 'Closure date needed.'}
               </p>
             </div>
-            <button className="btn btn-danger btn-block" onClick={() => setDeleteTargetCardId(cardId)}>
-              Remove Record
-            </button>
+            <div className="flex gap-sm">
+              {card.status === 'closed' && (
+                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setClosureTarget({ cardId, status: 'closed' })}>
+                  Edit Closure Date
+                </button>
+              )}
+              <button className="btn btn-danger" style={{ flex: 1 }} onClick={() => setDeleteTargetCardId(cardId)}>
+                Remove Record
+              </button>
+            </div>
           </div>
         )}
 
-        {card.status === 'active' && closeTargetCardId === cardId && (
+        {closureTarget?.cardId === cardId && card.status === closureTarget.status && (
           <CloseCardModal
             cardId={cardId}
             cardName={card.nickname || template.name}
             openedDate={card.openedDate}
-            onClose={() => setCloseTargetCardId(null)}
+            closedDate={closedDate}
+            status={closureTarget.status}
+            onClose={() => setClosureTarget(null)}
           />
         )}
 

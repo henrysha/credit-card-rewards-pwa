@@ -82,3 +82,42 @@ Feature: Bank of America Atmos churning rules
     And I confirm the removal
     Then I should be on the cards page
     And I should not see "Atmos Rewards Ascent Visa Signature"
+
+  Scenario: Opening and closing use the Eastern calendar after UTC rolls over
+    Given the churning calendar uses "America/New_York" at "2026-11-28T01:00:00Z"
+    And I have added the "Atmos Rewards Ascent Visa Signature" card
+    Then the card should display opening date "2026-11-27"
+    When I open the card details editor
+    And I enter "2026-11-28" as the card opening date
+    Then saving the opening date should be disabled
+    When I click "Cancel"
+    And I am on the "Churning" page
+    Then I should see "Ascent currently held" for Bank of America
+    When I view the card detail for "Atmos Rewards Ascent Visa Signature"
+    And I open the Mark Closed dialog
+    Then the closure date input should show "2026-11-27"
+    When I confirm marking the card closed
+    Then I should see "Closed on 2026-11-27" on the detail page
+    When I am on the "Churning" page
+    Then I should see "Ascent lookback ends Nov 27, 2028" for Bank of America
+
+  Scenario Outline: A closed card's imported date can be corrected and survives reload
+    Given the churning date is "2026-11-27"
+    And my card history includes an Atmos Ascent opened "2020-01-01" and closed "<imported date>"
+    When I am on the "Churning" page
+    Then I should see "Ascent closure date needed" for Bank of America
+    When I view the card detail for "Atmos Rewards Ascent Visa Signature"
+    And I click "Edit Closure Date"
+    Then the closure date input should show ""
+    When I enter "2024-11-26" as the closure date
+    And I click "Save Closure Date"
+    Then I should see "Closed on 2024-11-26" on the detail page
+    When I reload the page
+    Then I should see "Closed on 2024-11-26" on the detail page
+    When I am on the "Churning" page
+    Then I should see "No Ascent hold in the lookback" for Bank of America
+
+    Examples:
+      | imported date |
+      | unknown       |
+      | 2025-02-30    |

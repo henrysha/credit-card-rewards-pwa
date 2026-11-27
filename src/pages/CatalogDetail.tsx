@@ -8,6 +8,7 @@ import { addCard, getCardTemplate } from '../db/helpers';
 import { useToast } from '../components/ToastContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { CatalogMasterSidebar } from '../components/CatalogMasterPane';
+import { getLocalDateString } from '../utils/quarterly-rewards';
 
 export function CatalogDetail() {
   const { templateId } = useParams<{ templateId: string }>();
@@ -29,7 +30,7 @@ export function CatalogDetail() {
 
   const handleAddCard = async (customDate?: string | null) => {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalDateString();
       const annualFeeDate = customDate || undefined;
       const cardId = await addCard(template.id, today, undefined, undefined, annualFeeDate);
       showToast(`${template.name} added to your cards!`);

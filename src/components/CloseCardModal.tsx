@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { closeCard } from '../db/helpers';
+import { saveCardClosureDate } from '../db/helpers';
 import { useModalEscape } from '../hooks/useModalEscape';
 import { getLocalDateString } from '../utils/quarterly-rewards';
 
@@ -7,12 +7,15 @@ interface CloseCardModalProps {
   cardId: number;
   cardName: string;
   openedDate: string;
+  closedDate?: string;
+  status: 'active' | 'closed';
   onClose: () => void;
 }
 
-export default function CloseCardModal({ cardId, cardName, openedDate, onClose }: CloseCardModalProps) {
+export default function CloseCardModal({ cardId, cardName, openedDate, closedDate, status, onClose }: CloseCardModalProps) {
   const today = getLocalDateString();
-  const [date, setDate] = useState(today);
+  const editing = status === 'closed';
+  const [date, setDate] = useState(editing ? closedDate ?? '' : today);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const dismiss = () => { if (!saving) onClose(); };
@@ -33,7 +36,7 @@ export default function CloseCardModal({ cardId, cardName, openedDate, onClose }
           setSaving(true);
           setError('');
           try {
-            await closeCard(cardId, date);
+            await saveCardClosureDate(cardId, date, status);
             onClose();
           } catch (failure) {
             setError(failure instanceof Error ? failure.message : 'Could not mark the card closed.');
@@ -42,8 +45,8 @@ export default function CloseCardModal({ cardId, cardName, openedDate, onClose }
         }}
       >
         <div className="modal-handle" />
-        <h3 id="close-card-title" className="mb-md">Mark Card Closed</h3>
-        <p className="text-sm text-muted mb-md">Keep {cardName} in your wallet history and record when you closed the account.</p>
+        <h3 id="close-card-title" className="mb-md">{editing ? 'Edit Closure Date' : 'Mark Card Closed'}</h3>
+        <p className="text-sm text-muted mb-md">Record when you closed {cardName}.</p>
         <div className="form-group">
           <label className="form-label" htmlFor="card-closure-date">Closure date</label>
           <input
@@ -62,7 +65,7 @@ export default function CloseCardModal({ cardId, cardName, openedDate, onClose }
         <div className="flex gap-sm mt-lg">
           <button type="button" className="btn btn-secondary" disabled={saving} onClick={dismiss}>Cancel</button>
           <button type="submit" className="btn btn-primary" disabled={saving || !date || date < openedDate || date > today}>
-            Mark Closed
+            {editing ? 'Save Closure Date' : 'Mark Closed'}
           </button>
         </div>
       </form>

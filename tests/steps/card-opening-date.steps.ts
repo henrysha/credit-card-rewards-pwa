@@ -38,7 +38,7 @@ Then('saving the opening date should be enabled', async function () {
 });
 
 When('I enter today as the card opening date', async function () {
-  const today = await this.page.evaluate(() => new Date().toISOString().split('T')[0]);
+  const today = await this.page.evaluate(() => new Intl.DateTimeFormat('sv-SE').format(new Date()));
   await this.page.getByLabel('Opening Date', { exact: true }).fill(today);
 });
 

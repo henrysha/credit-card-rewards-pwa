@@ -4,7 +4,7 @@ import type { CardFamilyId } from './card-families';
 import { cardTemplates, churningRules } from './seed-data';
 import type { UserCard, SignupBonus, UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from './types';
 import { isPerkAvailable, isUserPerkAvailable } from '../utils/perk-availability';
-import { getLocalDateString, hasRotatingRewards, parseDate } from '../utils/quarterly-rewards';
+import { getEffectiveDate, getLocalDateString, hasRotatingRewards, parseDate } from '../utils/quarterly-rewards';
 
 // ── Helpers for computing renewal dates ──
 
@@ -114,6 +114,13 @@ function isCalendarDate(date: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) && getLocalDateString(parseDate(date)) === date;
 }
 
+export function getRecordedClosureDate(card: Pick<UserCard, 'openedDate' | 'closedDate'>, today = getLocalDateString()) {
+  const { openedDate, closedDate } = card;
+  return closedDate && isCalendarDate(closedDate) && closedDate >= openedDate && closedDate <= today
+    ? closedDate
+    : undefined;
+}
+
 export function checkPreviousCardholderHistory(
   cardTemplateId: string,
   cooldownMonths: number,
@@ -127,13 +134,13 @@ export function checkPreviousCardholderHistory(
 
   for (const card of cards) {
     if (card.cardTemplateId !== cardTemplateId || card.openedDate > today) continue;
+    const closedDate = getRecordedClosureDate(card, today);
     if (card.status === 'active') {
       currentlyHeld = true;
-    } else if (!card.closedDate || !isCalendarDate(card.closedDate)
-      || card.closedDate < card.openedDate || card.closedDate > today) {
+    } else if (!closedDate) {
       missingClosureDate = true;
     } else {
-      const end = parseDate(card.closedDate);
+      const end = parseDate(closedDate);
       const anniversaryMonth = new Date(end.getFullYear(), end.getMonth() + cooldownMonths, 1);
       const lastDay = endOfMonth(anniversaryMonth).getDate();
       anniversaryMonth.setDate(Math.min(lastDay, end.getDate()));
@@ -260,14 +267,14 @@ export async function removeCard(cardId: number): Promise<void> {
   await db.cards.delete(cardId);
 }
 
-export async function closeCard(cardId: number, closedDate: string): Promise<void> {
+export async function saveCardClosureDate(cardId: number, closedDate: string, expectedStatus: 'active' | 'closed'): Promise<void> {
   if (!isCalendarDate(closedDate) || closedDate > getLocalDateString()) {
     throw new Error('Closure date must be a valid date on or before today.');
   }
 
   await db.transaction('rw', db.cards, async () => {
     const card = await db.cards.get(cardId);
-    if (card?.status !== 'active') throw new Error('Only active cards can be marked closed.');
+    if (card?.status !== expectedStatus) throw new Error('The card status changed. Reopen the form to try again.');
     if (closedDate < card.openedDate) throw new Error('Closure date must be on or after the opening date.');
     await db.cards.update(cardId, { status: 'closed', closedDate });
   });
@@ -278,12 +285,7 @@ export async function updateCard(
   updates: { nickname?: string; lastFourDigits?: string; annualFeeDate?: string; openedDate?: string }
 ): Promise<void> {
   if (updates.openedDate !== undefined) {
-    const parsed = new Date(updates.openedDate);
-    const today = new Date().toISOString().split('T')[0];
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(updates.openedDate)
-      || !Number.isFinite(parsed.getTime())
-      || parsed.toISOString().split('T')[0] !== updates.openedDate
-      || updates.openedDate > today) {
+    if (!isCalendarDate(updates.openedDate) || updates.openedDate > getLocalDateString()) {
       throw new Error('Opening date must be a valid date on or before today.');
     }
   }
@@ -292,7 +294,8 @@ export async function updateCard(
     const card = await db.cards.get(cardId);
     if (!card) return;
 
-    if (updates.openedDate && card.closedDate && updates.openedDate > card.closedDate) {
+    const closedDate = getRecordedClosureDate(card);
+    if (updates.openedDate && closedDate && updates.openedDate > closedDate) {
       throw new Error('Opening date must be on or before the closure date.');
     }
 
@@ -392,7 +395,7 @@ export async function productChangeCard(
     throw new Error('Product change must stay within the same card family');
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getLocalDateString();
 
   // 1. Update old card status to 'product-changed'
   const updated = await db.cards.where('id').equals(cardId).and(card => card.status === 'active').modify({
@@ -630,8 +633,9 @@ export async function refreshExpiredPerks(): Promise<number> {
 // ── Churning helpers ──
 
 export async function getCardsOpenedInLast24Months(): Promise<number> {
-  const cutoff = addMonths(new Date(), -24).toISOString().split('T')[0];
-  const userCards = await db.cards.where('openedDate').aboveOrEqual(cutoff).toArray();
+  const now = getEffectiveDate();
+  const cutoff = getLocalDateString(addMonths(now, -24));
+  const userCards = await db.cards.where('openedDate').between(cutoff, getLocalDateString(now), true, true).toArray();
   
   // Count the account opening even if the card is now closed. A product
   // change retains the opening date on the replacement, so skip the old record.

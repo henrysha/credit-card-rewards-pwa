@@ -1288,15 +1288,15 @@ export const churningRules: ChurningRule[] = [
     id: 'boa-atmos-business-offer',
     issuer: 'Bank of America',
     ruleName: 'Atmos Business Application and Welcome Offer',
-    description: 'Bank of America may decline an application if the same business entity currently has or had another Bank of America business card in the preceding 24 months. The welcome offer applies to qualifying new company-level accounts. Review the terms using your business entity’s card history.',
+    description: 'Bank of America may decline an application if the same business entity currently has or had another Bank of America business card in the preceding 24 months. The welcome offer applies to qualifying new company-level accounts and is limited to one bonus offer per new company.',
     affectedCards: ['boa-atmos-business'],
   },
   {
     id: 'boa-reported-2-3-4',
     issuer: 'Bank of America',
     ruleName: 'Reported 2/3/4 Approval Limits',
-    description: 'Cardholders report limits of 2 new Bank of America cards in 2 months, 3 in 12 months, and 4 in 24 months. The tracker shows this reported approval practice for reference.',
-    sourceUrl: 'https://onemileatatime.com/guides/atmos-rewards-summit-card-application-approval/',
+    description: 'Applicants report limits on new Bank of America personal cards of 2 in 2 months, 3 in 12 months, and 4 in 24 months. Reports of enforcement vary.',
+    sourceUrl: 'https://www.doctorofcredit.com/httpswww-doctorofcredit-combank-america-312-rule-credit-card-approvals-contribute-data-points/',
   },
 ];
 

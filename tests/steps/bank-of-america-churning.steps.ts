@@ -6,6 +6,15 @@ Given('the churning date is {string}', async function (date: string) {
   await this.page.clock.setFixedTime(new Date(`${date}T12:00:00`));
 });
 
+Given('the churning calendar uses {string} at {string}', async function (timezoneId: string, instant: string) {
+  await this.context.close();
+  this.context = await this.browser.newContext({ timezoneId, serviceWorkers: 'block' });
+  this.page = await this.context.newPage();
+  await this.page.clock.setFixedTime(new Date(instant));
+  await this.page.goto(`${this.baseUrl}?test_db=${this.testDbId}`);
+  await this.page.waitForLoadState('networkidle');
+});
+
 Given('my card history includes an Atmos Ascent opened {string} and closed {string}', async function (openedDate: string, closed: string) {
   await this.page.evaluate(async ({ openedDate, closed }) => {
     const database = (window as unknown as { db: typeof db }).db;
@@ -37,7 +46,10 @@ Then('the Bank of America section should link to the three issuer offers and the
     await expect(offerLinks.nth(index)).toHaveAttribute('href', url);
   }
   await expect(section.getByRole('link', { name: 'Read the reported approval limits' }))
-    .toHaveAttribute('href', 'https://onemileatatime.com/guides/atmos-rewards-summit-card-application-approval/');
+    .toHaveAttribute('href', 'https://www.doctorofcredit.com/httpswww-doctorofcredit-combank-america-312-rule-credit-card-approvals-contribute-data-points/');
+  await expect(section).toContainText('one bonus offer per new company');
+  await expect(section).toContainText('Bank of America personal cards');
+  await expect(section).toContainText('Reports of enforcement vary');
 });
 
 When('I open the Mark Closed dialog', async function () {
@@ -46,7 +58,11 @@ When('I open the Mark Closed dialog', async function () {
 });
 
 When('I enter {string} as the closure date', async function (date: string) {
-  await this.page.getByLabel('Closure date').fill(date);
+  await this.page.getByLabel('Closure date', { exact: true }).fill(date);
+});
+
+Then('the closure date input should show {string}', async function (date: string) {
+  await expect(this.page.getByLabel('Closure date', { exact: true })).toHaveValue(date);
 });
 
 Then('saving the closure date should be disabled', async function () {

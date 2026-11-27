@@ -1137,11 +1137,14 @@ export const cardTemplates: CardTemplate[] = [
     ],
   },
   // ─── BANK OF AMERICA / ALASKA ATMOS REWARDS ─────────────────
-  // Consumer offers use the Bank of America online product pages and the
-  // linked campaign disclosures, checked 2026-11-26. Other campaigns can vary.
+  // Consumer offers use the Bank of America online product pages, checked 2026-11-27.
+  // The elevated November offers stepped down on ~2026-11-26 (Ascent 70,000/$2,500 and
+  // Summit 80,000/$4,000); the campaign-disclosure links were removed as stale.
+  // Other campaigns can vary.
   // https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/
   // https://www.bankofamerica.com/credit-cards/products/alaska-airlines-infinite-credit-card/
-  // Alaska Airlines' public pages also show the same consumer offers.
+  // Alaska Airlines' pages can show different channel offers (e.g. a two-tier Ascent
+  // offer); the catalog records the Bank of America product-page offer.
   // https://www.alaskaair.com/atmosrewards/content/credit-cards/visa-ascent
   // https://www.alaskaair.com/atmosrewards/content/credit-cards/visa-summit
   // https://business.bankofamerica.com/en/credit-cards/atmos-rewards
@@ -1157,9 +1160,8 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 95,
     color: '#005c71',
     signupBonus: {
-      points: 70000, spend: 2500, timeDays: 90, unit: 'points',
-      additionalBonus: { points: 1, spend: 2500, unit: 'Companion Fare', description: '$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement' },
-      termsUrl: 'https://www.bankofamerica.com/credit-cards/terms-and-conditions/?campaignid=4081060&productoffercode=RS&locale=en_US',
+      points: 50000, spend: 1500, timeDays: 90, unit: 'points',
+      additionalBonus: { points: 1, spend: 1500, unit: 'Companion Fare', description: '$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement' },
     },
     earningRates: [
       { category: 'Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },
@@ -1187,9 +1189,8 @@ export const cardTemplates: CardTemplate[] = [
     annualFee: 395,
     color: '#173149',
     signupBonus: {
-      points: 80000, spend: 4000, timeDays: 90, unit: 'points',
-      additionalBonus: { points: 25000, spend: 4000, unit: 'companion award points', description: '25,000-point Global Companion Award after meeting the spend requirement' },
-      termsUrl: 'https://www.bankofamerica.com/credit-cards/terms-and-conditions/?campaignid=4081112&productoffercode=S2&locale=en_US',
+      points: 70000, spend: 3000, timeDays: 90, unit: 'points',
+      additionalBonus: { points: 25000, spend: 3000, unit: 'companion award points', description: '25,000-point Global Companion Award after meeting the spend requirement' },
     },
     earningRates: [
       { category: 'Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },

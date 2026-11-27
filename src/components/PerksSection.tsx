@@ -6,6 +6,7 @@ import { togglePerk, togglePerkActivation } from '../db/helpers';
 import { useToast } from './ToastContext';
 import { InfoIcon } from './InfoIcon';
 import { PerkDetailsModal } from './PerkDetailsModal';
+import { PerkPeriod } from './PerkPeriod';
 
 interface PerksSectionProps {
   perks?: UserPerk[];
@@ -75,7 +76,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               {perk.periodValue ? (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
                   <div className="perk-value">${perk.periodValue}</div>
-                  <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                  <PerkPeriod period={perk.renewalPeriod} />
                 </div>
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>
@@ -125,7 +126,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               {perk.periodValue ? (
                 <>
                   <div className="perk-value">${perk.periodValue}</div>
-                  <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                  <PerkPeriod period={perk.renewalPeriod} />
                 </>
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>

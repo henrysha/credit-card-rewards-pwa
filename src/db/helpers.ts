@@ -14,9 +14,13 @@ function addMonths(date: Date, months: number): Date {
   return d;
 }
 
-function bonusDeadline(openedDate: string, months: number): string {
+function bonusDeadline(openedDate: string, offer: CardTemplate['signupBonus']): string {
   const date = new Date(openedDate);
-  date.setUTCMonth(date.getUTCMonth() + months);
+  if (offer.timeDays !== undefined) {
+    date.setUTCDate(date.getUTCDate() + offer.timeDays);
+  } else {
+    date.setUTCMonth(date.getUTCMonth() + offer.timeMonths);
+  }
   return date.toISOString().split('T')[0];
 }
 
@@ -167,7 +171,7 @@ export async function addCard(
   const isAutomaticallyAwarded = template.signupBonus.spend <= 0;
   const deadline = isAutomaticallyAwarded
     ? '9999-12-31'
-    : bonusDeadline(openedDate, template.signupBonus.timeMonths);
+    : bonusDeadline(openedDate, template.signupBonus);
   await db.signupBonuses.add({
     cardId: cardId as number,
     cardTemplateId,
@@ -235,12 +239,15 @@ export async function updateCard(
       for (const bonus of bonuses) {
         const template = getCardTemplate(bonus.cardTemplateId);
         if (!template || bonus.completed || bonus.targetSpend <= 0 || !bonus.id) continue;
-        const originalDeadline = bonusDeadline(card.openedDate, template.signupBonus.timeMonths);
-        const legacyDeadline = addMonths(new Date(card.openedDate), template.signupBonus.timeMonths).toISOString().split('T')[0];
+        const offer = template.signupBonus;
+        const originalDeadline = bonusDeadline(card.openedDate, offer);
+        const legacyDeadline = offer.timeMonths === undefined
+          ? undefined
+          : addMonths(new Date(card.openedDate), offer.timeMonths).toISOString().split('T')[0];
         // Only adjust deadlines that still match the generated default.
         if (bonus.deadline === originalDeadline || bonus.deadline === legacyDeadline) {
           await db.signupBonuses.update(bonus.id, {
-            deadline: bonusDeadline(updates.openedDate, template.signupBonus.timeMonths),
+            deadline: bonusDeadline(updates.openedDate, offer),
           });
         }
       }

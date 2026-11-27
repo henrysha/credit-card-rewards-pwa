@@ -7,6 +7,7 @@ export const cardFamilyLabels = {
   IHG: 'IHG',
   'bilt-card-2.0': 'Bilt Card 2.0',
   'skypass-visa': 'SKYPASS Visa',
+  'atmos-rewards': 'Atmos Rewards',
 } as const;
 
 export type CardFamilyId = keyof typeof cardFamilyLabels;

@@ -10,6 +10,19 @@ Then('I should see {int} cards in the catalog', async function (count: number) {
   await expect(cards).toHaveCount(count, { timeout: 5000 });
 });
 
+Then('the {string} catalog card should be marked as a business card', async function (cardName: string) {
+  const card = this.page.locator('.catalog-list .glass-card').filter({
+    has: this.page.getByText(cardName, { exact: true }),
+  });
+  await expect(card).toContainText('• Business');
+});
+
+Then('the catalog offer terms should link to {string}', async function (url: string) {
+  const link = this.page.getByRole('link', { name: 'View Bank of America offer terms', exact: true });
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute('href', url);
+});
+
 Then('the {string} family should have {int} catalog cards', async function (family: string, count: number) {
   await this.page.getByRole('button', { name: family, exact: true }).click();
   await expect(this.page.locator('.page .glass-card')).toHaveCount(count, { timeout: 5000 });

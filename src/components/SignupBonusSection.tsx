@@ -51,6 +51,11 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
   };
 
   const additionalBonus = bonus?.additionalBonus ?? template?.signupBonus.additionalBonus;
+  const offerTermsLink = !bonus && template?.signupBonus.termsUrl && (
+    <a className="text-sm" href={template.signupBonus.termsUrl} target="_blank" rel="noopener noreferrer">
+      View {template.issuer} offer terms
+    </a>
+  );
   const isAutomaticallyAwarded = bonus
     ? bonus.targetSpend <= 0
     : template
@@ -71,6 +76,7 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
             {additionalBonus && (
               <div className="text-sm text-muted mt-sm">Plus: {additionalBonus.description}</div>
             )}
+            {offerTermsLink}
           </div>
         </div>
       </div>
@@ -129,12 +135,15 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
         <div className="text-sm text-muted mb-md">
           Spend ${signupBonusData.spend.toLocaleString()} to earn {signupBonusData.points.toLocaleString()} {signupBonusData.unit}
           {!signupBonusData.isExisting && template && (
-            <span> in {template.signupBonus.timeMonths} months</span>
+            <span> in {template.signupBonus.timeDays !== undefined
+              ? `${template.signupBonus.timeDays} days`
+              : `${template.signupBonus.timeMonths} months`}</span>
           )}
         </div>
         {additionalBonus && (
           <div className="text-sm text-muted mb-md">Plus: {additionalBonus.description}</div>
         )}
+        {offerTermsLink}
         {signupBonusData.isExisting && (
           <>
             <div className="progress-bar">

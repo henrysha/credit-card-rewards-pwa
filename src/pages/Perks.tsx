@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/database';
 import { togglePerk, togglePerkActivation, daysUntilDate, getCardTemplate } from '../db/helpers';
 import { PerkDetailsModal } from '../components/PerkDetailsModal';
+import { PerkPeriod } from '../components/PerkPeriod';
 import { InfoIcon } from '../components/InfoIcon';
 import { useToast } from '../components/ToastContext';
 import { useState } from 'react';
@@ -149,7 +150,7 @@ export default function Perks() {
                         {perk.periodValue ? (
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
                             <div className="perk-value">${perk.periodValue}</div>
-                            <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
+                            <PerkPeriod period={perk.renewalPeriod} />
                           </div>
                         ) : (
                           <div className="perk-value">${perk.annualValue}</div>
@@ -193,7 +194,7 @@ export default function Perks() {
                         {perk.periodValue ? (
                           <>
                             <div className="perk-value">${perk.periodValue}</div>
-                            <div className="perk-period">/{period === 'monthly' ? 'mo' : period === 'quarterly' ? 'qtr' : period === 'semi-annual' ? '6mo' : 'yr'}</div>
+                            <PerkPeriod period={perk.renewalPeriod} />
                           </>
                         ) : (
                           <div className="perk-value">${perk.annualValue}</div>

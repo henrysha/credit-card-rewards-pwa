@@ -1003,7 +1003,9 @@ export const cardTemplates: CardTemplate[] = [
     perks: [
       { id: 'aa-plat-checked-bag', name: 'First Checked Bag Free', description: 'For you and up to 4 companions', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
       { id: 'aa-plat-boarding', name: 'Preferred Boarding', description: 'Board in Group 5', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
-      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual', requiresEnrollment: true },    ],
+      { id: 'aa-plat-flight-discount', name: '$125 AA Flight Discount', description: 'After $20K spend in a membership year', category: 'travel-credit', annualValue: 125, renewalPeriod: 'annual', requiresEnrollment: true },
+      { id: 'aa-plat-turo', name: '$180 Turo Credit', description: 'Up to $30 in statement credits per eligible Turo trip completed, up to $180 each calendar year; link the card to your Turo account', category: 'rideshare-credit', annualValue: 180, renewalPeriod: 'annual', requiresEnrollment: true },
+    ],
   },
   {
     id: 'citi-aa-mileup',

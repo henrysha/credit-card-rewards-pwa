@@ -16,3 +16,13 @@ Feature: Current Citi AAdvantage welcome offers
     When I reload the page
     Then I should see "Plus: Additional $100 statement credit after meeting the spend requirement" on the detail page
     And I should see "15,000" as the bonus amount
+
+  Scenario: Catalog shows the Platinum Select Turo credit
+    Given I am on the "Catalog" page
+    Then the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" catalog perk "$180 Turo Credit" should have an annual value of 180 with "annual" renewal and require enrollment
+
+  Scenario: Turo credit appears when the Platinum Select card is added
+    Given I have added the "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®" card
+    When I view the card detail for "Citi® / AAdvantage® Platinum Select® World Elite Mastercard®"
+    Then I should see "$180 Turo Credit" in the perks list
+    And the "$180 Turo Credit" perk should have an Activate button

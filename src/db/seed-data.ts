@@ -1136,6 +1136,111 @@ export const cardTemplates: CardTemplate[] = [
       { id: 'skypass-select-anniversary-miles', name: 'Anniversary Bonus Miles', description: '5,000 bonus miles after $15,000 in cardmember-year purchases, plus 10,000 renewal bonus miles after $35,000 in cardmember-year purchases', category: 'other', annualValue: 0, renewalPeriod: 'annual' },
     ],
   },
+  // ─── BANK OF AMERICA / ALASKA ATMOS REWARDS ─────────────────
+  // Public offers checked 2026-11-26 on Alaska's Ascent and Summit pages
+  // and Bank of America's Business product page.
+  // https://www.alaskaair.com/atmosrewards/content/credit-cards/visa-ascent
+  // https://www.alaskaair.com/atmosrewards/content/credit-cards/visa-summit
+  // https://business.bankofamerica.com/en/credit-cards/atmos-rewards
+  // Business terms reflect applications from the 2026-11-18 refresh onward.
+  // https://news.alaskaair.com/loyalty/alaska-air-group-refreshes-atmos-rewards-visa-business-card-with-bank-of-america/
+  // These products share a loyalty program. The public offers do not establish product-change paths.
+  {
+    id: 'boa-atmos-ascent',
+    name: 'Atmos Rewards Ascent Visa Signature',
+    issuer: 'Bank of America',
+    familyId: 'atmos-rewards',
+    productChangeEligible: false,
+    annualFee: 95,
+    color: '#005c71',
+    signupBonus: {
+      points: 70000, spend: 2500, timeDays: 90, unit: 'points',
+      additionalBonus: { points: 1, spend: 2500, unit: 'Companion Fare', description: '$99 Companion Fare (plus taxes and fees from $23) after meeting the spend requirement' },
+    },
+    earningRates: [
+      { category: 'Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },
+      { category: 'Gas & EV Charging', multiplier: 2 },
+      { category: 'Local Transit & Rideshare', multiplier: 2 },
+      { category: 'Cable & Select Streaming Services', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'atmos-ascent-companion', name: 'Annual $99 Companion Fare', description: 'Earn a $99 Companion Fare (plus taxes and fees from $23) on eligible Alaska or Hawaiian flights within North America after $6,000 in purchases in the prior anniversary year.', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'atmos-ascent-lounge', name: '$100 Alaska Lounge+ Discount', description: 'Get $100 off an annual Alaska Lounge+ membership purchased with the card.', category: 'lounge-access', annualValue: 100, renewalPeriod: 'annual' },
+      { id: 'atmos-ascent-bags-boarding', name: 'Free First Checked Bag & Preferred Boarding', description: 'For you and up to six guests on the same reservation when you pay for eligible Alaska or Hawaiian flights with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-ascent-inflight', name: '20% Back on Inflight Purchases', description: 'Earn 20% back on eligible Alaska and Hawaiian inflight purchases paid for with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-ascent-status', name: 'Status Points on Purchases', description: 'Earn one status point per $3 in eligible purchases, with no annual cap.', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-ascent-bank-bonus', name: '10% Bank of America Rewards Bonus', description: 'Earn a 10% bonus on points from card purchases with an eligible Bank of America account.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-ascent-no-ftf', name: 'No Foreign Transaction Fees', description: 'The card has no foreign transaction fees.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'boa-atmos-summit',
+    name: 'Atmos Rewards Summit Visa Infinite',
+    issuer: 'Bank of America',
+    familyId: 'atmos-rewards',
+    productChangeEligible: false,
+    annualFee: 395,
+    color: '#173149',
+    signupBonus: {
+      points: 80000, spend: 4000, timeDays: 90, unit: 'points',
+      additionalBonus: { points: 25000, spend: 4000, unit: 'companion award points', description: '25,000-point Global Companion Award after meeting the spend requirement' },
+    },
+    earningRates: [
+      { category: 'Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },
+      { category: 'Dining', multiplier: 3 },
+      { category: 'Eligible Foreign Purchases', multiplier: 3, recommendationCategory: 'Eligible Foreign Purchases' },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'atmos-summit-companion-25k', name: 'Annual 25,000-Point Global Companion Award', description: 'Receive a Global Companion Award for up to 25,000 points at each account anniversary for two travelers booking the same eligible award itinerary.', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'atmos-summit-companion-100k', name: '100,000-Point Global Companion Award', description: 'Earn a Global Companion Award for up to 100,000 points after $60,000 in eligible purchases in the account anniversary year.', category: 'companion-certificate', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'atmos-summit-lounge', name: '8 Alaska Lounge Passes', description: 'Receive two Alaska Lounge passes each calendar quarter. Each pass covers access throughout the day of travel.', category: 'lounge-access', annualValue: 0, renewalPeriod: 'quarterly' },
+      { id: 'atmos-summit-ge', name: '$120 Global Entry/TSA PreCheck', description: 'Get up to $120 in statement credits for an eligible application fee every four years.', category: 'global-entry-tsa', annualValue: 30, periodValue: 120, renewalPeriod: 'every-4-years' },
+      { id: 'atmos-summit-delay', name: '$50 Instant Travel Delay Credit', description: 'Receive a $50 airport food and beverage voucher when an eligible Alaska Airlines flight is canceled or delayed by at least two hours on the day of travel.', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-changes', name: 'Same-Day Confirmed Flight Changes', description: 'Same-day confirmed change fees are waived on eligible flights regardless of Atmos Rewards status.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-bags-boarding', name: 'Free First Checked Bag & Preferred Boarding', description: 'For you and up to six guests on the same reservation when you pay for eligible Alaska or Hawaiian flights with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-inflight', name: '20% Back on Inflight Purchases', description: 'Earn 20% back on eligible Alaska and Hawaiian inflight purchases paid for with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-status-spend', name: 'Status Points on Purchases', description: 'Earn one status point per $2 in eligible purchases, with no annual cap.', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-status-anniversary', name: '10,000 Anniversary Status Points', description: 'Receive 10,000 status points each account anniversary.', category: 'elite-status', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'atmos-summit-partner-waiver', name: 'Partner Award Booking Fee Waiver', description: 'The partner award booking fee is waived on eligible redemptions.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-point-sharing', name: 'Free Points Sharing', description: 'Share redeemable points with up to 10 Atmos Rewards members through your points sharing network.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-point-transfers', name: 'Partner Loyalty Program Transfers', description: 'Transfer Atmos Rewards points to participating partner loyalty programs.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-bank-bonus', name: '10% Bank of America Rewards Bonus', description: 'Earn a 10% bonus on points from card purchases with an eligible Bank of America account.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-summit-no-ftf', name: 'No Foreign Transaction Fees', description: 'The card has no foreign transaction fees.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
+  {
+    id: 'boa-atmos-business',
+    name: 'Atmos Rewards Visa Signature Business',
+    issuer: 'Bank of America',
+    familyId: 'atmos-rewards',
+    productChangeEligible: false,
+    annualFee: 195,
+    color: '#27444f',
+    isBusinessCard: true,
+    signupBonus: { points: 90000, spend: 6000, timeDays: 90, unit: 'points' },
+    earningRates: [
+      { category: 'Alaska & Hawaiian Flights via Atmos for Business', multiplier: 10, recommendationCategory: 'Alaska & Hawaiian Flights via Atmos for Business' },
+      { category: 'Other Alaska Airlines & Hawaiian Airlines Purchases', multiplier: 3, recommendationCategory: 'Alaska Airlines & Hawaiian Airlines Purchases' },
+      { category: 'Dining', multiplier: 2 },
+      { category: 'All Other', multiplier: 1 },
+    ],
+    perks: [
+      { id: 'atmos-business-lounge', name: '4 Alaska Lounge Passes', description: 'The primary cardholder receives one Alaska Lounge pass per calendar quarter.', category: 'lounge-access', annualValue: 0, renewalPeriod: 'quarterly' },
+      { id: 'atmos-business-ge', name: '$120 Global Entry/TSA PreCheck', description: 'Get up to $120 in statement credits for an eligible application fee every four years.', category: 'global-entry-tsa', annualValue: 30, periodValue: 120, renewalPeriod: 'every-4-years' },
+      { id: 'atmos-business-spend', name: '50% Flight Discounts & Bonus Status Points', description: 'Earn a code for 50% off the base fare of eligible Saver or Main Cabin tickets and 10,000 status points at each of $100,000 and $200,000 in purchases per account anniversary year.', category: 'travel-credit', annualValue: 0, renewalPeriod: 'annual' },
+      { id: 'atmos-business-delay', name: '$50 Instant Travel Delay Credit', description: 'The primary cardholder receives a $50 airport food and beverage voucher when an eligible flight is canceled or delayed by at least two hours on the day of travel.', category: 'travel-credit', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-changes', name: 'Same-Day Confirmed Flight Changes', description: 'Same-day confirmed change fees are waived for the primary cardholder on eligible flights, excluding Saver fares.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-bags-boarding', name: 'Free First Checked Bag & Preferred Boarding', description: 'For cardholders and up to six guests on the same reservation when eligible Alaska or Hawaiian flights are paid for with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-inflight', name: '20% Back on Inflight Purchases', description: 'Earn 20% back on eligible Alaska and Hawaiian inflight purchases paid for with the card.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-status', name: 'Status Points on Purchases', description: 'The primary cardholder earns one status point per $3 in eligible purchases, with no annual cap.', category: 'elite-status', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-point-sharing', name: 'Free Points Sharing', description: 'The primary cardholder can share redeemable points with up to 10 Atmos Rewards members through their points sharing network.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-bank-bonus', name: '10% Bank of America Rewards Bonus', description: 'Earn a 10% bonus on points from card purchases with an eligible Bank of America small business account.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-employees', name: 'Employee Cards Included', description: 'The company annual fee covers additional employee cards.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+      { id: 'atmos-business-no-ftf', name: 'No Foreign Transaction Fees', description: 'The card has no foreign transaction fees.', category: 'other', annualValue: 0, renewalPeriod: 'ongoing' },
+    ],
+  },
 ];
 
 // ============================================================

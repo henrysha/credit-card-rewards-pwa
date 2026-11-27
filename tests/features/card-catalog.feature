@@ -4,7 +4,7 @@ Feature: Card Catalog
   Scenario: View all cards in the catalog
     Given I open the app
     When I navigate to the "Catalog"
-    Then I should see 47 cards in the catalog
+    Then I should see 50 cards in the catalog
 
   Scenario: SKYPASS consumer cards are listed and filterable
     Given I am on the "Catalog" page
@@ -42,7 +42,7 @@ Feature: Card Catalog
   Scenario: Family filter tabs use human-friendly labels
     Given I am on the "Catalog" page
     Then the card family label mappings should exactly cover the catalog family IDs
-    And the card family filters should be labeled "All Families, Chase Ultimate Rewards Consumer, Chase United, Chase Marriott Bonvoy, Hilton, IHG, Bilt Card 2.0, SKYPASS Visa"
+    And the card family filters should be labeled "All Families, Chase Ultimate Rewards Consumer, Chase United, Chase Marriott Bonvoy, Hilton, IHG, Bilt Card 2.0, SKYPASS Visa, Atmos Rewards"
     And the card family filters should not show slug labels
     And the "Chase United" family should have 4 catalog cards
 

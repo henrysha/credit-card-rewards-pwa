@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { RequestCardModal } from '../components/RequestCardModal';
 import { CardFamilyFilter } from '../components/CardFamilyFilter';
-import { getFamilyIds } from '../db/helpers';
+import { getFamilyIds, getFamilyLabel } from '../db/helpers';
 import type { CardFamilyId } from '../db/card-families';
+import type { CardIssuer } from '../db/types';
 
 export default function CardCatalog() {
   const now = useCurrentDate();
@@ -16,7 +17,7 @@ export default function CardCatalog() {
   const [familyFilter, setFamilyFilter] = useState<'all' | CardFamilyId>('all');
   const [showRequestModal, setShowRequestModal] = useState(false);
 
-  const issuers = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'Robinhood', 'U.S. Bank', 'Bilt'];
+  const issuers: Array<'all' | CardIssuer> = ['all', 'Chase', 'Amex', 'Capital One', 'Citi', 'Robinhood', 'U.S. Bank', 'Bilt', 'Bank of America'];
   const families: Array<'all' | CardFamilyId> = ['all', ...getFamilyIds()];
 
   let filtered = cardTemplates;
@@ -67,7 +68,7 @@ export default function CardCatalog() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="font-bold" style={{ fontSize: '0.9rem' }}>{card.name}</div>
-                <div className="text-xs text-muted">{card.issuer}{card.familyId ? ` • ${card.familyId}` : ''} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
+                <div className="text-xs text-muted">{card.issuer}{card.familyId ? ` • ${getFamilyLabel(card.familyId)}` : ''} • ${card.annualFee}/yr{card.isBusinessCard ? ' • Business' : ''}</div>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div className="text-gold font-bold" style={{ fontSize: '0.85rem' }}>

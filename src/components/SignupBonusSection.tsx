@@ -129,7 +129,9 @@ export function SignupBonusSection({ bonus, template }: SignupBonusSectionProps)
         <div className="text-sm text-muted mb-md">
           Spend ${signupBonusData.spend.toLocaleString()} to earn {signupBonusData.points.toLocaleString()} {signupBonusData.unit}
           {!signupBonusData.isExisting && template && (
-            <span> in {template.signupBonus.timeMonths} months</span>
+            <span> in {template.signupBonus.timeDays !== undefined
+              ? `${template.signupBonus.timeDays} days`
+              : `${template.signupBonus.timeMonths} months`}</span>
           )}
         </div>
         {additionalBonus && (

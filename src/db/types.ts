@@ -15,7 +15,7 @@ export type RenewalPeriod =
   | 'ongoing';
 
 /** Card network / issuer */
-export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank' | 'Bilt';
+export type CardIssuer = 'Chase' | 'Amex' | 'Capital One' | 'Citi' | 'Goldman Sachs' | 'Robinhood' | 'U.S. Bank' | 'Bilt' | 'Bank of America';
 
 /** Category of perk */
 export type PerkCategory =
@@ -94,10 +94,12 @@ export interface CardTemplate {
   signupBonus: {
     points: number;
     spend: number;
-    timeMonths: number;
     unit: string;           // "points", "miles", "cash back"
     additionalBonus?: SignupBonusAdditional;
-  };
+  } & (
+    | { timeMonths: number; timeDays?: never }
+    | { timeDays: number; timeMonths?: never }
+  );
   earningRates: EarningRate[];
   perks: PerkTemplate[];
   isBusinessCard?: boolean;

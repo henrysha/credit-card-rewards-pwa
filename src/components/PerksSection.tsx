@@ -1,7 +1,7 @@
 import { isPerkAvailable } from '../utils/perk-availability';
 import { useCurrentDate } from '../hooks/useCurrentDate';
 import { useState } from 'react';
-import type { UserPerk, CardTemplate, PerkTemplate } from '../db/types';
+import type { UserPerk, CardTemplate, PerkTemplate, RenewalPeriod } from '../db/types';
 import { togglePerk, togglePerkActivation } from '../db/helpers';
 import { useToast } from './ToastContext';
 import { InfoIcon } from './InfoIcon';
@@ -12,6 +12,13 @@ interface PerksSectionProps {
   template: CardTemplate;
   readOnly?: boolean;
 }
+
+const periodLabels: Partial<Record<RenewalPeriod, string>> = {
+  monthly: 'mo',
+  quarterly: 'qtr',
+  'semi-annual': '6mo',
+  'every-4-years': '4yr',
+};
 
 export function PerksSection({ perks, template, readOnly = false }: PerksSectionProps) {
   const now = useCurrentDate();
@@ -75,7 +82,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               {perk.periodValue ? (
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
                   <div className="perk-value">${perk.periodValue}</div>
-                  <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                  <div className="perk-period">/{periodLabels[perk.renewalPeriod] ?? 'yr'}</div>
                 </div>
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>
@@ -125,7 +132,7 @@ export function PerksSection({ perks, template, readOnly = false }: PerksSection
               {perk.periodValue ? (
                 <>
                   <div className="perk-value">${perk.periodValue}</div>
-                  <div className="perk-period">/{perk.renewalPeriod === 'monthly' ? 'mo' : perk.renewalPeriod === 'quarterly' ? 'qtr' : perk.renewalPeriod === 'semi-annual' ? '6mo' : 'yr'}</div>
+                  <div className="perk-period">/{periodLabels[perk.renewalPeriod] ?? 'yr'}</div>
                 </>
               ) : (
                 <div className="perk-value">${perk.annualValue}</div>
